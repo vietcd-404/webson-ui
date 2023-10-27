@@ -148,3 +148,9 @@ html {
 .error-page h3 {
   font-weight: normal;
 }
+
+.active-link-head {
+  color: black; /* Màu chữ bôi đen */
+  text-decoration: underline; /* Gạch chân */
+  font-weight: bold;
+}

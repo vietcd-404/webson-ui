@@ -1,6 +1,6 @@
 import React from "react";
 import { Route, Routes } from "react-router-dom";
-import LayoutAdmin from "../components/admin/LayoutAdmin";
+import LayoutAdmin from "../layout/AdminLayout";
 import ThongKe from "../pages/admin/ThongKe/ThongKe";
 import SanPham from "../pages/admin/ThuocTinh/SanPham";
 import SanPhamChiTiet from "../pages/admin/SanPhamChiTiet/SanPhamChiTiet";
