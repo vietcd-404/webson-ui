@@ -1,14 +1,5 @@
 import React, { useEffect, useState } from "react";
-import {
-  Table,
-  Button,
-  Modal,
-  Space,
-  Row,
-  Col,
-  Checkbox,
-  Menu,
-} from "antd";
+import { Table, Button, Modal, Space, Row, Col, Checkbox, Menu } from "antd";
 import {
   EditOutlined,
   DeleteOutlined,
