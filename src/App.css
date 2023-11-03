@@ -1,3 +1,7 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
 .App {
   text-align: center;
 }
@@ -13,8 +17,8 @@
   }
 }
 /* @tailwind base;
-@tailwind components;
-@tailwind utilities; */
+    @tailwind components;
+    @tailwind utilities; */
 .App-header {
   background-color: #282c34;
   min-height: 100vh;
@@ -39,7 +43,7 @@
   }
 }
 
-/* .image-container {
+.image-container {
   position: relative;
 }
 
@@ -52,8 +56,8 @@
   position: absolute;
   top: 5px;
   left: 5px;
-} */
-/* .image-container {
+}
+*/ .image-container {
   display: flex;
   flex-wrap: wrap;
 }
@@ -61,7 +65,7 @@
 .image-container label {
   display: block;
   margin-right: 10px; /* Khoảng cách giữa các hình ảnh */
-/* }
+}
 
 .image-container img {
   width: 100px;
@@ -70,7 +74,7 @@
 
 .image-container input[type="checkbox"] {
   margin-top: 5px; /* Điều chỉnh khoảng cách giữa hình ảnh và checkbox */
-/* } */
+}
 .scroll {
   overflow-y: auto; /* Kích hoạt thanh cuộn dọc */
   max-height: 70vh; /* Đặt chiều cao tối đa cho phần nội dung */

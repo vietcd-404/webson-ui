@@ -11,7 +11,7 @@ import {
 import { MenuFoldOutlined, MenuUnfoldOutlined } from "@ant-design/icons";
 import { Layout, Menu, theme, Button, Image } from "antd";
 import { Link } from "react-router-dom";
-import logo from "../../assets/image/logo.jpg";
+import logo from "../assets/images/logo.jpg";
 
 const { Header, Content, Footer, Sider } = Layout;
 

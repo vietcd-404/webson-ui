@@ -1,6 +1,6 @@
 import React from "react";
 import { Route, Routes } from "react-router-dom";
-import LayoutAdmin from "../components/admin/LayoutAdmin";
+import LayoutAdmin from "../layout/AdminLayout";
 import ThongKe from "../pages/admin/ThongKe/ThongKe";
 import SanPham from "../pages/admin/ThuocTinh/SanPham";
 import SanPhamChiTiet from "../pages/admin/SanPhamChiTiet/SanPhamChiTiet";
@@ -19,7 +19,7 @@ const AdminRouter = () => {
     <div>
       <Routes>
         <Route
-          path="/admin/thong-ke"
+          path="/thong-ke"
           element={
             <LayoutAdmin>
               <ThongKe />
@@ -27,7 +27,7 @@ const AdminRouter = () => {
           }
         />
         <Route
-          path="/admin/san-pham-chi-tiet"
+          path="/san-pham-chi-tiet"
           element={
             <LayoutAdmin>
               <SanPhamChiTiet />
@@ -35,7 +35,7 @@ const AdminRouter = () => {
           }
         />
         <Route
-          path="/admin/san-pham-chi-tiet/quan-ly-san-pham"
+          path="/san-pham-chi-tiet/quan-ly-san-pham"
           element={
             <LayoutAdmin>
               <SanPhamChiTietLayout>
@@ -45,7 +45,7 @@ const AdminRouter = () => {
           }
         />
         <Route
-          path="/admin/san-pham-chi-tiet/danh-sach"
+          path="/san-pham-chi-tiet/danh-sach"
           element={
             <LayoutAdmin>
               <SanPhamChiTietLayout>
@@ -55,7 +55,7 @@ const AdminRouter = () => {
           }
         />
         <Route
-          path="/admin/san-pham"
+          path="/san-pham"
           element={
             <LayoutAdmin>
               <SanPham />
@@ -63,7 +63,7 @@ const AdminRouter = () => {
           }
         />
         <Route
-          path="/admin/loai"
+          path="/loai"
           element={
             <LayoutAdmin>
               <Loai />
@@ -71,7 +71,7 @@ const AdminRouter = () => {
           }
         />
         <Route
-          path="/admin/mau-sac"
+          path="/mau-sac"
           element={
             <LayoutAdmin>
               <Mau />
@@ -79,7 +79,7 @@ const AdminRouter = () => {
           }
         />
         <Route
-          path="/admin/thuong-hieu"
+          path="/thuong-hieu"
           element={
             <LayoutAdmin>
               <ThuongHieu />
@@ -87,7 +87,7 @@ const AdminRouter = () => {
           }
         />
         <Route
-          path="/admin/nguoi-dung"
+          path="/nguoi-dung"
           element={
             <LayoutAdmin>
               <NguoiDung />
@@ -95,7 +95,7 @@ const AdminRouter = () => {
           }
         />
         <Route
-          path="/admin/phuong-thuc-thanh-toan"
+          path="/phuong-thuc-thanh-toan"
           element={
             <LayoutAdmin>
               <ThanhToan />

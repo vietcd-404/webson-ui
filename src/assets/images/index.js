@@ -1,4 +1,4 @@
-import logo from "./orebiLogo.png";
+import logo from "./logo.jpg";
 import logoLight from "./logoLight.png";
 import bannerImgOne from "./banner/bannerImgOne.webp";
 import bannerImgTwo from "./banner/bannerImgTwo.webp";
@@ -35,7 +35,7 @@ import spfFour from "./products/specialOffer/spfFour.webp";
 import productOfTheYear from "./products/productOfTheYear.webp";
 // ============== Products End here ======================
 import paymentCard from "./payment.png";
-import emptyCart from "../images/emptyCart.png";
+import emptyCart from "./emptyCart.png";
 
 export {
   banner1,

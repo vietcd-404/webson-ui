@@ -7,8 +7,8 @@ import { BrowserRouter } from "react-router-dom";
 import "primereact/resources/themes/saga-blue/theme.css";
 import "primereact/resources/primereact.min.css";
 import "primeicons/primeicons.css";
-import "primeflex/primeflex.css";
-import { store, persistor } from "./redux/store";
+//import "primeflex/primeflex.css";
+import { store } from "./redux/store";
 import { Provider } from "react-redux";
 
 const root = ReactDOM.createRoot(document.getElementById("root"));
