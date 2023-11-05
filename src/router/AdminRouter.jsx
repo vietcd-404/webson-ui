@@ -19,23 +19,23 @@ const AdminRouter = () => {
     <div>
       <Routes>
         <Route
-          path="/thong-ke"
+          path="/tong-quan"
           element={
             <LayoutAdmin>
               <ThongKe />
             </LayoutAdmin>
           }
         />
-        <Route
+        {/* <Route
           path="/san-pham-chi-tiet"
           element={
             <LayoutAdmin>
               <SanPhamChiTiet />
             </LayoutAdmin>
           }
-        />
+        /> */}
         <Route
-          path="/san-pham-chi-tiet/quan-ly-san-pham"
+          path="/san-pham-chi-tiet"
           element={
             <LayoutAdmin>
               <SanPhamChiTietLayout>

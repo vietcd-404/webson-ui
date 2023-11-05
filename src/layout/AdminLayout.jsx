@@ -25,7 +25,7 @@ function getItem(label, key, icon, children) {
 }
 const items = [
   getItem(
-    <Link to="/admin/thong-ke">Tổng quan</Link>,
+    <Link to="/admin/tong-quan">Tổng quan</Link>,
     "1",
     <DashboardOutlined />
   ),

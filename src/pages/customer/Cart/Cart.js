@@ -31,7 +31,7 @@ const Cart = () => {
   }, [totalAmt]);
   return (
     <div className="max-w-container mx-auto px-4">
-      <Breadcrumbs title="Cart" />
+      <Breadcrumbs title="Giỏ Hàng" />
       {products.length > 0 ? (
         <div className="pb-20">
           <div className="w-full h-20 bg-[#F5F7F7] text-primeColor hidden lgl:grid grid-cols-5 place-content-center px-6 text-lg font-titleFont font-semibold">
