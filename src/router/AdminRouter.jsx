@@ -13,8 +13,21 @@ import TableSPCT from "../components/admin/TableSPCT";
 import ListSPCT from "../components/admin/ListSPCT";
 import SanPhamChiTietLayout from "../components/admin/LayoutSanPhamChiTiet";
 import KhoAnh from "../pages/admin/KhoAnh/KhoAnh";
+import Logout from "../pages/customer/Account/Logout";
+// import { useAuth } from "../pages/customer/Account/AuthProvider";
+// import { Modal } from "antd";
 
 const AdminRouter = () => {
+  // const { signout } = useAuth();
+  // const handleLogout = () => {
+  //   Modal.confirm({
+  //     title: "Xác nhận đăng xuất",
+  //     content: "Bạn có chắc muốn đăng xuất?",
+  //     onOk: () => {
+  //       signout();
+  //     },
+  //   });
+  // };
   return (
     <div>
       <Routes>
@@ -103,13 +116,14 @@ const AdminRouter = () => {
           }
         />
         <Route
-          path="/admin/quan-li-kho-anh"
+          path="/quan-li-kho-anh"
           element={
             <LayoutAdmin>
               <KhoAnh />
             </LayoutAdmin>
           }
         />
+        <Route path="/dang-xuat" element={<Logout />} />
       </Routes>
     </div>
   );

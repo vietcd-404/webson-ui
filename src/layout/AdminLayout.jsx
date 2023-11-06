@@ -7,6 +7,7 @@ import {
   MacCommandOutlined,
   PayCircleOutlined,
   InboxOutlined,
+  LoginOutlined,
 } from "@ant-design/icons";
 import { MenuFoldOutlined, MenuUnfoldOutlined } from "@ant-design/icons";
 import { Layout, Menu, theme, Button, Image } from "antd";
@@ -23,6 +24,7 @@ function getItem(label, key, icon, children) {
     label,
   };
 }
+
 const items = [
   getItem(
     <Link to="/admin/tong-quan">Tổng quan</Link>,
@@ -58,6 +60,11 @@ const items = [
     <Link to="/admin/quan-li-kho-anh">Kho ảnh</Link>,
     "11",
     <InboxOutlined />
+  ),
+  getItem(
+    <Link to="/admin/dang-xuat">Đăng xuất</Link>,
+    "12",
+    <LoginOutlined />
   ),
 ];
 const LayoutAdmin = ({ children }) => {

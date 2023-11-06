@@ -57,9 +57,18 @@ const Journal = () => {
           </div>
         ))}
 
-        <button className="w-52 h-10 bg-[#FF0000] text-white hover:text-white hover:bg-black duration-300">
-          <Link to="/shop">Tiếp tục Shopping</Link>
-        </button>
+        <div
+          style={{
+            display: "flex",
+            justifyContent: "center",
+            alignItems: "center",
+            height: "20", // Đặt chiều cao của div để làm cho nút giữa màn hình
+          }}
+        >
+          <button className="w-52 h-10 bg-[#FF0000] text-white hover:text-white hover:bg-[#FF99CC] duration-300">
+            <Link to="/shop">Tiếp tục Shopping</Link>
+          </button>
+        </div>
       </div>
     </div>
   );

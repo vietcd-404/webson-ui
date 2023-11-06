@@ -1,9 +1,13 @@
 import React, { useState } from "react";
-import { Link } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
+import { useAuth } from "./AuthProvider";
+import { ToastContainer, toast } from "react-toastify";
+import "react-toastify/dist/ReactToastify.css";
 
 const SignIn = () => {
+  const navigate = useNavigate();
   // ============= Initial State Start here =============
-  const [email, setEmail] = useState("");
+  const [username, setUsername] = useState("");
   const [password, setPassword] = useState("");
   // ============= Initial State End here ===============
   // ============= Error Msg Start here =================
@@ -14,44 +18,47 @@ const SignIn = () => {
   const [successMsg, setSuccessMsg] = useState("");
   // ============= Event Handler Start here =============
   const handleEmail = (e) => {
-    setEmail(e.target.value);
+    setUsername(e.target.value);
     setErrEmail("");
   };
+  const { signin } = useAuth();
+
   const handlePassword = (e) => {
     setPassword(e.target.value);
     setErrPassword("");
   };
   // ============= Event Handler End here ===============
-  const handleSignUp = (e) => {
+  const handleSignUp = async (e) => {
     e.preventDefault();
-
-    if (!email) {
-      setErrEmail("Enter your email");
+    if (!username) {
+      setErrEmail("User name không bỏ trông");
     }
-
     if (!password) {
-      setErrPassword("Create a password");
+      setErrPassword("Mật khẩu không bỏ trống");
     }
-    // ============== Getting the value ==============
-    if (email && password) {
-      setSuccessMsg(
-        `Hello dear, Thank you for your attempt. We are processing to validate your access. Till then stay connected and additional assistance will be sent to you by your mail at ${email}`
-      );
-      setEmail("");
-      setPassword("");
-    }
+
+    await signin(username, password);
   };
+
+  // const handleSubmit = async (e) => {
+  //   await signin(username, password);
+  //   e.preventDefault();
+  // };
   return (
     <div className="container mx-auto h-screen flex items-center justify-center">
+      <ToastContainer />
       <div className="w-full lgl:w-1/2 h-full">
         {successMsg ? (
           <div className="w-full lgl:w-[200px] h-full flex flex-col justify-center">
             <p className="w-full px-4 py-10 text-green-500 font-medium font-titleFont">
-              {successMsg}
+              <ToastContainer />
             </p>
           </div>
         ) : (
-          <form className="w-full lgl:w-[450px] h-screen flex items-center justify-center">
+          <form
+            // onSubmit={handleSubmit}
+            className="w-full lgl:w-[450px] h-screen flex items-center justify-center"
+          >
             <div className="px-6 py-4 w-full h-[90%] flex flex-col justify-center ">
               <h1 className="font-titleFont underline underline-offset-4 decoration-[1px] font-semibold text-3xl mdl:text-4xl mb-4">
                 Đăng Nhập
@@ -64,7 +71,7 @@ const SignIn = () => {
                   </p>
                   <input
                     onChange={handleEmail}
-                    value={email}
+                    value={username}
                     className="w-full h-8 placeholder:text-sm placeholder:tracking-wide px-4 text-base font-medium placeholder:font-normal rounded-md border-[1px] border-gray-400 outline-none"
                     type="text"
                     placeholder="username"
