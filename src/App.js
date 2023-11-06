@@ -1,4 +1,4 @@
-import { Routes, Route } from "react-router-dom";
+import { Routes, Route, Navigate } from "react-router-dom";
 import "./App.css";
 // import { ProtectedRoute } from "./components/ProtectedRoute";
 
@@ -15,12 +15,29 @@ import Journal from "./pages/customer/Journal/Journal";
 import Offer from "./pages/customer/Offer/Offer";
 import Payment from "./pages/customer/payment/Payment";
 import ProductDetails from "./pages/customer/ProductDetails/ProductDetails";
+import { ProtectedRoute } from "./pages/customer/Account/ProtectedRoute";
+import Forbidden from "./pages/customer/Account/Forbidden";
+import { useAuth } from "./pages/customer/Account/AuthProvider";
+import Otp from "./pages/customer/Account/Otp";
+import ThongTin from "./pages/customer/ThongTin/ThongTin";
+import HoaDon from "./pages/customer/ThongTin/HoaDon";
+import CaNhan from "./pages/customer/ThongTin/CaNhan";
+import SanPhamYeuThich from "./pages/customer/ThongTin/SanPhamYeuThich";
 
 const App = () => {
+  const { user } = useAuth();
   return (
     <div>
       <Routes>
-        <Route path="/admin/*" element={<AdminRouter />} />
+        <Route
+          path="/admin/*"
+          element={
+            <ProtectedRoute userRole="ROLE_ADMIN">
+              <AdminRouter />
+            </ProtectedRoute>
+          }
+        />
+        <Route path="/forbidden" element={<Forbidden />} />
 
         {/* Khách hàng  */}
         <Route
@@ -98,17 +115,42 @@ const App = () => {
         ></Route>
         <Route
           path="/signup"
+          element={user ? <Navigate to="/" /> : <Main children={<SignUp />} />}
+        ></Route>
+        <Route
+          path="/signin"
+          element={user ? <Navigate to="/" /> : <Main children={<SignIn />} />}
+        ></Route>
+        <Route path="/active" element={<Otp />}></Route>
+        <Route
+          path="/thong-tin"
           element={
             <Main>
-              <SignUp />
+              <ThongTin />
             </Main>
           }
         ></Route>
         <Route
-          path="/signin"
+          path="/hoa-don"
           element={
             <Main>
-              <SignIn />
+              <ThongTin childre={<HoaDon />} />
+            </Main>
+          }
+        ></Route>
+        <Route
+          path="/profile"
+          element={
+            <Main>
+              <ThongTin childre={<CaNhan />} />
+            </Main>
+          }
+        ></Route>
+        <Route
+          path="/yeu-thich"
+          element={
+            <Main>
+              <ThongTin childre={<SanPhamYeuThich />} />
             </Main>
           }
         ></Route>

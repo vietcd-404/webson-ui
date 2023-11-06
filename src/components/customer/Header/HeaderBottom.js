@@ -6,6 +6,7 @@ import Flex from "../designLayouts/Flex";
 import { Link, useNavigate } from "react-router-dom";
 import { useSelector } from "react-redux";
 import { paginationItems } from "../../constants";
+import { useAuth } from "../../../pages/customer/Account/AuthProvider";
 
 const HeaderBottom = () => {
   const products = useSelector((state) => state.orebiReducer.products);
@@ -13,6 +14,7 @@ const HeaderBottom = () => {
   const [showUser, setShowUser] = useState(false);
   const navigate = useNavigate();
   const ref = useRef();
+  const { user } = useAuth();
   useEffect(() => {
     const handleBodyClick = (e) => {
       if (ref.current && ref.current.contains(e.target)) {
@@ -110,15 +112,34 @@ const HeaderBottom = () => {
                   transition={{ duration: 0.5 }}
                   className="absolute top-6 right-0 z-50 bg-white w-44 text-[#767676] h-auto p-4 pb-6"
                 >
-                  <li className="text-400 px-4 py-1 border-b-[1px] border-b-gray-400 hover:border-b-black hover:text-[#b4073a] duration-300 cursor-pointer">
-                    <Link to="/signin">Đăng nhập</Link>
-                  </li>
-
-                  <li className="text-400 px-4 py-1 border-b-[1px] border-b-gray-400 hover:border-b-black hover:text-[#b4073a] duration-300 cursor-pointer">
-                    <Link onClick={() => setShowUser(false)} to="/signup">
-                      Đăng ký
-                    </Link>
-                  </li>
+                  {user.username ? (
+                    <>
+                      <li className="text-400 px-4 py-1 border-b-[1px] border-b-gray-400 hover:border-b-black hover:text-[#b4073a] duration-300 cursor-pointer">
+                        Chào, {user.username}
+                      </li>
+                      <li className="text-400 px-4 py-1 border-b-[1px] border-b-gray-400 hover:border-b-black hover-text-[#b4073a] duration-300 cursor-pointer">
+                        <Link
+                          to="/signout"
+                          onClick={() => {
+                            setShowUser(false);
+                          }}
+                        >
+                          Đăng xuất
+                        </Link>
+                      </li>
+                    </>
+                  ) : (
+                    <>
+                      <li className="text-400 px-4 py-1 border-b-[1px] border-b-gray-400 hover:border-b-black hover:text-[#b4073a] duration-300 cursor-pointer">
+                        <Link to="/signin">Đăng nhập</Link>
+                      </li>
+                      <li className="text-400 px-4 py-1 border-b-[1px] border-b-gray-400 hover:border-b-black hover-text-[#b4073a] duration-300 cursor-pointer">
+                        <Link onClick={() => setShowUser(false)} to="/signup">
+                          Đăng ký
+                        </Link>
+                      </li>
+                    </>
+                  )}
 
                   <li className="text-400 px-4 py-1 border-b-[1px] border-b-gray-400 hover:border-b-black hover:text-[#b4073a] duration-300 cursor-pointer">
                     Thông tin

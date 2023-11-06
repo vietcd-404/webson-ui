@@ -6,6 +6,7 @@ import Flex from "../../designLayouts/Flex";
 import { Link, useNavigate } from "react-router-dom";
 import { useSelector } from "react-redux";
 import { paginationItems } from "../../../../constants";
+import { useAuth } from "../../../../pages/customer/Account/AuthProvider";
 
 const HeaderBottom = () => {
   const products = useSelector((state) => state.orebiReducer.products);
@@ -35,6 +36,7 @@ const HeaderBottom = () => {
   const handleSearch = (e) => {
     setSearchQuery(e.target.value);
   };
+  const { user, signout } = useAuth();
 
   useEffect(() => {
     const filtered = paginationItems.filter((item) =>
@@ -110,18 +112,31 @@ const HeaderBottom = () => {
                   transition={{ duration: 0.5 }}
                   className="absolute top-6 right-0 z-50 bg-white w-44 text-[#767676] h-auto p-4 pb-6"
                 >
+                  {user ? (
+                    <>
+                      <li className="text-400 px-4 py-1 border-b-[1px] border-b-gray-400 hover:border-b-black hover:text-[#b4073a] duration-300 cursor-pointer">
+                        Chào, {user.username}
+                      </li>
+                      <li className="text-400 px-4 py-1 border-b-[1px] border-b-gray-400 hover:border-b-black hover-text-[#b4073a] duration-300 cursor-pointer">
+                        <Link to="/signin" onClick={signout}>
+                          Đăng xuất
+                        </Link>
+                      </li>
+                    </>
+                  ) : (
+                    <>
+                      <li className="text-400 px-4 py-1 border-b-[1px] border-b-gray-400 hover:border-b-black hover:text-[#b4073a] duration-300 cursor-pointer">
+                        <Link to="/signin">Đăng nhập</Link>
+                      </li>
+                      <li className="text-400 px-4 py-1 border-b-[1px] border-b-gray-400 hover:border-b-black hover-text-[#b4073a] duration-300 cursor-pointer">
+                        <Link onClick={() => setShowUser(false)} to="/signup">
+                          Đăng ký
+                        </Link>
+                      </li>
+                    </>
+                  )}
                   <li className="text-400 px-4 py-1 border-b-[1px] border-b-gray-400 hover:border-b-black hover:text-[#b4073a] duration-300 cursor-pointer">
-                    <Link to="/signin">Đăng nhập</Link>
-                  </li>
-
-                  <li className="text-400 px-4 py-1 border-b-[1px] border-b-gray-400 hover:border-b-black hover:text-[#b4073a] duration-300 cursor-pointer">
-                    <Link onClick={() => setShowUser(false)} to="/signup">
-                      Đăng ký
-                    </Link>
-                  </li>
-
-                  <li className="text-400 px-4 py-1 border-b-[1px] border-b-gray-400 hover:border-b-black hover:text-[#b4073a] duration-300 cursor-pointer">
-                    Thông tin
+                    <Link to="/thong-tin">Thông tin</Link>
                   </li>
                   <li className="text-400 px-4 py-1 border-b-[1px] border-b-gray-400  hover:border-b-black hover:text-[#b4073a] duration-300 cursor-pointer">
                     Khác

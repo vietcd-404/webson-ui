@@ -40,6 +40,7 @@ import productOfTheYear from "./products/productOfTheYear.webp";
 // ============== Products End here ======================
 import paymentCard from "./payment.png";
 import emptyCart from "./emptyCart.png";
+import forbidden from "./403.jpg";
 
 export {
   banner1,
@@ -84,4 +85,5 @@ export {
   new2,
   new3,
   new4,
+  forbidden,
 };

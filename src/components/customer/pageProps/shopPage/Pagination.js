@@ -4,6 +4,7 @@ import Product from "../../home/Products/Product";
 import { paginationItems } from "../../../../constants";
 
 const items = paginationItems;
+
 function Items({ currentItems }) {
   return (
     <>
