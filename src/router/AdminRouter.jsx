@@ -123,7 +123,6 @@ const AdminRouter = () => {
             </LayoutAdmin>
           }
         />
-        <Route path="/dang-xuat" element={<Logout />} />
       </Routes>
     </div>
   );
