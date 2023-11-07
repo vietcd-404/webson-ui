@@ -1,7 +1,13 @@
 import React, { useState, useRef, useEffect } from "react";
 import { motion } from "framer-motion";
 // import { HiOutlineMenuAlt4 } from "react-icons/hi";
-import { FaSearch, FaUser, FaCaretDown, FaShoppingCart } from "react-icons/fa";
+import {
+  FaSearch,
+  FaUser,
+  FaCaretDown,
+  FaShoppingCart,
+  FaHeart,
+} from "react-icons/fa";
 import Flex from "../../designLayouts/Flex";
 import { Link, useNavigate } from "react-router-dom";
 import { useSelector } from "react-redux";
@@ -114,10 +120,13 @@ const HeaderBottom = () => {
                 >
                   {user ? (
                     <>
-                      <li className="text-400 px-4 py-1 border-b-[1px] border-b-gray-400 hover:border-b-black hover:text-[#b4073a] duration-300 cursor-pointer">
-                        Chào, {user.username}
+                      <li className="text-400 text-black hover:bg-[#FF99CC] px-4 py-1 border-b-[1px] border-b-gray-400 hover:border-b-black hover:text-white duration-300 cursor-pointer">
+                        <Link to="/profile">Chào, {user.username}</Link>
                       </li>
-                      <li className="text-400 px-4 py-1 border-b-[1px] border-b-gray-400 hover:border-b-black hover-text-[#b4073a] duration-300 cursor-pointer">
+                      <li className="text-400 text-black hover:bg-[#FF99CC] px-4 py-1 border-b-[1px] border-b-gray-400 hover:border-b-black hover:text-white duration-300 cursor-pointer">
+                        <Link to="/bill">Hóa đơn</Link>
+                      </li>
+                      <li className="text-400 text-black hover:bg-[#FF99CC] px-4 py-1 border-b-[1px] border-b-gray-400 hover:border-b-black hover:text-white duration-300 cursor-pointer">
                         <Link to="/signin" onClick={signout}>
                           Đăng xuất
                         </Link>
@@ -125,30 +134,33 @@ const HeaderBottom = () => {
                     </>
                   ) : (
                     <>
-                      <li className="text-400 px-4 py-1 border-b-[1px] border-b-gray-400 hover:border-b-black hover:text-[#b4073a] duration-300 cursor-pointer">
+                      <li className="text-400 text-black hover:bg-[#FF99CC] px-4 py-1 border-b-[1px] border-b-gray-400 hover:border-b-black hover:text-white duration-300 cursor-pointer">
                         <Link to="/signin">Đăng nhập</Link>
                       </li>
-                      <li className="text-400 px-4 py-1 border-b-[1px] border-b-gray-400 hover:border-b-black hover-text-[#b4073a] duration-300 cursor-pointer">
+                      <li className="text-400 text-black hover:bg-[#FF99CC] px-4 py-1 border-b-[1px] border-b-gray-400 hover:border-b-black hover:text-white duration-300 cursor-pointer">
                         <Link onClick={() => setShowUser(false)} to="/signup">
                           Đăng ký
                         </Link>
                       </li>
                     </>
                   )}
-                  <li className="text-400 px-4 py-1 border-b-[1px] border-b-gray-400 hover:border-b-black hover:text-[#b4073a] duration-300 cursor-pointer">
-                    <Link to="/thong-tin">Thông tin</Link>
-                  </li>
-                  <li className="text-400 px-4 py-1 border-b-[1px] border-b-gray-400  hover:border-b-black hover:text-[#b4073a] duration-300 cursor-pointer">
-                    Khác
-                  </li>
                 </motion.ul>
               )}
             </div>
 
+            <Link to="/my-favorites">
+              <div className="relative ml-2 mr-2">
+                <FaHeart size={20} />
+                <span className="absolute font-titleFont -top-4 -right-2 text-xs flex items-center justify-center bg-[#FF0000] text-white font-bold w-3.5">
+                  {products.length > 0 ? products.length : 0}
+                </span>
+              </div>
+            </Link>
+
             <Link to="/cart">
               <div className="relative">
                 <FaShoppingCart size={20} />
-                <span className="absolute font-titleFont -top-4 -right-2 text-xs flex items-center justify-center bg-[#FF0000] text-white font-bold w-3.5">
+                <span className="absolute font-titleFont -top-4 -right-2 text-xs flex items-center justify-center bg-[#0033CC] text-white font-bold w-3.5">
                   {products.length > 0 ? products.length : 0}
                 </span>
               </div>

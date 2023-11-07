@@ -55,7 +55,7 @@ const ProductBanner = ({ itemsPerPageFromBanner }) => {
         ======================================================== */}
       <div className="flex items-center gap-2 md:gap-6 mt-4 md:mt-0">
         <div className="flex items-center gap-2 text-base text-[#767676] relative">
-          <label className="block">Sort by:</label>
+          <label className="block">Sắp xếp theo:</label>
           <select
             // onChange={(e) => setSelected(e.target.value)}
             id="countries"
@@ -71,7 +71,7 @@ const ProductBanner = ({ itemsPerPageFromBanner }) => {
           </span>
         </div>
         <div className="flex items-center gap-2 text-[#767676] relative">
-          <label className="block">Show:</label>
+          <label className="block">Hiển thị:</label>
           <select
             onChange={(e) => itemsPerPageFromBanner(+e.target.value)}
             id="countries"

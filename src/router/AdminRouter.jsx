@@ -13,29 +13,42 @@ import TableSPCT from "../components/admin/TableSPCT";
 import ListSPCT from "../components/admin/ListSPCT";
 import SanPhamChiTietLayout from "../components/admin/LayoutSanPhamChiTiet";
 import KhoAnh from "../pages/admin/KhoAnh/KhoAnh";
+import Logout from "../pages/customer/Account/Logout";
+// import { useAuth } from "../pages/customer/Account/AuthProvider";
+// import { Modal } from "antd";
 
 const AdminRouter = () => {
+  // const { signout } = useAuth();
+  // const handleLogout = () => {
+  //   Modal.confirm({
+  //     title: "Xác nhận đăng xuất",
+  //     content: "Bạn có chắc muốn đăng xuất?",
+  //     onOk: () => {
+  //       signout();
+  //     },
+  //   });
+  // };
   return (
     <div>
       <Routes>
         <Route
-          path="/thong-ke"
+          path="/tong-quan"
           element={
             <LayoutAdmin>
               <ThongKe />
             </LayoutAdmin>
           }
         />
-        <Route
+        {/* <Route
           path="/san-pham-chi-tiet"
           element={
             <LayoutAdmin>
               <SanPhamChiTiet />
             </LayoutAdmin>
           }
-        />
+        /> */}
         <Route
-          path="/san-pham-chi-tiet/quan-ly-san-pham"
+          path="/san-pham-chi-tiet"
           element={
             <LayoutAdmin>
               <SanPhamChiTietLayout>
@@ -103,13 +116,14 @@ const AdminRouter = () => {
           }
         />
         <Route
-          path="/admin/quan-li-kho-anh"
+          path="/quan-li-kho-anh"
           element={
             <LayoutAdmin>
               <KhoAnh />
             </LayoutAdmin>
           }
         />
+        <Route path="/dang-xuat" element={<Logout />} />
       </Routes>
     </div>
   );

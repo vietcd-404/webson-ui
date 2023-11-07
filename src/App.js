@@ -123,34 +123,31 @@ const App = () => {
         ></Route>
         <Route path="/active" element={<Otp />}></Route>
         <Route
-          path="/thong-tin"
+          path="/bill"
           element={
             <Main>
-              <ThongTin />
-            </Main>
-          }
-        ></Route>
-        <Route
-          path="/hoa-don"
-          element={
-            <Main>
-              <ThongTin childre={<HoaDon />} />
+              <ThongTin children={<HoaDon />} />
             </Main>
           }
         ></Route>
         <Route
           path="/profile"
           element={
-            <Main>
-              <ThongTin childre={<CaNhan />} />
-            </Main>
+            user ? (
+              <Main>
+                {" "}
+                <ThongTin />
+              </Main>
+            ) : (
+              <Navigate to="/signin" replace />
+            )
           }
         ></Route>
         <Route
-          path="/yeu-thich"
+          path="/my-favorites"
           element={
             <Main>
-              <ThongTin childre={<SanPhamYeuThich />} />
+              <ThongTin children={<SanPhamYeuThich />} />
             </Main>
           }
         ></Route>

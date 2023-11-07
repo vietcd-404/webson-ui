@@ -211,7 +211,7 @@ const SignUp = () => {
                 // onClick={handleAdd}
                 className={`${
                   checked
-                    ? "bg-primeColor hover:bg-black hover:text-white cursor-pointer"
+                    ? "bg-[#FF0000] text-white hover:bg-black hover:text-white cursor-pointer"
                     : "bg-gray-500 hover:bg-gray-500 hover:text-gray-200 cursor-none"
                 } w-full text-gray-200 text-base font-medium h-10 rounded-md hover:text-white duration-300`}
               >

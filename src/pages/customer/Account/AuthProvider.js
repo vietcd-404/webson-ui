@@ -32,7 +32,7 @@ export const AuthProvider = ({ children }) => {
       setUser(data);
       toast.success("Đăng nhập thành công");
       if (data.vaiTro === "ROLE_ADMIN") {
-        navigate("/admin/thong-ke", {
+        navigate("/admin/tong-quan", {
           replace: true,
         });
       } else if (data.vaiTro === "ROLE_USER") {

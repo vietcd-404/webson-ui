@@ -83,8 +83,12 @@ const UploadImage = () => {
       onCancel: () => {},
     });
   };
-
   const handleUpload = async () => {
+    if (fileList.length === 0) {
+      toast.error("Vui lòng chọn ảnh trước khi tải lên.");
+      return;
+    }
+
     try {
       const formData = new FormData();
       fileList.forEach((file) => {
@@ -94,7 +98,7 @@ const UploadImage = () => {
       const response = await createAnh(formData);
 
       if (response.status === 200) {
-        loadTable();
+        load();
         setFileList([]);
       }
     } catch (error) {
@@ -138,7 +142,7 @@ const UploadImage = () => {
             </div>
           )}
         </Upload>
-        <Button onClick={load}>Tải lên ảnh</Button>
+        <Button onClick={handleUpload}>Tải lên ảnh</Button>
       </div>
       <div className="mt-6">
         <Row gutter={16}>

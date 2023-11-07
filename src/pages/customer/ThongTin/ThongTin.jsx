@@ -11,7 +11,7 @@ const ThongTin = ({ childre }) => {
 
         <ul className="space-y-2 p-4">
           <li className="border-b border-gray-200 py-2">
-            <Link to="/hoa-don" className=" hover:text-blue-500">
+            <Link to="/bill" className=" hover:text-blue-500">
               Hóa đơn
             </Link>
           </li>
@@ -21,7 +21,7 @@ const ThongTin = ({ childre }) => {
             </Link>
           </li>
           <li className="border-b border-gray-200 py-2">
-            <Link to="/yeu-thich" className=" hover:text-blue-500">
+            <Link to="/my-favorites" className=" hover:text-blue-500">
               Sản phẩm yêu thích
             </Link>
           </li>
