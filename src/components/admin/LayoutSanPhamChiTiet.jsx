@@ -1,5 +1,5 @@
 import React from "react";
-import { Tabs } from "antd";
+import { Button, Tabs } from "antd";
 import { Link } from "react-router-dom";
 
 const SanPhamChiTietLayout = ({ children }) => {
@@ -10,14 +10,20 @@ const SanPhamChiTietLayout = ({ children }) => {
     {
       key: "1",
       label: (
-        <Link to="/admin/san-pham-chi-tiet/quan-ly-san-pham">
-          Quản lý sản phẩm
-        </Link>
+        <Button>
+          <Link className="p-2" to="/admin/san-pham-chi-tiet">
+            Quản lý sản phẩm
+          </Link>
+        </Button>
       ),
     },
     {
       key: "2",
-      label: <Link to="/admin/san-pham-chi-tiet/danh-sach">Danh Sách</Link>,
+      label: (
+        <Button>
+          <Link to="/admin/san-pham-chi-tiet/danh-sach">Danh Sách</Link>
+        </Button>
+      ),
     },
   ];
   return (

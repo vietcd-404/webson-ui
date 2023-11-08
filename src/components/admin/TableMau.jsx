@@ -33,6 +33,7 @@ const TableMau = () => {
 
   const showEditModal = (record) => {
     setEditFormData(record);
+    formUpdate.setFieldsValue({ tenMau: record.tenMau });
     setIsEditModalOpen(true);
   };
 

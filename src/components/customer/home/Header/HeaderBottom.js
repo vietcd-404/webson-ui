@@ -1,11 +1,18 @@
 import React, { useState, useRef, useEffect } from "react";
 import { motion } from "framer-motion";
 // import { HiOutlineMenuAlt4 } from "react-icons/hi";
-import { FaSearch, FaUser, FaCaretDown, FaShoppingCart } from "react-icons/fa";
-import Flex from "../designLayouts/Flex";
+import {
+  FaSearch,
+  FaUser,
+  FaCaretDown,
+  FaShoppingCart,
+  FaHeart,
+} from "react-icons/fa";
+import Flex from "../../designLayouts/Flex";
 import { Link, useNavigate } from "react-router-dom";
 import { useSelector } from "react-redux";
-import { paginationItems } from "../../constants";
+import { paginationItems } from "../../../../constants";
+import { useAuth } from "../../../../pages/customer/Account/AuthProvider";
 
 const HeaderBottom = () => {
   const products = useSelector((state) => state.orebiReducer.products);
@@ -35,6 +42,7 @@ const HeaderBottom = () => {
   const handleSearch = (e) => {
     setSearchQuery(e.target.value);
   };
+  const { user, signout } = useAuth();
 
   useEffect(() => {
     const filtered = paginationItems.filter((item) =>
@@ -44,18 +52,18 @@ const HeaderBottom = () => {
   }, [searchQuery]);
 
   return (
-    <div className="container mx-auto bg-[#F5F5F3] relative">
+    <div className="w-full bg-[#F5F5F3] relative">
       <div className="max-w-container mx-auto">
         <Flex className="flex flex-col lg:flex-row items-start lg:items-center justify-between w-full px-4 pb-4 lg:pb-0 h-full lg:h-24">
           <div className="relative w-full lg:w-[600px] h-[50px] text-base text-primeColor bg-white flex items-center gap-2 justify-between px-6 rounded-xl">
             <input
-              className="w-[200px] flex-1 h-full outline-none placeholder:text-[#C4C4C4] placeholder:text-[14px]"
+              className="flex-1 h-full outline-none placeholder:text-[#C4C4C4] placeholder:text-[14px]"
               type="text"
               onChange={handleSearch}
               value={searchQuery}
               placeholder="Tìm kiếm sản phẩm tại đây"
             />
-            <FaSearch className="w-3 h-5 ml-20" />
+            <FaSearch className="w-5 h-5 ml-20" />
             {searchQuery && (
               <div
                 className={`w-full mt-2 lg:mt-0 lg:left-0 lg:right-0 absolute z-50 overflow-y-scroll shadow-2xl scrollbar-hide cursor-pointer`}
@@ -110,30 +118,49 @@ const HeaderBottom = () => {
                   transition={{ duration: 0.5 }}
                   className="absolute top-6 right-0 z-50 bg-white w-44 text-[#767676] h-auto p-4 pb-6"
                 >
-                  <li className="text-400 px-4 py-1 border-b-[1px] border-b-gray-400 hover:border-b-black hover:text-[#b4073a] duration-300 cursor-pointer">
-                    <Link to="/signin">Đăng nhập</Link>
-                  </li>
-
-                  <li className="text-400 px-4 py-1 border-b-[1px] border-b-gray-400 hover:border-b-black hover:text-[#b4073a] duration-300 cursor-pointer">
-                    <Link onClick={() => setShowUser(false)} to="/signup">
-                      Đăng ký
-                    </Link>
-                  </li>
-
-                  <li className="text-400 px-4 py-1 border-b-[1px] border-b-gray-400 hover:border-b-black hover:text-[#b4073a] duration-300 cursor-pointer">
-                    Thông tin
-                  </li>
-                  <li className="text-400 px-4 py-1 border-b-[1px] border-b-gray-400  hover:border-b-black hover:text-[#b4073a] duration-300 cursor-pointer">
-                    Khác
-                  </li>
+                  {user ? (
+                    <>
+                      <li className="text-400 text-black hover:bg-[#FF99CC] px-4 py-1 border-b-[1px] border-b-gray-400 hover:border-b-black hover:text-white duration-300 cursor-pointer">
+                        <Link to="/profile">Chào, {user.username}</Link>
+                      </li>
+                      <li className="text-400 text-black hover:bg-[#FF99CC] px-4 py-1 border-b-[1px] border-b-gray-400 hover:border-b-black hover:text-white duration-300 cursor-pointer">
+                        <Link to="/bill">Hóa đơn</Link>
+                      </li>
+                      <li className="text-400 text-black hover:bg-[#FF99CC] px-4 py-1 border-b-[1px] border-b-gray-400 hover:border-b-black hover:text-white duration-300 cursor-pointer">
+                        <Link to="/signin" onClick={signout}>
+                          Đăng xuất
+                        </Link>
+                      </li>
+                    </>
+                  ) : (
+                    <>
+                      <li className="text-400 text-black hover:bg-[#FF99CC] px-4 py-1 border-b-[1px] border-b-gray-400 hover:border-b-black hover:text-white duration-300 cursor-pointer">
+                        <Link to="/signin">Đăng nhập</Link>
+                      </li>
+                      <li className="text-400 text-black hover:bg-[#FF99CC] px-4 py-1 border-b-[1px] border-b-gray-400 hover:border-b-black hover:text-white duration-300 cursor-pointer">
+                        <Link onClick={() => setShowUser(false)} to="/signup">
+                          Đăng ký
+                        </Link>
+                      </li>
+                    </>
+                  )}
                 </motion.ul>
               )}
             </div>
 
+            <Link to="/my-favorites">
+              <div className="relative ml-2 mr-2">
+                <FaHeart size={20} />
+                <span className="absolute font-titleFont -top-4 -right-2 text-xs flex items-center justify-center bg-[#FF0000] text-white font-bold w-3.5">
+                  {products.length > 0 ? products.length : 0}
+                </span>
+              </div>
+            </Link>
+
             <Link to="/cart">
               <div className="relative">
                 <FaShoppingCart size={20} />
-                <span className="absolute font-titleFont -top-4 -right-2 text-xs flex items-center justify-center bg-[#FF0000] text-white font-bold w-3.5">
+                <span className="absolute font-titleFont -top-4 -right-2 text-xs flex items-center justify-center bg-[#0033CC] text-white font-bold w-3.5">
                   {products.length > 0 ? products.length : 0}
                 </span>
               </div>

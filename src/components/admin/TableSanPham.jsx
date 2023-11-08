@@ -1,5 +1,16 @@
 import React, { useEffect, useState } from "react";
-import { Button, Col, Form, Input, Row, Space, Table, Modal, Tag } from "antd";
+import {
+  Button,
+  Col,
+  Form,
+  Input,
+  Row,
+  Space,
+  Table,
+  Modal,
+  Tag,
+  Checkbox,
+} from "antd";
 
 import { EditOutlined, DeleteOutlined } from "@ant-design/icons";
 import SearchInput from "./SearchInput";
@@ -21,6 +32,11 @@ const TableSanPham = () => {
   const [isEditModalOpen, setIsEditModalOpen] = useState(false);
   const [editFormData, setEditFormData] = useState(null); // Data for editing
 
+  const [doBong, setDoBong] = useState(0);
+  const [doLi, setDoLi] = useState(0);
+  const [doBongEdit, setDoBongEdit] = useState(0);
+  const [doLiEdit, setDoLiEdit] = useState(0);
+
   const [form] = Form.useForm();
   const [formUpdate] = Form.useForm();
 
@@ -29,11 +45,15 @@ const TableSanPham = () => {
   };
 
   const handleCancel = () => {
+    form.resetFields();
     setIsModalOpen(false);
   };
 
   const showEditModal = (record) => {
+    setDoBongEdit(record.doBong);
+    setDoLiEdit(record.doLi);
     setEditFormData(record);
+    formUpdate.setFieldsValue({ tenSanPham: record.tenSanPham });
     setIsEditModalOpen(true);
   };
 
@@ -70,6 +90,8 @@ const TableSanPham = () => {
       onOk: async () => {
         try {
           const values = await form.validateFields();
+          values.doBong = doBong;
+          values.doLi = doLi;
           const response = await createSanPham(values);
           if (response.status === 200) {
             console.log(response);
@@ -98,11 +120,14 @@ const TableSanPham = () => {
       onOk: async () => {
         try {
           const values = await formUpdate.validateFields();
+          values.doBong = doBongEdit; // Sử dụng giá trị doBongEdit
+          values.doLi = doLiEdit;
           const response = await updateSanPham(values, editFormData.maSanPham);
           if (response.status === 200) {
             console.log(response);
             setIsEditModalOpen(false);
             toast.success("Cập nhật thành công!");
+            formUpdate.resetFields();
             loadTable();
           }
         } catch (error) {
@@ -151,15 +176,21 @@ const TableSanPham = () => {
       key: "doBong",
       render: (doBong) =>
         doBong === 0 ? (
-          <Tag color="green">Độ bóng</Tag>
+          <Tag color="red">Không Bóng</Tag>
         ) : (
-          <Tag color="red">Độ lì</Tag>
+          <Tag color="green">Son Bóng</Tag>
         ),
     },
     {
       title: "Độ lì",
       dataIndex: "doLi",
       key: "doLi",
+      render: (doLi) =>
+        doLi === 0 ? (
+          <Tag color="red">Không Lì</Tag>
+        ) : (
+          <Tag color="green">Son Lì</Tag>
+        ),
     },
 
     {
@@ -212,13 +243,31 @@ const TableSanPham = () => {
               >
                 <Input placeholder="Tên" />
               </Form.Item>
+              <Form.Item
+                label="Độ bóng"
+                style={{ width: "360px", marginLeft: "40px" }}
+              >
+                <Checkbox
+                  checked={doBong === 1}
+                  onChange={() => setDoBong(doBong === 1 ? 0 : 1)}
+                />
+              </Form.Item>
+              <Form.Item
+                label="Độ lì"
+                style={{ width: "360px", marginLeft: "40px" }}
+              >
+                <Checkbox
+                  checked={doLi === 1}
+                  onChange={() => setDoLi(doLi === 1 ? 0 : 1)}
+                />
+              </Form.Item>
             </Form>
           </Modal>
         </Col>
       </Row>
 
       <Modal
-        title="Cập nhật loại"
+        title="Cập nhật sản phẩm"
         open={isEditModalOpen}
         onCancel={handleEditCancel}
         onOk={handleUpdate}
@@ -233,6 +282,24 @@ const TableSanPham = () => {
             ]}
           >
             <Input placeholder="Tên" />
+          </Form.Item>
+          <Form.Item
+            label="Độ bóng"
+            style={{ width: "360px", marginLeft: "40px" }}
+          >
+            <Checkbox
+              checked={doBongEdit === 1}
+              onChange={() => setDoBongEdit(doBongEdit === 1 ? 0 : 1)}
+            />
+          </Form.Item>
+          <Form.Item
+            label="Độ lì"
+            style={{ width: "360px", marginLeft: "40px" }}
+          >
+            <Checkbox
+              checked={doLiEdit === 1}
+              onChange={() => setDoLiEdit(doLiEdit === 1 ? 0 : 1)}
+            />
           </Form.Item>
         </Form>
       </Modal>

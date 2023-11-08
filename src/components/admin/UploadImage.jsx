@@ -10,17 +10,29 @@ import {
 import { ToastContainer, toast } from "react-toastify";
 import { UploadOutlined } from "@ant-design/icons";
 import "react-toastify/dist/ReactToastify.css";
+import { useAuth } from "../../pages/customer/Account/AuthProvider";
+import ReactPaginate from "react-paginate";
+import NavPage from "../customer/pageProps/shopPage/NavPage";
 
 const UploadImage = () => {
+  const [totalPages, setTotalPages] = useState(0);
   const [data, setData] = useState([]);
   const [fileList, setFileList] = useState([]);
   const [previewOpen, setPreviewOpen] = useState(false);
   const [previewImage, setPreviewImage] = useState("");
   const [previewTitle, setPreviewTitle] = useState("");
+  const [page, setPage] = useState(1);
+
+  const size = 8;
+
+  const handlePageClick = (selectedPage) => {
+    setPage(selectedPage);
+  };
   const loadTable = async () => {
     try {
-      const response = await findAllAnh();
-      setData(response.data);
+      const response = await findAllAnh(page, size);
+      setData(response.data.content);
+      setTotalPages(response.data.totalPages);
       console.log(response);
     } catch (error) {
       console.error("Lỗi khi gọi API: ", error);
@@ -111,14 +123,15 @@ const UploadImage = () => {
   const handleFileChange = ({ fileList }) => {
     setFileList(fileList);
   };
+
   const load = () => {
-    toast.success("Thêm ảnh thành công!");
+    toast.success("Tải ảnh thành công!");
     loadTable();
     setFileList([]);
   };
   useEffect(() => {
     loadTable();
-  }, []);
+  }, [page]);
 
   return (
     <>
@@ -126,7 +139,8 @@ const UploadImage = () => {
 
       <div>
         <Upload
-          action="http://localhost:8000/api/admin/anh/upload" // Thay đổi URL theo đường dẫn của API tải lên
+          action="http://localhost:8000/api/anh/upload"
+          // Thay đổi URL theo đường dẫn của API tải lên
           listType="picture-card"
           fileList={fileList}
           onRemove={handleRemove}
@@ -165,6 +179,25 @@ const UploadImage = () => {
             </Col>
           ))}
         </Row>
+        {/* <div className="mt-4">
+          <ReactPaginate
+            previousLabel={"Previous"}
+            nextLabel={"Next"}
+            pageCount={Math.ceil(data.length / ItemsPerPage)}
+            marginPagesDisplayed={2}
+            pageRangeDisplayed={5}
+            onPageChange={handlePageClick}
+            containerClassName={"pagination"}
+            activeClassName={"active"}
+          />
+        </div> */}
+        <div className="mt-7 flex flex-col mdl:flex-row justify-center mdl:justify-between items-center">
+          <NavPage
+            totalPages={totalPages}
+            page={page}
+            setPage={handlePageClick}
+          />
+        </div>
       </div>
     </>
   );

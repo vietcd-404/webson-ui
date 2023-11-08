@@ -1,11 +1,9 @@
 import React, { useEffect, useState } from "react";
 import { Link, NavLink, useLocation } from "react-router-dom";
-import { logo } from "../../../assets/images";
-// import Image from "../../designLayouts/Image";
-// import { navBarList } from "../../../constants";
-import Flex from "../designLayouts/Flex";
-import Image from "../designLayouts/Image";
-import { navBarList } from "../../constants";
+import { logo } from "../../../../assets/images";
+import Image from "../../designLayouts/Image";
+import { navBarList } from "../../../../constants";
+import Flex from "../../designLayouts/Flex";
 
 const Header = () => {
   const location = useLocation();

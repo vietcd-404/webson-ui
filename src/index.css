@@ -1,23 +1,53 @@
-body {
-  margin: 0;
-  background-color: #f5f5f5;
-  font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", "Roboto", "Oxygen",
-    "Ubuntu", "Cantarell", "Fira Sans", "Droid Sans", "Helvetica Neue",
-    sans-serif;
-  -webkit-font-smoothing: antialiased;
-  -moz-osx-font-smoothing: grayscale;
-}
-
-code {
-  font-family: source-code-pro, Menlo, Monaco, Consolas, "Courier New",
-    monospace;
-}
+@import url("https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;700&family=Poppins:wght@100;200;300;400;500;600;700;800;900&display=swap");
 
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
+
+/* index.css */
+@import "~slick-carousel/slick/slick.css";
+@import "~slick-carousel/slick/slick-theme.css";
+
+@layer components {
+  .hoverEffect {
+    @apply duration-300 cursor-pointer;
+  }
+  .headerSedenavLi {
+    @apply hover:underline underline-offset-2 cursor-pointer text-gray-300 hover:text-white;
+  }
+}
+
+/* ============= NavLink active Start here ============== */
+nav .active li {
+  color: black;
+  font-weight: 600;
+  text-decoration: 1px underline black;
+}
+
+@media screen and (max-width: 665px) {
+  nav .active li {
+    color: white;
+    font-weight: 600;
+    text-decoration: 1px underline white;
+  }
+}
+
+.scrollbar-hide::-webkit-scrollbar {
+  display: none;
+}
+
+/* Định dạng liên kết "Trang chủ" khi nó là trang hiện tại */
+.active-link-head {
+  color: black; /* Màu chữ bôi đen */
+  text-decoration: underline; /* Gạch chân */
+  font-weight: bold;
+}
+
+/* ============= NavLink active End here ================ */
+
+/* ==============Admin========= */
 html {
-  font-size: 14px;
+  font-size: 16px;
 }
 
 .header {
@@ -147,4 +177,24 @@ html {
 
 .error-page h3 {
   font-weight: normal;
+}
+/* ====================New================ */
+.journal-entry-image {
+  max-width: 300px; /* Thay đổi giá trị này để thay đổi kích thước ảnh */
+  height: auto;
+  margin-right: 20px; /* Thay đổi giá trị này để thay đổi khoảng cách giữa ảnh và title và content */
+}
+.card {
+  /* box-shadow: 0 0 1px rgba(0, 0, 0, 0.12); */
+  border-radius: 0.25rem;
+  padding: 1.25rem;
+  margin-bottom: 1.25rem;
+}
+.journal-entry {
+  display: flex;
+  flex-direction: column;
+}
+
+.text-bold {
+  font-weight: bold;
 }

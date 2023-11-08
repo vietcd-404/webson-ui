@@ -34,6 +34,7 @@ const TableThuongHieu = () => {
 
   const showEditModal = (record) => {
     setEditFormData(record);
+    formUpdate.setFieldsValue({ tenThuongHieu: record.tenThuongHieu });
     setIsEditModalOpen(true);
   };
 

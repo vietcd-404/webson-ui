@@ -33,6 +33,7 @@ const TableLoai = () => {
 
   const showEditModal = (record) => {
     setEditFormData(record);
+    formUpdate.setFieldsValue({ tenLoai: record.tenLoai });
     setIsEditModalOpen(true);
   };
 

@@ -1,4 +1,4 @@
-import logo from "./orebiLogo.png";
+import logo from "./logo.jpg";
 import logoLight from "./logoLight.png";
 import bannerImgOne from "./banner/bannerImgOne.webp";
 import bannerImgTwo from "./banner/bannerImgTwo.webp";
@@ -30,12 +30,17 @@ import spfOne from "./products/specialOffer/spfOne.webp";
 import spfTwo from "./products/specialOffer/spfTwo.webp";
 import spfThree from "./products/specialOffer/spfThree.webp";
 import spfFour from "./products/specialOffer/spfFour.webp";
+import new1 from "./news/new1.jpeg";
+import new2 from "./news/new2.jpeg";
+import new3 from "./news/new3.jpg";
+import new4 from "./news/new4.jpg";
 
 // Year Product
 import productOfTheYear from "./products/productOfTheYear.webp";
 // ============== Products End here ======================
 import paymentCard from "./payment.png";
-import emptyCart from "../images/emptyCart.png";
+import emptyCart from "./emptyCart.png";
+import forbidden from "./403.jpg";
 
 export {
   banner1,
@@ -76,4 +81,9 @@ export {
   // ===================== Products End here ==============
   paymentCard,
   emptyCart,
+  new1,
+  new2,
+  new3,
+  new4,
+  forbidden,
 };

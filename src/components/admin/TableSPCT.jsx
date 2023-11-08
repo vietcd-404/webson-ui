@@ -217,7 +217,18 @@ function TableSPCT() {
               <Form.Item
                 label="Giá bán"
                 name="giaBan"
-                rules={[{ required: true, message: "Giá bán không để trống" }]}
+                rules={[
+                  { required: true, message: "Giá bán không để trống" },
+                  {
+                    validator: (rule, value) => {
+                      if (value && value <= 0) {
+                        return Promise.reject("Giá bán phải lớn hơn 0");
+                      } else {
+                        return Promise.resolve();
+                      }
+                    },
+                  },
+                ]}
               >
                 <Input placeholder="Price" type="number" />
               </Form.Item>
@@ -226,7 +237,18 @@ function TableSPCT() {
               <Form.Item
                 label="Số lượng"
                 name="soLuongTon"
-                rules={[{ required: true, message: "Số lượng không để trống" }]}
+                rules={[
+                  { required: true, message: "Số lượng không để trống" },
+                  {
+                    validator: (rule, value) => {
+                      if (value && value <= 0) {
+                        return Promise.reject("Số lượng phải lớn hơn 0");
+                      } else {
+                        return Promise.resolve();
+                      }
+                    },
+                  },
+                ]}
               >
                 <Input placeholder="Quantity" type="number" />
               </Form.Item>
@@ -242,9 +264,9 @@ function TableSPCT() {
                   },
                   {
                     validator: (rule, value) => {
-                      if (value && (value < 1 || value > 99)) {
+                      if (value && (value < 0 || value > 99)) {
                         return Promise.reject(
-                          "Phần trăm giảm phải nằm trong khoảng từ 1 đến 99"
+                          "Phần trăm giảm không được nhỏ hơn 0 hoặc lớn hơn 99"
                         );
                       } else {
                         return Promise.resolve();
