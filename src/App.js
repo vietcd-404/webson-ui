@@ -125,9 +125,11 @@ const App = () => {
         <Route
           path="/bill"
           element={
-            <Main>
-              <ThongTin children={<HoaDon />} />
-            </Main>
+            <ProtectedRoute userRole="ROLE_USER">
+              <Main>
+                <ThongTin children={<HoaDon />} />
+              </Main>
+            </ProtectedRoute>
           }
         ></Route>
         <Route
@@ -146,9 +148,11 @@ const App = () => {
         <Route
           path="/my-favorites"
           element={
-            <Main>
-              <ThongTin children={<SanPhamYeuThich />} />
-            </Main>
+            <ProtectedRoute userRole="ROLE_USER">
+              <Main>
+                <ThongTin children={<SanPhamYeuThich />} />
+              </Main>
+            </ProtectedRoute>
           }
         ></Route>
       </Routes>
