@@ -13,6 +13,8 @@ import { Link, useNavigate } from "react-router-dom";
 import { useSelector } from "react-redux";
 import { paginationItems } from "../../../../constants";
 import { useAuth } from "../../../../pages/customer/Account/AuthProvider";
+import { ExclamationCircleFilled } from "@ant-design/icons";
+import { Modal } from "antd";
 
 const HeaderBottom = () => {
   const products = useSelector((state) => state.orebiReducer.products);
@@ -50,6 +52,21 @@ const HeaderBottom = () => {
     );
     setFilteredProducts(filtered);
   }, [searchQuery]);
+
+  const handleLogout = () => {
+    Modal.confirm({
+      title: "Xác nhận",
+      icon: <ExclamationCircleFilled />,
+      content: "Bạn có chắc muốn đăng xuất không?",
+      okText: "Ok",
+      okType: "danger",
+      cancelText: "Hủy",
+      onOk: async () => {
+        signout();
+      },
+      onCancel: () => {},
+    });
+  };
 
   return (
     <div className="w-full bg-[#F5F5F3] relative">
@@ -116,7 +133,7 @@ const HeaderBottom = () => {
                   initial={{ y: 30, opacity: 0 }}
                   animate={{ y: 0, opacity: 1 }}
                   transition={{ duration: 0.5 }}
-                  className="absolute top-6 right-0 z-50 bg-white w-44 text-[#767676] h-auto p-4 pb-6"
+                  className="absolute top-6 right-0 z-50 bg-white w-44 text-[#767676] h-auto p-2 pb-6"
                 >
                   {user ? (
                     <>
@@ -127,7 +144,7 @@ const HeaderBottom = () => {
                         <Link to="/bill">Hóa đơn</Link>
                       </li>
                       <li className="text-400 text-black hover:bg-[#FF99CC] px-4 py-1 border-b-[1px] border-b-gray-400 hover:border-b-black hover:text-white duration-300 cursor-pointer">
-                        <Link to="/signin" onClick={signout}>
+                        <Link to="" onClick={() => handleLogout()}>
                           Đăng xuất
                         </Link>
                       </li>

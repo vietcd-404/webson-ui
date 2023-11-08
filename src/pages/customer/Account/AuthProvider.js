@@ -1,4 +1,10 @@
-import React, { createContext, useContext, useMemo, useState } from "react";
+import React, {
+  createContext,
+  useContext,
+  useMemo,
+  useState,
+  useEffect,
+} from "react";
 import { useNavigate } from "react-router-dom";
 import { APP_BASE_URL } from "../../../configs/constans";
 import { toast } from "react-toastify";
@@ -43,7 +49,23 @@ export const AuthProvider = ({ children }) => {
     } catch (error) {
       console.error(error);
     }
+    // startSessionTimer();
   };
+
+  // const startSessionTimer = () => {
+  //   // Đặt thời gian tự động đăng xuất sau 30 phút (30 * 60 * 1000 ms)
+  //   const sessionTimeout = 5 * 60 * 1000;
+
+  //   // Xóa hết timer hiện tại (nếu có)
+  //   clearTimeout(sessionTimer);
+
+  //   // Thiết lập một timer mới để đăng xuất sau một khoảng thời gian
+  //   sessionTimer = setTimeout(() => {
+  //     signout();
+  //     toast.info("Đã tự động đăng xuất do hết phiên làm việc.");
+  //   }, sessionTimeout);
+  // };
+
   const signup = async (username, password, email, sdt) => {
     try {
       const response = await fetch(`${APP_BASE_URL}/auth/signup`, {
@@ -72,6 +94,7 @@ export const AuthProvider = ({ children }) => {
     navigate("/signin", {
       replace: true,
     });
+    // clearTimeout(sessionTimer);5
   };
 
   const value = useMemo(
@@ -85,6 +108,14 @@ export const AuthProvider = ({ children }) => {
     // eslint-disable-next-line
     [user]
   );
+  // let sessionTimer;
+
+  // useEffect(() => {
+  //   // Khi component AuthProvider được render hoặc user thay đổi, bắt đầu hoặc cập nhật timer
+  //   if (user) {
+  //     startSessionTimer();
+  //   }
+  // }, [user]);
 
   return <AuthContext.Provider value={value}>{children}</AuthContext.Provider>;
 };

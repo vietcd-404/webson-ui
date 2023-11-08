@@ -13,9 +13,7 @@ import TableSPCT from "../components/admin/TableSPCT";
 import ListSPCT from "../components/admin/ListSPCT";
 import SanPhamChiTietLayout from "../components/admin/LayoutSanPhamChiTiet";
 import KhoAnh from "../pages/admin/KhoAnh/KhoAnh";
-import Logout from "../pages/customer/Account/Logout";
-// import { useAuth } from "../pages/customer/Account/AuthProvider";
-// import { Modal } from "antd";
+import Voucher from "../pages/admin/Voucher/Voucher";
 
 const AdminRouter = () => {
   // const { signout } = useAuth();
@@ -120,6 +118,14 @@ const AdminRouter = () => {
           element={
             <LayoutAdmin>
               <KhoAnh />
+            </LayoutAdmin>
+          }
+        />
+        <Route
+          path="/voucher"
+          element={
+            <LayoutAdmin>
+              <Voucher />
             </LayoutAdmin>
           }
         />

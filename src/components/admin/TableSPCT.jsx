@@ -107,14 +107,14 @@ function TableSPCT() {
       const response = await creatSPCT(newProduct, values1);
 
       if (response.status === 200) {
-        message.success("Product added successfully");
+        message.success("Thêm sản phẩm thành công!");
         form.resetFields();
       } else {
-        message.error("Failed to add the product");
+        message.error("Thêm sản phẩm thất bại!");
       }
     } catch (error) {
-      console.error("Error adding product:", error);
-      message.error("Failed to add the product");
+      console.error("Có lỗi khi thêm sản phẩm", error);
+      message.error("Có lỗi khi thêm sản phẩm");
     }
   };
 
@@ -137,21 +137,23 @@ function TableSPCT() {
   return (
     <div className="table-spct-container">
       <Card title="Sản phẩm" bordered={false} className="card">
-        <Form.Item name="tenSanPham">
-          <Select
-            placeholder="Select a product"
-            size="large"
-            style={{ width: "100%" }}
-            form={form}
-            onChange={handleSanPhamChange}
-          >
-            {dataSanPham.map((sanPham) => (
-              <Option key={sanPham.maSanPham} value={sanPham.tenSanPham}>
-                {sanPham.tenSanPham}
-              </Option>
-            ))}
-          </Select>
-        </Form.Item>
+        <Form form={form} onFinish={handleAddProduct}>
+          <Form.Item name="tenSanPham">
+            <Select
+              placeholder="Select a product"
+              size="large"
+              style={{ width: "100%" }}
+              form={form}
+              onChange={handleSanPhamChange}
+            >
+              {dataSanPham.map((sanPham) => (
+                <Option key={sanPham.maSanPham} value={sanPham.tenSanPham}>
+                  {sanPham.tenSanPham}
+                </Option>
+              ))}
+            </Select>
+          </Form.Item>
+        </Form>
       </Card>
 
       <Card title="Thuộc tính" bordered={false} className="card">

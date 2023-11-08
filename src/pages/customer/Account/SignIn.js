@@ -106,7 +106,7 @@ const SignIn = () => {
 
                 <button
                   onClick={handleSignUp}
-                  className="bg-black text-white hover:bg-[#FFBBFF] text-gray-200 hover:text-white cursor-pointer w-full text-base font-medium h-10 rounded-md  duration-300"
+                  className=" text-white bg-[#cc0000] text-gray-200 hover:text-white cursor-pointer w-full text-base font-medium h-10 rounded-md  duration-300"
                 >
                   Đăng nhập
                 </button>

@@ -18,9 +18,9 @@ const Footer = () => {
 
   const handleSubscription = () => {
     if (emailInfo === "") {
-      setErrMsg("Please provide an Email !");
+      setErrMsg("Mời nhập email");
     } else if (!emailValidation(emailInfo)) {
-      setErrMsg("Please give a valid Email!");
+      setErrMsg("Mời nhập đúng định dạng email");
     } else {
       setSubscription(true);
       setErrMsg("");
@@ -128,7 +128,7 @@ const Footer = () => {
                 transition={{ duration: 0.5 }}
                 className="w-full text-center text-base font-titleFont font-semibold text-green-600"
               >
-                Subscribed Successfully !
+                Cảm ơn bạn đã cung cấp thông tin!
               </motion.p>
             ) : (
               <div className="w-full flex-col xl:flex-row flex justify-between items-center gap-4">
@@ -148,7 +148,7 @@ const Footer = () => {
                 </div>
                 <button
                   onClick={handleSubscription}
-                  className="bg-white text-lightText w-[30%] h-10 hover:bg-black hover:text-white duration-300 text-base tracking-wide "
+                  className="bg-[#ff6600] text-white text-lightText w-[30%] h-10  hover:text-black duration-300 text-base tracking-wide "
                 >
                   Đăng ký
                 </button>

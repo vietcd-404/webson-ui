@@ -9,6 +9,7 @@ import {
   InboxOutlined,
   LoginOutlined,
   ExclamationCircleFilled,
+  GiftOutlined,
 } from "@ant-design/icons";
 import { MenuFoldOutlined, MenuUnfoldOutlined } from "@ant-design/icons";
 import { Layout, Menu, theme, Button, Image, Modal } from "antd";
@@ -64,15 +65,16 @@ const LayoutAdmin = ({ children }) => {
       "11",
       <InboxOutlined />
     ),
+    getItem(<Link to="/admin/voucher">Voucher</Link>, "12", <GiftOutlined />),
     getItem(
-      <Link onClick={() => handleDelete()}>Đăng xuất</Link>,
-      "12",
+      <Link onClick={() => handleLogout()}>Đăng xuất</Link>,
+      "13",
       <LoginOutlined />
     ),
   ];
   const { signout } = useAuth();
 
-  const handleDelete = () => {
+  const handleLogout = () => {
     Modal.confirm({
       title: "Xác nhận",
       icon: <ExclamationCircleFilled />,
