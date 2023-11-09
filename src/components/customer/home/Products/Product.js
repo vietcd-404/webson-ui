@@ -5,12 +5,11 @@ import { FaShoppingCart } from "react-icons/fa";
 import { MdOutlineLabelImportant } from "react-icons/md";
 import Image from "../../designLayouts/Image";
 import Badge from "./Badge";
-import { useNavigate, Link } from "react-router-dom";
+import { useNavigate } from "react-router-dom";
 import { useDispatch } from "react-redux";
 import { addToCart } from "../../../../redux/orebiSlice";
 
 const Product = (props) => {
-  console.log("Props: ", props);
   const dispatch = useDispatch();
   const maSanPhamCT = props.maSanPhamCT;
   const idString = (_id) => {
@@ -24,8 +23,7 @@ const Product = (props) => {
   const handleProductDetails = () => {
     navigate(`/product/${rootId}`, {
       state: {
-        productInfo: productItem,
-        maSanPhamCT: maSanPhamCT,
+        item: productItem,
       },
     });
   };
@@ -36,7 +34,6 @@ const Product = (props) => {
           <img
             className="w-full h-full"
             src={`data:image/png;base64,${props.img}`}
-            onClick={handleProductDetails}
           />
         </div>
         <div className="absolute top-6 left-8">
@@ -44,15 +41,12 @@ const Product = (props) => {
         </div>
         <div className="w-full h-32 absolute bg-white -bottom-[130px] group-hover:bottom-0 duration-700">
           <ul className="w-full h-full flex flex-col items-end justify-center gap-2 font-titleFont px-2 border-l border-r">
-            <li
-              onClick={handleProductDetails}
-              className="text-[#767676] hover:text-primeColor text-sm font-normal border-b-[1px] border-b-gray-200 hover:border-b-primeColor flex items-center justify-end gap-2 hover:cursor-pointer pb-1 duration-300 w-full hover:text-pink-500"
-            >
-              Xem chi tiết
-              <span className="text-lg">
-                <MdOutlineLabelImportant />
+            {/* <li className="text-[#767676] hover:text-primeColor text-sm font-normal border-b-[1px] border-b-gray-200 hover:border-b-primeColor flex items-center justify-end gap-2 hover:cursor-pointer pb-1 duration-300 w-full hover:text-pink-500">
+              So sánh
+              <span>
+                <GiReturnArrow />
               </span>
-            </li>
+            </li> */}
             <li
               onClick={() =>
                 dispatch(
@@ -74,7 +68,15 @@ const Product = (props) => {
                 <FaShoppingCart />
               </span>
             </li>
-
+            <li
+              onClick={handleProductDetails}
+              className="text-[#767676] hover:text-primeColor text-sm font-normal border-b-[1px] border-b-gray-200 hover:border-b-primeColor flex items-center justify-end gap-2 hover:cursor-pointer pb-1 duration-300 w-full hover:text-pink-500"
+            >
+              Xem chi tiết
+              <span className="text-lg">
+                <MdOutlineLabelImportant />
+              </span>
+            </li>
             <li className="text-[#767676] hover:text-primeColor text-sm font-normal border-b-[1px] border-b-gray-200 hover:border-b-primeColor flex items-center justify-end gap-2 hover:cursor-pointer pb-1 duration-300 w-full hover:text-pink-500">
               Thêm vào sản phẩm yêu thích
               <span>
@@ -87,13 +89,12 @@ const Product = (props) => {
       <div className="max-w-80 py-6 flex flex-col gap-1 border-[1px] border-t-0 px-4">
         <div className="flex items-center justify-between font-titleFont">
           <h2 className="text-lg text-primeColor font-bold">
-            <p onClick={handleProductDetails}>{props.tenSanPham}</p>
+            {props.tenSanPham}
           </h2>
           <p className="text-[#767676] text-[14px]">${props.giaBan}</p>
         </div>
         <div>
           <p className="text-[#767676] text-[14px]">{props.tenMau}</p>
-          <p className="text-[#767676] text-[14px]">{props.tenLoai}</p>
         </div>
       </div>
     </div>
