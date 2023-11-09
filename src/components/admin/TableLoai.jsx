@@ -10,7 +10,7 @@ import {
   findAllLoai,
   updateLoai,
 } from "../../services/LoaiService";
-import { toast } from "react-toastify";
+import { ToastContainer, toast } from "react-toastify";
 
 const TableLoai = () => {
   const [data, setData] = useState([]);
@@ -169,6 +169,8 @@ const TableLoai = () => {
   ];
   return (
     <div>
+      <ToastContainer />
+
       <Row>
         <Col span={12}>
           <SearchInput text="Tìm kiếm loại" />

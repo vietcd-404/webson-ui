@@ -1,9 +1,25 @@
+import {
+  Button,
+  Col,
+  DatePicker,
+  Form,
+  Input,
+  Modal,
+  Row,
+  Space,
+  Table,
+} from "antd";
 import React, { useEffect, useState } from "react";
-import { Button, Col, Form, Input, Row, Space, Table, Modal } from "antd";
 
-import { EditOutlined, DeleteOutlined } from "@ant-design/icons";
-import SearchInput from "./SearchInput";
-import { ExclamationCircleFilled } from "@ant-design/icons";
+import dayjs from "dayjs";
+
+import {
+  DeleteOutlined,
+  EditOutlined,
+  ExclamationCircleFilled,
+} from "@ant-design/icons";
+import TextArea from "antd/es/input/TextArea";
+import { format } from "date-fns";
 import { ToastContainer, toast } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
 import {
@@ -12,7 +28,7 @@ import {
   findAllVoucher,
   updateVoucher,
 } from "../../services/VoucherService";
-import { format } from "date-fns";
+import SearchInput from "./SearchInput";
 
 const TableVoucher = () => {
   const [data, setData] = useState([]);
@@ -35,12 +51,22 @@ const TableVoucher = () => {
 
   const showEditModal = (record) => {
     setEditFormData(record);
-    formUpdate.setFieldsValue({ maVoucher: record.maVoucher });
+    formUpdate.setFieldsValue({
+      maVoucher: record.maVoucher,
+      soLuong: record.soLuong,
+      thoiGianBatDau: dayjs(record.thoiGianBatDau),
+      thoiGianKetThuc: dayjs(record.thoiGianKetThuc),
+      giamToiDa: record.giamToiDa,
+      giaTriGiam: record.giaTriGiam,
+      kieuGiamGia: record.kieuGiamGia,
+      moTa: record.moTa,
+      tenVoucher: record.tenVoucher,
+    });
     setIsEditModalOpen(true);
   };
 
   const handleEditCancel = () => {
-    formUpdate.resetFields();
+    // formUpdate.resetFields();
     setIsEditModalOpen(false);
   };
 
@@ -144,23 +170,43 @@ const TableVoucher = () => {
 
   const columns = [
     {
+      title: "Tên",
+      dataIndex: "tenVoucher",
+      key: "tenVoucher",
+    },
+    {
       title: "Thời gian bắt đầu",
       dataIndex: "thoiGianBatDau",
       key: "thoiGianBatDau",
       render: (thoiGianBatDau) =>
-        format(new Date(thoiGianBatDau), "dd/MM/yyyy HH:mm:ss"),
+        format(new Date(thoiGianBatDau), "dd-MM-yyyy "),
     },
     {
       title: "Thời gian kết thúc",
       dataIndex: "thoiGianKetThuc",
       key: "thoiGianKetThuc",
       render: (thoiGianKetThuc) =>
-        format(new Date(thoiGianKetThuc), "dd/MM/yyyy HH:mm:ss"),
+        format(new Date(thoiGianKetThuc), "dd-MM-yyyy "),
     },
     {
       title: "Số lượng",
       dataIndex: "soLuong",
       key: "soLuong",
+    },
+    {
+      title: "Giảm tối đa",
+      dataIndex: "giamToiDa",
+      key: "giamToiDa",
+    },
+    {
+      title: "Giá trị giảm",
+      dataIndex: "giaTriGiam",
+      key: "giaTriGiam",
+    },
+    {
+      title: "Kiểu giảm giá",
+      dataIndex: "kieuGiamGia",
+      key: "kieuGiamGia",
     },
     {
       title: "Mô tả",
@@ -189,6 +235,7 @@ const TableVoucher = () => {
       ),
     },
   ];
+
   return (
     <div>
       <ToastContainer />
@@ -201,12 +248,143 @@ const TableVoucher = () => {
             Thêm
           </Button>
           <Modal
-            title="Thêm thương hiệu"
+            title="Thêm voucher"
             open={isModalOpen}
             onCancel={handleCancel}
             onOk={handleAdd}
+            width={900}
           >
-            <Form onFinish={handleAdd} form={form}>
+            <Form
+              onFinish={handleAdd}
+              form={form}
+              layout="vertical"
+              autoComplete="off"
+            >
+              <Row gutter={[16, 16]}>
+                <Col span={12}>
+                  <Form.Item
+                    label="Tên"
+                    name="tenVoucher"
+                    style={{ width: "360px", marginLeft: "40px" }}
+                    rules={[
+                      {
+                        required: true,
+                        message: "Tên loại không được để trống!",
+                      },
+                    ]}
+                  >
+                    <Input placeholder="Tên" />
+                  </Form.Item>
+                  <Form.Item
+                    label="Số lượng"
+                    name="soLuong"
+                    style={{ width: "360px", marginLeft: "40px" }}
+                    rules={[
+                      {
+                        required: true,
+                        message: "Số lượng không được để trống!",
+                      },
+                    ]}
+                  >
+                    <Input placeholder="Số lượng" />
+                  </Form.Item>
+
+                  <Form.Item
+                    label="Giảm tối đa"
+                    name="giamToiDa"
+                    style={{ width: "360px", marginLeft: "40px" }}
+                    rules={[
+                      {
+                        required: true,
+                        message: "Giảm tối đa không được để trống!",
+                      },
+                    ]}
+                  >
+                    <Input placeholder="Giảm tối đa" />
+                  </Form.Item>
+                  <Form.Item
+                    label="Giá trị giảm"
+                    name="giaTriGiam"
+                    style={{ width: "360px", marginLeft: "40px" }}
+                    rules={[
+                      {
+                        required: true,
+                        message: "Giá trị giảm không được để trống!",
+                      },
+                    ]}
+                  >
+                    <Input placeholder="Giá trị giảm" />
+                  </Form.Item>
+                </Col>
+                <Col span={12}>
+                  <Form.Item
+                    label="Kiểu giảm giá"
+                    name="kieuGiamGia"
+                    style={{ width: "360px", marginLeft: "40px" }}
+                    rules={[
+                      {
+                        required: true,
+                        message: "Kiểu giảm giá không được để trống!",
+                      },
+                    ]}
+                  >
+                    <Input placeholder="Kiểu giảm giá" />
+                  </Form.Item>
+                  <Form.Item
+                    name="thoiGianBatDau"
+                    label="Ngày bắt đầu"
+                    style={{
+                      marginLeft: "40px",
+                    }}
+                    rules={[{ required: true, message: "Chọn ngày bắt đầu!" }]}
+                  >
+                    <DatePicker
+                      format="DD-MM-YYYY"
+                      style={{ width: "360px" }}
+                    />
+                  </Form.Item>
+
+                  <Form.Item
+                    name="thoiGianKetThuc"
+                    label="Ngày kết thúc"
+                    style={{ width: "360px", marginLeft: "40px" }}
+                    rules={[{ required: true, message: "Chọn ngày kết thúc!" }]}
+                  >
+                    <DatePicker
+                      format="DD-MM-YYYY"
+                      style={{ width: "360px" }}
+                    />
+                  </Form.Item>
+                  <Form.Item
+                    label="Mô tả"
+                    name="moTa"
+                    style={{ width: "360px", marginLeft: "40px" }}
+                  >
+                    <TextArea rows={4} />
+                  </Form.Item>
+                </Col>
+              </Row>
+            </Form>
+          </Modal>
+        </Col>
+      </Row>
+
+      <Modal
+        title="Cập nhật voucher"
+        open={isEditModalOpen}
+        onCancel={handleEditCancel}
+        onOk={handleUpdate}
+        width={900}
+      >
+        <Form
+          form={formUpdate}
+          name="editForm"
+          initialValues={editFormData}
+          layout="vertical"
+          autoComplete="off"
+        >
+          <Row gutter={[16, 16]}>
+            <Col span={12}>
               <Form.Item
                 label="Tên"
                 name="tenVoucher"
@@ -217,28 +395,83 @@ const TableVoucher = () => {
               >
                 <Input placeholder="Tên" />
               </Form.Item>
-            </Form>
-          </Modal>
-        </Col>
-      </Row>
+              <Form.Item
+                label="Số lượng"
+                name="soLuong"
+                style={{ width: "360px", marginLeft: "40px" }}
+                rules={[
+                  { required: true, message: "Số lượng không được để trống!" },
+                ]}
+              >
+                <Input placeholder="Số lượng" />
+              </Form.Item>
+              <Form.Item
+                label="Giảm tối đa"
+                name="giamToiDa"
+                style={{ width: "360px", marginLeft: "40px" }}
+                rules={[
+                  {
+                    required: true,
+                    message: "Giảm tối đa không được để trống!",
+                  },
+                ]}
+              >
+                <Input placeholder="Giảm tối đa" />
+              </Form.Item>
+              <Form.Item
+                label="Giá trị giảm"
+                name="giaTriGiam"
+                style={{ width: "360px", marginLeft: "40px" }}
+                rules={[
+                  {
+                    required: true,
+                    message: "Giá trị giảm không được để trống!",
+                  },
+                ]}
+              >
+                <Input placeholder="Giá trị giảm" />
+              </Form.Item>
+            </Col>
+            <Col span={12}>
+              <Form.Item
+                label="Kiểu giảm giá"
+                name="kieuGiamGia"
+                style={{ width: "360px", marginLeft: "40px" }}
+                rules={[
+                  {
+                    required: true,
+                    message: "Kiểu giảm giá không được để trống!",
+                  },
+                ]}
+              >
+                <Input placeholder="Kiểu giảm giá" />
+              </Form.Item>
+              <Form.Item
+                name="thoiGianBatDau"
+                label="Ngày bắt đầu"
+                style={{ width: "360px", marginLeft: "40px" }}
+                rules={[{ required: true, message: "Chọn ngày bắt đầu!" }]}
+              >
+                <DatePicker format="DD-MM-YYYY" style={{ width: "360px" }} />
+              </Form.Item>
 
-      <Modal
-        title="Cập nhật loại"
-        open={isEditModalOpen}
-        onCancel={handleEditCancel}
-        onOk={handleUpdate}
-      >
-        <Form form={formUpdate} name="editForm" initialValues={editFormData}>
-          <Form.Item
-            label="Tên"
-            name="tenVoucher"
-            style={{ width: "360px", marginLeft: "40px" }}
-            rules={[
-              { required: true, message: "Tên loại không được để trống!" },
-            ]}
-          >
-            <Input placeholder="Tên" />
-          </Form.Item>
+              <Form.Item
+                name="thoiGianKetThuc"
+                label="Ngày kết thúc"
+                style={{ width: "360px", marginLeft: "40px" }}
+                rules={[{ required: true, message: "Chọn ngày kết thúc!" }]}
+              >
+                <DatePicker format="DD-MM-YYYY" style={{ width: "360px" }} />
+              </Form.Item>
+              <Form.Item
+                label="Mô tả"
+                name="moTa"
+                style={{ width: "360px", marginLeft: "40px" }}
+              >
+                <TextArea rows={4} />
+              </Form.Item>
+            </Col>
+          </Row>
         </Form>
       </Modal>
 
