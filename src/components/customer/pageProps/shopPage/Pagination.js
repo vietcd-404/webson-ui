@@ -50,6 +50,10 @@ const Pagination = () => {
                   giaBan={item.giaBan}
                   tenMau={item.tenMau}
                   tenThuongHieu={item.tenThuongHieu}
+                  tenLoai={item.tenLoai}
+                  doLi={item.doLi}
+                  doBong={item.doBong}
+                  soLuongTon={item.soLuongTon}
                 />
               </div>
             ))}
