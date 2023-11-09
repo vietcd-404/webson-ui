@@ -1,17 +1,40 @@
-import React from "react";
+import React, { useState, useEffect, useParams } from "react";
 import { useDispatch } from "react-redux";
 import { addToCart } from "../../../../redux/orebiSlice";
+import { Tag } from "antd";
 
 const ProductInfo = ({ productInfo }) => {
   const dispatch = useDispatch();
   return (
     <div className="flex flex-col gap-5">
-      <h2 className="text-4xl font-semibold">{productInfo.productName}</h2>
-      <p className="text-xl font-semibold">${productInfo.price}</p>
-      <p className="text-base text-gray-600">{productInfo.des}</p>
-      <p className="text-sm">Be the first to leave a review.</p>
+      <h2 className="text-4xl font-semibold">{productInfo.tenSanPham}</h2>
+      <p className="text-xl font-semibold">Giá Bán:${productInfo.giaBan}</p>
       <p className="font-medium text-lg">
-        <span className="font-normal">Colors:</span> {productInfo.color}
+        <span className="font-normal">Thương hiệu:</span>{" "}
+        {productInfo.tenThuongHieu}
+      </p>
+      <p className="font-medium text-lg">
+        <span className="font-normal">Màu son:</span> {productInfo.tenMau}
+      </p>
+      <p className="font-medium text-lg">
+        <span className="font-normal">Loại son:</span> {productInfo.tenLoai}
+      </p>
+      <p className="font-medium text-lg">
+        <span className="font-normal mr-2">Dạng son:</span>
+        {productInfo.doLi === 0 ? (
+          <Tag color="red">Không Lì</Tag>
+        ) : (
+          <Tag color="green">Son Lì</Tag>
+        )}
+        ,
+        {productInfo.doBong === 0 ? (
+          <Tag color="red">Không Bóng</Tag>
+        ) : (
+          <Tag color="green">Son Bóng</Tag>
+        )}
+      </p>
+      <p className="font-medium text-lg">
+        <span className="font-normal">Số lượng:</span> {productInfo.soLuongTon}
       </p>
       <button
         onClick={() =>
@@ -27,14 +50,10 @@ const ProductInfo = ({ productInfo }) => {
             })
           )
         }
-        className="w-full py-4 bg-primeColor hover:bg-black duration-300 text-white text-lg font-titleFont"
+        className="w-full py-4 bg-[#ff0000] text-[#ffff] hover:bg-[#ffff] hover:text-[#003300] duration-300 text-lg font-titleFont"
       >
-        Add to Cart
+        Thêm vào giỏ hàng
       </button>
-      <p className="font-normal text-sm">
-        <span className="text-base font-medium"> Categories:</span> Spring
-        collection, Streetwear, Women Tags: featured SKU: N/A
-      </p>
     </div>
   );
 };
