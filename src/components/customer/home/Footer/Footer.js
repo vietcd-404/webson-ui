@@ -148,7 +148,7 @@ const Footer = () => {
                 </div>
                 <button
                   onClick={handleSubscription}
-                  className="bg-white text-lightText w-[30%] h-10 hover:bg-black hover:text-white duration-300 text-base tracking-wide "
+                  className="bg-black text-lightText w-[30%] h-10 text-[#ffff] duration-300 text-base tracking-wide "
                 >
                   Đăng ký
                 </button>

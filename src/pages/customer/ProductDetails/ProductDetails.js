@@ -3,17 +3,27 @@ import { useLocation } from "react-router-dom";
 import Breadcrumbs from "../../../components/customer/pageProps/Breadcrumbs";
 import ProductInfo from "../../../components/customer/pageProps/productDetails/ProductInfo";
 import ProductsOnSale from "../../../components/customer/pageProps/productDetails/ProductsOnSale";
-
-const ProductDetails = () => {
-  const location = useLocation();
+import {
+  listImageSanPhamGuest,
+  getDetailById,
+} from "../../../services/SanPhamUser";
+const ProductDetails = (props) => {
   const [prevLocation, setPrevLocation] = useState("");
-  const [productInfo, setProductInfo] = useState([]);
+  const location = useLocation();
+  const { state } = location;
+  // const { state } = location;
+  const { productInfo, maSanPhamCT } = state;
+  const [dataImg, setDataImg] = useState("");
 
   useEffect(() => {
-    setProductInfo(location.state.item);
+    setDataImg();
     setPrevLocation(location.pathname);
-  }, [location, productInfo]);
+  }, []);
 
+  const loadAnhSanPham = async (maSanPhamCT) => {
+    const response = await listImageSanPhamGuest(maSanPhamCT);
+    setDataImg(response);
+  };
   return (
     <div className="w-full mx-auto border-b-[1px] border-b-gray-300">
       <div className="max-w-container mx-auto px-4">
@@ -21,13 +31,13 @@ const ProductDetails = () => {
           <Breadcrumbs title="" prevLocation={prevLocation} />
         </div>
         <div className="w-full grid grid-cols-1 md:grid-cols-2 xl:grid-cols-6 gap-4 h-full -mt-5 xl:-mt-8 pb-10 bg-gray-100 p-4">
-          <div className="h-full">
+          {/* <div className="h-full">
             <ProductsOnSale />
-          </div>
+          </div> */}
           <div className="h-full xl:col-span-2">
             <img
-              className="w-full h-full object-cover"
-              src={productInfo.img}
+              className="w-300 h-full p-9 object-cover"
+              src={`data:image/png;base64,${productInfo.img}`}
               alt={productInfo.img}
             />
           </div>
