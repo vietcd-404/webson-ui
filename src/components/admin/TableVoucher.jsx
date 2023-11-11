@@ -98,6 +98,10 @@ const TableVoucher = () => {
       onOk: async () => {
         try {
           const values = await form.validateFields();
+          if (values.thoiGianBatDau.isAfter(values.thoiGianKetThuc)) {
+            toast.error("Ngày bắt đầu không được lớn hơn ngày kết thúc");
+            return;
+          }
           const response = await createVoucher(values);
           if (response.status === 200) {
             console.log(response);

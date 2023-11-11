@@ -14,3 +14,7 @@ export const updateNguoiDung = async (nguoiDung, ma) => {
 export const deleteNguoiDung = async (ma) => {
   return await api.delete(`/admin/nguoi-dung/delete/${ma}`);
 };
+
+export const updateStatus = async (trangThai, ma) => {
+  return await api.put(`/admin/nguoi-dung/sua/${ma}`, trangThai);
+};

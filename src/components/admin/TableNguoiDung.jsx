@@ -5,6 +5,7 @@ import {
   deleteNguoiDung,
   findAllNguoiDung,
   updateNguoiDung,
+  updateStatus,
 } from "../../services/NguoiDungService";
 import { useState } from "react";
 import {
@@ -17,6 +18,7 @@ import {
   Row,
   Select,
   Space,
+  Switch,
   Table,
 } from "antd";
 import {
@@ -40,6 +42,7 @@ const TableNguoiDung = () => {
   const [editFormData, setEditFormData] = useState(null);
   const [form] = Form.useForm();
   const [formUpdate] = Form.useForm();
+  const [switchStatus, setSwitchStatus] = useState({});
 
   useEffect(() => {
     loadTable();
@@ -60,14 +63,15 @@ const TableNguoiDung = () => {
     formUpdate.setFieldsValue({
       maNguoiDung: record.maNguoiDung,
       email: record.email,
-      ngaySinh: dayjs(record.ngaySinh),
+      ngaySinh: record.ngaySinh ? dayjs(record.ngaySinh) : null,
       username: record.username,
-      gioiTinh: record.gioiTinh,
+      gioiTinh: record.gioiTinh.toString(),
       sdt: record.sdt,
       tenDem: record.tenDem,
       ten: record.ten,
       ho: record.ho,
-      vaiTro: record.vaiTro,
+      trangThai: record.trangThai,
+      vaiTro: record.vaiTro.toString(),
     });
     setIsEditModalOpen(true);
   };
@@ -102,10 +106,91 @@ const TableNguoiDung = () => {
     });
   };
 
+  const handleAdd = () => {
+    Modal.confirm({
+      title: "Xác nhận",
+      icon: <ExclamationCircleFilled />,
+      content: "Bạn có chắc muốn thêm thương hiệu mới?",
+      okText: "OK",
+      okType: "danger",
+      cancelText: "Đóng",
+      onOk: async () => {
+        try {
+          const values = await form.validateFields();
+          const response = await createNguoiDung(values);
+          if (response.status === 200) {
+            console.log(response);
+            setIsModalOpen(false);
+            toast.success("Thêm mới thành công!");
+            loadTable();
+            form.resetFields();
+          }
+        } catch (error) {
+          console.error("Lỗi khi tạo người dùng : ", error);
+          toast.error(error.response.data.message);
+        }
+      },
+      onCancel: () => {},
+    });
+  };
+  const handleUpdate = () => {
+    Modal.confirm({
+      title: "Xác nhận",
+      icon: <ExclamationCircleFilled />,
+      content: "Bạn có chắc muốn cập nhập người dùng không?",
+      okText: "OK",
+      okType: "danger",
+      cancelText: "Đóng",
+      onOk: async () => {
+        try {
+          const values = await formUpdate.validateFields();
+          const response = await updateNguoiDung(
+            values,
+            editFormData.maNguoiDung
+          );
+          if (response.status === 200) {
+            console.log(response);
+            setIsEditModalOpen(false);
+            toast.success("Cập nhật thành công!");
+            loadTable();
+          }
+        } catch (error) {
+          console.error("Lỗi khi cập nhật người dùng : ", error);
+          toast.error(error.response.data.message);
+        }
+      },
+
+      onCancel: () => {},
+    });
+  };
+
+  const handleSwitchChange = async (record, checked) => {
+    const trangThaiValue = checked ? 1 : 0;
+    console.log(trangThaiValue);
+    try {
+      const response = await updateStatus(
+        { ...record, trangThai: checked ? 1 : 0 },
+        record.maNguoiDung
+      );
+      if (response.status === 200) {
+        setSwitchStatus((prevStatus) => ({
+          ...prevStatus,
+          [record.maNguoiDung]: checked,
+        }));
+        toast.success("Cập nhật trạng thái thành công!");
+        loadTable();
+      }
+    } catch (error) {
+      console.error("Lỗi khi cập nhật trạng thái người dùng: ", error);
+      toast.error("Cập nhật trạng thái thất bại.");
+    }
+  };
+
   //Hiện list danh sách lên
   const loadTable = async () => {
     try {
       const response = await findAllNguoiDung();
+      console.log(response.data);
       setData(response.data);
       setTotalPage(response.totalPage);
       setLoading(false);
@@ -113,6 +198,24 @@ const TableNguoiDung = () => {
       console.error("Lỗi khi gọi API: ", error);
       setLoading(false);
     }
+  };
+
+  const validateEmail = (rule, value) => {
+    const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+    if (value && !emailRegex.test(value)) {
+      return Promise.reject("Email không hợp lệ!");
+    }
+    return Promise.resolve();
+  };
+
+  const validatePhoneNumber = (rule, value) => {
+    const phoneRegex = /^(0|\\+84)[3|5|7|8|9][0-9]{8}$/;
+
+    if (value && (!phoneRegex.test(value) || value.length !== 10)) {
+      return Promise.reject("Số điện thoại không hợp lệ!");
+    }
+
+    return Promise.resolve();
   };
 
   const columns = [
@@ -125,6 +228,18 @@ const TableNguoiDung = () => {
       title: "Vai trò",
       dataIndex: "vaiTro",
       key: "vaiTro",
+      render: (vaiTro) => {
+        switch (vaiTro) {
+          case "1":
+            return "ROLE_ADMIN";
+          case "2":
+            return "ROLE_USER";
+          case "3":
+            return "ROLE_STAFF";
+          default:
+            return "Không xác định";
+        }
+      },
     },
     {
       title: "Họ",
@@ -167,8 +282,12 @@ const TableNguoiDung = () => {
       title: "Trạng Thái",
       dataIndex: "trangThai",
       key: "trangThai",
-      render: (trangThai) =>
-        trangThai === 1 ? "Hoạt động" : "Không hoạt động",
+      render: (_, record) => (
+        <Switch
+          checked={record.trangThai === 1}
+          onChange={(checked) => handleSwitchChange(record, checked)}
+        />
+      ),
     },
     {
       title: "Chức năng",
@@ -187,69 +306,12 @@ const TableNguoiDung = () => {
     },
   ];
 
-  const handleAdd = () => {
-    Modal.confirm({
-      title: "Xác nhận",
-      icon: <ExclamationCircleFilled />,
-      content: "Bạn có chắc muốn thêm thương hiệu mới?",
-      okText: "OK",
-      okType: "danger",
-      cancelText: "Đóng",
-      onOk: async () => {
-        try {
-          const values = await form.validateFields();
-          const response = await createNguoiDung(values);
-          if (response.status === 200) {
-            console.log(response);
-            setIsModalOpen(false);
-            toast.success("Thêm mới thành công!");
-            loadTable();
-            form.resetFields();
-          }
-        } catch (error) {
-          console.error("Lỗi khi tạo người dùng : ", error);
-          toast.error("Thêm mới thất bại.");
-        }
-      },
-      onCancel: () => {},
-    });
-  };
-  const handleUpdate = () => {
-    Modal.confirm({
-      title: "Xác nhận",
-      icon: <ExclamationCircleFilled />,
-      content: "Bạn có chắc muốn cập nhập người dùng không?",
-      okText: "OK",
-      okType: "danger",
-      cancelText: "Đóng",
-      onOk: async () => {
-        try {
-          const values = await formUpdate.validateFields();
-          const response = await updateNguoiDung(
-            values,
-            editFormData.maNguoiDung
-          );
-          if (response.status === 200) {
-            console.log(response);
-            setIsEditModalOpen(false);
-            toast.success("Cập nhật thành công!");
-            loadTable();
-          }
-        } catch (error) {
-          console.error("Lỗi khi cập nhật người dùng : ", error);
-          toast.error("Cập nhật thất bại.");
-        }
-      },
-
-      onCancel: () => {},
-    });
-  };
   return (
     <div>
       <ToastContainer />
       <Row>
         <Col span={12}>
-          <SearchInput text="Tìm kiếm voucher" />
+          <SearchInput text="Tìm kiếm người dùng" />
         </Col>
         <Col span={4} offset={8}>
           <Button className="bg-blue-500 text-white" onClick={showModal}>
@@ -324,7 +386,7 @@ const TableNguoiDung = () => {
                     rules={[
                       {
                         required: true,
-                        message: "Số lượng không được để trống!",
+                        message: "Tài khoản không được để trống!",
                       },
                     ]}
                   >
@@ -337,11 +399,11 @@ const TableNguoiDung = () => {
                     rules={[
                       {
                         required: true,
-                        message: "Số lượng không được để trống!",
+                        message: "Mật khẩu không được để trống!",
                       },
                     ]}
                   >
-                    <Input placeholder="Username" />
+                    <Input placeholder="Password" type="password" />
                   </Form.Item>
                   <Form.Item
                     label="Giới tính"
@@ -381,6 +443,9 @@ const TableNguoiDung = () => {
                         required: true,
                         message: "Số điện thoại không bỏ trống!",
                       },
+                      {
+                        validator: validatePhoneNumber,
+                      },
                     ]}
                   >
                     <Input placeholder="sdt" />
@@ -393,6 +458,9 @@ const TableNguoiDung = () => {
                       {
                         required: true,
                         message: "Email không được để trống!",
+                      },
+                      {
+                        validator: validateEmail,
                       },
                     ]}
                   >
@@ -497,11 +565,11 @@ const TableNguoiDung = () => {
                 rules={[
                   {
                     required: true,
-                    message: "Số lượng không được để trống!",
+                    message: "Tài khoản không được để trống!",
                   },
                 ]}
               >
-                <Input placeholder="Username" />
+                <Input placeholder="Username" disabled />
               </Form.Item>
               <Form.Item
                 label="Mật khẩu"
@@ -510,11 +578,11 @@ const TableNguoiDung = () => {
                 rules={[
                   {
                     required: true,
-                    message: "Số lượng không được để trống!",
+                    message: "Mật khẩu không được để trống!",
                   },
                 ]}
               >
-                <Input placeholder="Username" />
+                <Input placeholder="Password" type="password" />
               </Form.Item>
               <Form.Item
                 label="Giới tính"
@@ -540,7 +608,7 @@ const TableNguoiDung = () => {
                 style={{ width: "360px", marginLeft: "40px" }}
                 rules={[{ required: true, message: "Chọn ngày bắt đầu!" }]}
               >
-                <DatePicker style={{ width: "360px" }} />
+                <DatePicker style={{ width: "360px" }} allowClear />
               </Form.Item>
               <Form.Item
                 name="sdt"
@@ -550,6 +618,9 @@ const TableNguoiDung = () => {
                   {
                     required: true,
                     message: "Số điện thoại không bỏ trống!",
+                  },
+                  {
+                    validator: validatePhoneNumber,
                   },
                 ]}
               >
@@ -563,6 +634,9 @@ const TableNguoiDung = () => {
                   {
                     required: true,
                     message: "Email không được để trống!",
+                  },
+                  {
+                    validator: validateEmail,
                   },
                 ]}
               >

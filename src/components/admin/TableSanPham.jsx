@@ -10,6 +10,7 @@ import {
   Modal,
   Tag,
   Checkbox,
+  Switch,
 } from "antd";
 
 import { EditOutlined, DeleteOutlined } from "@ant-design/icons";
@@ -22,6 +23,7 @@ import {
   deleteBySanPham,
   findAllSanPham,
   updateSanPham,
+  updateStatusSp,
 } from "../../services/SanPhamService";
 
 const TableSanPham = () => {
@@ -31,6 +33,8 @@ const TableSanPham = () => {
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [isEditModalOpen, setIsEditModalOpen] = useState(false);
   const [editFormData, setEditFormData] = useState(null); // Data for editing
+  const [switchStatus, setSwitchStatus] = useState({});
+  const [searchTenSanPham, setsearchTenSanPham] = useState("");
 
   const [doBong, setDoBong] = useState(0);
   const [doLi, setDoLi] = useState(0);
@@ -164,11 +168,40 @@ const TableSanPham = () => {
     });
   };
 
+  const handleSwitchChange = async (record, checked) => {
+    const trangThaiValue = checked ? 1 : 0;
+    console.log(trangThaiValue);
+    console.log(record.maSanPham);
+    try {
+      const response = await updateStatusSp(
+        { ...record, trangThai: checked ? 1 : 0 },
+        record.maSanPham
+      );
+      if (response.status === 200) {
+        setSwitchStatus((prevStatus) => ({
+          ...prevStatus,
+          [record.maSanPham]: checked,
+        }));
+        toast.success("Cập nhật trạng thái thành công!");
+        loadTable();
+      }
+    } catch (error) {
+      console.error("Lỗi khi cập nhật trạng thái người dùng: ", error);
+      toast.error("Cập nhật trạng thái thất bại.");
+    }
+  };
+
   const columns = [
     {
       title: "Tên",
       dataIndex: "tenSanPham",
       key: "tenSanPham",
+      filteredValue: [searchTenSanPham],
+      onFilter: (value, record) => {
+        return String(record.tenSanPham)
+          .toLowerCase()
+          .includes(value.toLowerCase());
+      },
     },
     {
       title: "Độ bóng",
@@ -197,8 +230,12 @@ const TableSanPham = () => {
       title: "Trạng Thái",
       dataIndex: "trangThai",
       key: "trangThai",
-      render: (trangThai) =>
-        trangThai === 0 ? "Hoạt động" : "Không hoạt động",
+      render: (_, record) => (
+        <Switch
+          checked={record.trangThai === 1}
+          onChange={(checked) => handleSwitchChange(record, checked)}
+        />
+      ),
     },
     {
       title: "Chức năng",
@@ -218,9 +255,17 @@ const TableSanPham = () => {
   return (
     <div>
       <ToastContainer />
-      <Row>
+      <Row style={{ marginBottom: "20px" }}>
         <Col span={12}>
-          <SearchInput text="Tìm kiếm loại" />
+          <Input.Search
+            placeholder="Tìm kiếm tên sản phẩm ..."
+            onSearch={(value) => {
+              setsearchTenSanPham(value);
+            }}
+            onChange={(e) => {
+              setsearchTenSanPham(e.target.value);
+            }}
+          />
         </Col>
         <Col span={4} offset={8}>
           <Button className="bg-blue-500 text-white" onClick={showModal}>
