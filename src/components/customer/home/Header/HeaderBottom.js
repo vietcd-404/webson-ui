@@ -15,12 +15,15 @@ import { paginationItems } from "../../../../constants";
 import { useAuth } from "../../../../pages/customer/Account/AuthProvider";
 import { ExclamationCircleFilled } from "@ant-design/icons";
 import { Modal } from "antd";
+import { findGioHang } from "../../../../services/GioHangService";
 
 const HeaderBottom = () => {
   const products = useSelector((state) => state.orebiReducer.products);
   const [show, setShow] = useState(false);
   const [showUser, setShowUser] = useState(false);
   const navigate = useNavigate();
+  const [data, setData] = useState([]);
+  const [isLoading, setIsLoading] = useState(true);
   const ref = useRef();
   useEffect(() => {
     const handleBodyClick = (e) => {
@@ -30,11 +33,25 @@ const HeaderBottom = () => {
         setShow(false);
       }
     };
+
     document.body.addEventListener("click", handleBodyClick);
     return () => {
       document.body.removeEventListener("click", handleBodyClick);
     };
   }, [show]);
+  const loadGioHang = async () => {
+    try {
+      const response = await findGioHang();
+      setData(response.data);
+    } catch (error) {
+      console.error("Lỗi khi gọi API: ", error);
+    } finally {
+      setIsLoading(false);
+    }
+  };
+  useEffect(() => {
+    loadGioHang();
+  }, []);
 
   const [searchQuery, setSearchQuery] = useState("");
   const [filteredProducts, setFilteredProducts] = useState([]);
@@ -177,9 +194,13 @@ const HeaderBottom = () => {
             <Link to="/cart">
               <div className="relative">
                 <FaShoppingCart size={20} />
-                <span className="absolute font-titleFont -top-4 -right-2 text-xs flex items-center justify-center bg-[#0033CC] text-white font-bold w-3.5">
-                  {products.length > 0 ? products.length : 0}
-                </span>
+                {isLoading ? (
+                  <p>Loading....</p>
+                ) : (
+                  <span className="absolute font-titleFont -top-4 -right-2 text-xs flex items-center justify-center bg-[#0033CC] text-white font-bold w-3.5">
+                    {data.length > 0 ? data.length : 0}
+                  </span>
+                )}
               </div>
             </Link>
           </div>

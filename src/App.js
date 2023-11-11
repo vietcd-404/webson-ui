@@ -125,7 +125,7 @@ const App = () => {
         <Route
           path="/bill"
           element={
-            <ProtectedRoute userRole="ROLE_USER">
+            <ProtectedRoute userRole={["ROLE_USER", "ROLE_ADMIN"]}>
               <Main>
                 <ThongTin children={<HoaDon />} />
               </Main>
@@ -148,7 +148,7 @@ const App = () => {
         <Route
           path="/my-favorites"
           element={
-            <ProtectedRoute userRole="ROLE_USER">
+            <ProtectedRoute userRole={["ROLE_USER", "ROLE_ADMIN"]}>
               <Main>
                 <ThongTin children={<SanPhamYeuThich />} />
               </Main>
