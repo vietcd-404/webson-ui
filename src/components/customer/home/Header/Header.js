@@ -41,7 +41,7 @@ const Header = () => {
                 {navBarList.map(({ _id, title, link }) => (
                   <li
                     key={_id}
-                    className="flex font-normal text-base text-white hover:font-bold   text-base text-white  hover:underline underline-offset-[4px] decoration-[1px] hover:text-[#262626] hoverEffect justify-center items-center px-12 md:border-r-[2px] border-r-gray-300 last:border-r-0"
+                    className="flex font-normal text-base hover:font-bold   text-white  hover:underline underline-offset-[4px] decoration-[1px] hover:text-[#262626] hoverEffect justify-center items-center px-12 md:border-r-[2px] border-r-gray-300 last:border-r-0"
                   >
                     <NavLink
                       key={_id}

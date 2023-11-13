@@ -23,6 +23,14 @@ import ThongTin from "./pages/customer/ThongTin/ThongTin";
 import HoaDon from "./pages/customer/ThongTin/HoaDon";
 import CaNhan from "./pages/customer/ThongTin/CaNhan";
 import SanPhamYeuThich from "./pages/customer/ThongTin/SanPhamYeuThich";
+import ChoXacNhan from "./pages/customer/ThongTin/TrangThaiHoaDon/ChoXacNhan";
+import TatCa from "./pages/customer/ThongTin/TrangThaiHoaDon/TatCa";
+import DangGiao from "./pages/customer/ThongTin/TrangThaiHoaDon/DangGiao";
+import HoanThanh from "./pages/customer/ThongTin/TrangThaiHoaDon/HoanThanh";
+import Huy from "./pages/customer/ThongTin/TrangThaiHoaDon/Huy";
+import ThongTinDonHang from "./pages/customer/ThongTin/TrangThaiHoaDon/ThongTinDonHang";
+import DaGiao from "./pages/customer/ThongTin/TrangThaiHoaDon/DaGiao";
+import XacNhan from "./pages/customer/ThongTin/TrangThaiHoaDon/XacNhan";
 
 const App = () => {
   const { user } = useAuth();
@@ -123,21 +131,104 @@ const App = () => {
         ></Route>
         <Route path="/active" element={<Otp />}></Route>
         <Route
-          path="/bill"
+          path="/invoices"
           element={
             <ProtectedRoute userRole={["ROLE_USER", "ROLE_ADMIN"]}>
               <Main>
-                <ThongTin children={<HoaDon />} />
+                <ThongTin childre={<HoaDon props={<TatCa />} />} />
+              </Main>
+            </ProtectedRoute>
+          }
+        ></Route>
+        {/* trạng thái giao hàng */}
+        <Route
+          path="/invoices"
+          element={
+            <ProtectedRoute userRole={["ROLE_USER", "ROLE_ADMIN"]}>
+              <Main>
+                <ThongTin childre={<HoaDon props={<TatCa />} />} />
               </Main>
             </ProtectedRoute>
           }
         ></Route>
         <Route
+          path="/information/:maHoaDon"
+          element={
+            <ProtectedRoute userRole={["ROLE_USER", "ROLE_ADMIN"]}>
+              <Main>
+                <ThongTin childre={<ThongTinDonHang />} />
+              </Main>
+            </ProtectedRoute>
+          }
+        ></Route>
+        <Route
+          path="/invoices/confirmation"
+          element={
+            <ProtectedRoute userRole={["ROLE_USER", "ROLE_ADMIN"]}>
+              <Main>
+                <ThongTin childre={<HoaDon props={<XacNhan />} />} />
+              </Main>
+            </ProtectedRoute>
+          }
+        ></Route>
+        <Route
+          path="/invoices/wait-for-confirmation"
+          element={
+            <ProtectedRoute userRole={["ROLE_USER", "ROLE_ADMIN"]}>
+              <Main>
+                <ThongTin childre={<HoaDon props={<ChoXacNhan />} />} />
+              </Main>
+            </ProtectedRoute>
+          }
+        ></Route>
+        <Route
+          path="/invoices/in-progress"
+          element={
+            <ProtectedRoute userRole={["ROLE_USER", "ROLE_ADMIN"]}>
+              <Main>
+                <ThongTin childre={<HoaDon props={<DangGiao />} />} />
+              </Main>
+            </ProtectedRoute>
+          }
+        ></Route>
+        <Route
+          path="/invoices/delivered"
+          element={
+            <ProtectedRoute userRole={["ROLE_USER", "ROLE_ADMIN"]}>
+              <Main>
+                <ThongTin childre={<HoaDon props={<DaGiao />} />} />
+              </Main>
+            </ProtectedRoute>
+          }
+        ></Route>
+        <Route
+          path="/invoices/complete"
+          element={
+            <ProtectedRoute userRole={["ROLE_USER", "ROLE_ADMIN"]}>
+              <Main>
+                <ThongTin childre={<HoaDon props={<HoanThanh />} />} />
+              </Main>
+            </ProtectedRoute>
+          }
+        ></Route>
+        <Route
+          path="/invoices/abort"
+          element={
+            <ProtectedRoute userRole={["ROLE_USER", "ROLE_ADMIN"]}>
+              <Main>
+                <ThongTin childre={<HoaDon props={<Huy />} />} />
+              </Main>
+            </ProtectedRoute>
+          }
+        ></Route>
+
+        {/* / */}
+
+        <Route
           path="/profile"
           element={
             user ? (
               <Main>
-                {" "}
                 <ThongTin />
               </Main>
             ) : (
@@ -150,7 +241,7 @@ const App = () => {
           element={
             <ProtectedRoute userRole={["ROLE_USER", "ROLE_ADMIN"]}>
               <Main>
-                <ThongTin children={<SanPhamYeuThich />} />
+                <ThongTin childre={<SanPhamYeuThich />} />
               </Main>
             </ProtectedRoute>
           }

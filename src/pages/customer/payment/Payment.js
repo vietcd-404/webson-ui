@@ -44,6 +44,7 @@ const Payment = () => {
     tinh: "",
     huyen: "",
     xa: "",
+    tenPhuongThuc: "",
   });
 
   const handleChange = (e) => {
@@ -145,6 +146,11 @@ const Payment = () => {
         message.error("Không được bỏ trống");
         return;
       }
+      if (!formData.tenPhuongThuc) {
+        message.error("Vui lòng chọn phương thức thanh toán");
+        return;
+      }
+
       const maGH = data[0].maGH;
 
       await taoHoaDon(maGH, formData);
@@ -295,31 +301,37 @@ const Payment = () => {
                 </span>
               </div>
               <p class="font-bold mt-2">Hình thức thanh toán</p>
-              <div class="form-check mb-5">
+              <div className="mb-5">
                 <input
-                  class="form-check-input"
+                  className="mr-2 form-radio text-blue-500"
                   type="radio"
-                  value="0"
-                  name="payment"
+                  onChange={handleChange}
+                  value="MONEY"
+                  name="tenPhuongThuc"
                   id="payment0"
-                  checked
-                  data-gtm-form-interact-field-id="1"
                 />
-                <label class="form-check-label" for="payment0">
+                <label
+                  className="inline-block text-sm font-medium text-gray-700"
+                  htmlFor="payment0"
+                >
                   Thanh toán khi nhận hàng (COD)
                 </label>
               </div>
-              <div class="form-check">
+
+              <div className="mb-5">
                 <input
-                  class="form-check-input"
+                  className="mr-2 form-radio text-blue-500"
                   type="radio"
-                  value="1"
-                  name="payment"
+                  onChange={handleChange}
+                  value="ELECTRONIC_WALLET"
+                  name="tenPhuongThuc"
                   id="payment1"
-                  data-gtm-form-interact-field-id="0"
                 />
-                <label class="form-check-label" for="payment1">
-                  Chuyển khoản: Tên tài khoản: Phạm Tiến Lợi - Vietcombank :
+                <label
+                  className="inline-block text-sm font-medium text-gray-700"
+                  htmlFor="payment1"
+                >
+                  Chuyển khoản: Tên tài khoản: Phạm Tiến Lợi - Vietcombank:
                   103878062018 TP Hà Nội - Hội sở
                 </label>
               </div>

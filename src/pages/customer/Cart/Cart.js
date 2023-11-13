@@ -180,24 +180,6 @@ const Cart = () => {
                 ))}
               </ul>
             </div>
-            {/* <div className="col-4 ml-6">
-              <h1 className="text-2xl font-semibold text-right">
-                Thông tin đơn hàng
-              </h1>
-              <div className="pb-2">
-                <p className="flex items-center justify-between border-[1px] border-gray-400 py-1.5 text-lg px-4 font-medium">
-                  Tổng tiền:
-                  <span className="font-semibold tracking-wide font-titleFont text-[#ff6347]">
-                    ${totalAmt}
-                  </span>
-                </p>
-              </div>
-              <Link to="/paymentgateway">
-                <button className="bg-[#FFA500] text-white rounded-md cursor-pointer hover:bg-[#8B0000] active:bg-gray-900 px-8 py-2 font-titleFont font-semibold text-lg text-gray-200 hover:text-white duration-300">
-                  Thanh Toán
-                </button>
-              </Link>
-            </div> */}
           </div>
           {/* <div className="flex flex-col mdl:flex-row justify-between border py-4 px-4 items-center gap-2 mdl:gap-0">
             <div className="flex items-center gap-4">

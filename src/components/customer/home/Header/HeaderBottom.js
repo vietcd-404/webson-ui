@@ -158,7 +158,7 @@ const HeaderBottom = () => {
                         <Link to="/profile">Chào, {user.username}</Link>
                       </li>
                       <li className="text-400 text-black hover:bg-[#FF99CC] px-4 py-1 border-b-[1px] border-b-gray-400 hover:border-b-black hover:text-white duration-300 cursor-pointer">
-                        <Link to="/bill">Hóa đơn</Link>
+                        <Link to="/invoices">Hóa đơn</Link>
                       </li>
                       <li className="text-400 text-black hover:bg-[#FF99CC] px-4 py-1 border-b-[1px] border-b-gray-400 hover:border-b-black hover:text-white duration-300 cursor-pointer">
                         <Link to="" onClick={() => handleLogout()}>
