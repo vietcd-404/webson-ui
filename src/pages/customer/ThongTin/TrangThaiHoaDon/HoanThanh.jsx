@@ -36,10 +36,8 @@ const HoanThanh = () => {
       case 2:
         return "Đang giao";
       case 3:
-        return "Đã giao";
-      case 4:
         return "Hoàn thành";
-      case 5:
+      case 4:
         return "Đã hủy";
       default:
         return "Chờ xác nhận";
