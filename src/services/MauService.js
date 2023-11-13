@@ -19,3 +19,11 @@ export const deleteMau = async (id) => {
 export const findMauById = async (id) => {
   return await api.get(`/admin/mau-sac/${id}`);
 };
+
+export const updateStatusMau = async (mau, maMau) => {
+  return await api.put(`/admin/mau-sac/sua/${maMau}`, mau);
+};
+
+export const loadAllMau = async () => {
+  return await api.get("/admin/mau-sac/load-mau");
+};

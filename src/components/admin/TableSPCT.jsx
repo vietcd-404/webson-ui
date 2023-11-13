@@ -10,10 +10,13 @@ import {
   Space,
 } from "antd";
 import React, { useEffect, useState } from "react";
-import { findAllMau } from "../../services/MauService";
-import { findAllSanPham } from "../../services/SanPhamService";
-import { findAllLoai } from "../../services/LoaiService";
-import { findAllThuongHieu } from "../../services/ThuongHieuService";
+import { findAllMau, loadAllMau } from "../../services/MauService";
+import { findAllSanPham, loadAllSanPham } from "../../services/SanPhamService";
+import { findAllLoai, loadAllLoai } from "../../services/LoaiService";
+import {
+  findAllThuongHieu,
+  loadAllThuongHieu,
+} from "../../services/ThuongHieuService";
 
 import { creatSPCT, findAllSPCT } from "../../services/SanPhamChiTietService";
 import { toast } from "react-toastify";
@@ -47,7 +50,7 @@ function TableSPCT() {
   }, []);
   const loadMau = async () => {
     try {
-      const response = await findAllMau();
+      const response = await loadAllMau();
       setDataMau(response.data);
     } catch (error) {
       console.error("Lỗi khi gọi API: ", error);
@@ -56,7 +59,7 @@ function TableSPCT() {
 
   const loadSanPham = async () => {
     try {
-      const response = await findAllSanPham();
+      const response = await loadAllSanPham();
       setDataSanPham(response.data);
     } catch (error) {
       console.error("Lỗi khi gọi API: ", error);
@@ -65,7 +68,7 @@ function TableSPCT() {
 
   const loadLoai = async () => {
     try {
-      const response = await findAllLoai();
+      const response = await loadAllLoai();
       setDataLoai(response.data);
     } catch (error) {
       console.error("Lỗi khi gọi API: ", error);
@@ -74,7 +77,7 @@ function TableSPCT() {
 
   const loadThuongHieu = async () => {
     try {
-      const response = await findAllThuongHieu();
+      const response = await loadAllThuongHieu();
       setDataThuongHieu(response.data);
     } catch (error) {
       console.error("Lỗi khi gọi API: ", error);
@@ -99,7 +102,7 @@ function TableSPCT() {
         giaBan: values.giaBan,
         soLuongTon: values.soLuongTon,
         phanTramGiam: values.phanTramGiam,
-        trangThai: 0,
+        trangThai: 1,
         xoa: 0,
       };
       const values1 = await form.validateFields();

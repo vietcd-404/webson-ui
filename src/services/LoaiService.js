@@ -19,3 +19,11 @@ export const deleteById = async (id) => {
 export const findLoaiById = async (id) => {
   return await api.get(`/admin/loai/${id}`);
 };
+
+export const updateStatusLoai = async (loai, maLoai) => {
+  return await api.put(`/admin/loai/sua/${maLoai}`, loai);
+};
+
+export const loadAllLoai = async () => {
+  return await api.get("/admin/loai/load-loai");
+};

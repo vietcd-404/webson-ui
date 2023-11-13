@@ -1,5 +1,15 @@
 import React, { useEffect, useState } from "react";
-import { Button, Col, Form, Input, Row, Space, Table, Modal } from "antd";
+import {
+  Button,
+  Col,
+  Form,
+  Input,
+  Row,
+  Space,
+  Table,
+  Modal,
+  Switch,
+} from "antd";
 import "react-toastify/dist/ReactToastify.css";
 import { EditOutlined, DeleteOutlined } from "@ant-design/icons";
 import { ExclamationCircleFilled } from "@ant-design/icons";
@@ -9,6 +19,7 @@ import {
   deleteMau,
   findAllMau,
   updateMau,
+  updateStatusMau,
 } from "../../services/MauService";
 
 const TableMau = () => {
@@ -19,6 +30,7 @@ const TableMau = () => {
   const [isEditModalOpen, setIsEditModalOpen] = useState(false);
   const [editFormData, setEditFormData] = useState(null);
   const [searchTenMau, setSearchTenMau] = useState("");
+  const [switchStatus, setSwitchStatus] = useState({});
 
   const [form] = Form.useForm();
   const [formUpdate] = Form.useForm();
@@ -140,6 +152,28 @@ const TableMau = () => {
     });
   };
 
+  const handleSwitchChange = async (record, checked) => {
+    const trangThaiValue = checked ? 1 : 0;
+    console.log(trangThaiValue);
+    try {
+      const response = await updateStatusMau(
+        { ...record, trangThai: checked ? 1 : 0 },
+        record.maMau
+      );
+      if (response.status === 200) {
+        setSwitchStatus((prevStatus) => ({
+          ...prevStatus,
+          [record.maMau]: checked,
+        }));
+        toast.success("Cập nhật trạng thái thành công!");
+        loadTable();
+      }
+    } catch (error) {
+      console.error("Lỗi khi cập nhật trạng thái người dùng: ", error);
+      toast.error("Cập nhật trạng thái thất bại.");
+    }
+  };
+
   const columns = [
     {
       title: "Tên",
@@ -156,17 +190,12 @@ const TableMau = () => {
       title: "Trạng Thái",
       dataIndex: "trangThai",
       key: "trangThai",
-      render: (trangThai) => {
-        return <p>{trangThai === 0 ? "Hoạt động" : "Không hoạt động"}</p>;
-      },
-      filters: [
-        { text: "Hoạt động", value: 0 },
-        { text: "Không hoạt động", value: 1 },
-      ],
-      onFilter: (value, record) => {
-        const trangThaiMatch = record.trangThai === parseInt(value);
-        return trangThaiMatch;
-      },
+      render: (_, record) => (
+        <Switch
+          checked={record.trangThai === 1}
+          onChange={(checked) => handleSwitchChange(record, checked)}
+        />
+      ),
     },
     {
       title: "Chức năng",
@@ -189,7 +218,7 @@ const TableMau = () => {
       <Row style={{ marginBottom: "20px" }}>
         <Col span={12}>
           <Input.Search
-            placeholder="Tìm kiếm loại ..."
+            placeholder="Tìm kiếm màu ..."
             onSearch={(value) => {
               setSearchTenMau(value);
             }}

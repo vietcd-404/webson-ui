@@ -1,5 +1,15 @@
 import React, { useEffect, useState } from "react";
-import { Button, Col, Form, Input, Row, Space, Table, Modal } from "antd";
+import {
+  Button,
+  Col,
+  Form,
+  Input,
+  Row,
+  Space,
+  Table,
+  Modal,
+  Switch,
+} from "antd";
 
 import { EditOutlined, DeleteOutlined } from "@ant-design/icons";
 import SearchInput from "./SearchInput";
@@ -10,6 +20,7 @@ import {
   createThuongHieu,
   deleteThuongHieu,
   findAllThuongHieu,
+  updateStatusThuongHieu,
   updateThuongHieu,
 } from "../../services/ThuongHieuService";
 
@@ -20,6 +31,8 @@ const TableThuongHieu = () => {
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [isEditModalOpen, setIsEditModalOpen] = useState(false);
   const [editFormData, setEditFormData] = useState(null); // Data for editing
+  const [switchStatus, setSwitchStatus] = useState({});
+  const [searchTenThuongHieu, setSearchTenThuongHieu] = useState("");
 
   const [form] = Form.useForm();
   const [formUpdate] = Form.useForm();
@@ -142,19 +155,50 @@ const TableThuongHieu = () => {
       onCancel: () => {},
     });
   };
+  const handleSwitchChange = async (record, checked) => {
+    const trangThaiValue = checked ? 1 : 0;
+    console.log(trangThaiValue);
+    try {
+      const response = await updateStatusThuongHieu(
+        { ...record, trangThai: checked ? 1 : 0 },
+        record.maThuongHieu
+      );
+      if (response.status === 200) {
+        setSwitchStatus((prevStatus) => ({
+          ...prevStatus,
+          [record.maThuongHieu]: checked,
+        }));
+        toast.success("Cập nhật trạng thái thành công!");
+        loadTable();
+      }
+    } catch (error) {
+      console.error("Lỗi khi cập nhật trạng thái người dùng: ", error);
+      toast.error("Cập nhật trạng thái thất bại.");
+    }
+  };
 
   const columns = [
     {
       title: "Tên",
       dataIndex: "tenThuongHieu",
       key: "tenThuongHieu",
+      filteredValue: [searchTenThuongHieu],
+      onFilter: (value, record) => {
+        return String(record.tenThuongHieu)
+          .toLowerCase()
+          .includes(value.toLowerCase());
+      },
     },
     {
       title: "Trạng Thái",
       dataIndex: "trangThai",
       key: "trangThai",
-      render: (trangThai) =>
-        trangThai === 0 ? "Hoạt động" : "Không hoạt động",
+      render: (_, record) => (
+        <Switch
+          checked={record.trangThai === 1}
+          onChange={(checked) => handleSwitchChange(record, checked)}
+        />
+      ),
     },
     {
       title: "Chức năng",
@@ -174,9 +218,17 @@ const TableThuongHieu = () => {
   return (
     <div>
       <ToastContainer />
-      <Row>
+      <Row style={{ marginBottom: "20px" }}>
         <Col span={12}>
-          <SearchInput text="Tìm kiếm loại" />
+          <Input.Search
+            placeholder="Tìm kiếm tên thương hiệu ..."
+            onSearch={(value) => {
+              setSearchTenThuongHieu(value);
+            }}
+            onChange={(e) => {
+              setSearchTenThuongHieu(e.target.value);
+            }}
+          />
         </Col>
         <Col span={4} offset={8}>
           <Button className="bg-blue-500 text-white" onClick={showModal}>

@@ -1,5 +1,15 @@
 import React, { useEffect, useState } from "react";
-import { Button, Col, Form, Input, Row, Space, Table, Modal } from "antd";
+import {
+  Button,
+  Col,
+  Form,
+  Input,
+  Row,
+  Space,
+  Table,
+  Modal,
+  Switch,
+} from "antd";
 
 import { EditOutlined, DeleteOutlined } from "@ant-design/icons";
 import SearchInput from "./SearchInput";
@@ -9,16 +19,19 @@ import {
   deleteById,
   findAllLoai,
   updateLoai,
+  updateStatusLoai,
 } from "../../services/LoaiService";
 import { ToastContainer, toast } from "react-toastify";
 
 const TableLoai = () => {
   const [data, setData] = useState([]);
+  const [searchTenLoai, setSearchTenLoai] = useState("");
   const [loading, setLoading] = useState(true);
   const [totalPage, setTotalPage] = useState(1);
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [isEditModalOpen, setIsEditModalOpen] = useState(false);
   const [editFormData, setEditFormData] = useState(null); // Data for editing
+  const [switchStatus, setSwitchStatus] = useState({});
 
   const [form] = Form.useForm();
   const [formUpdate] = Form.useForm();
@@ -139,18 +152,50 @@ const TableLoai = () => {
     });
   };
 
+  const handleSwitchChange = async (record, checked) => {
+    const trangThaiValue = checked ? 1 : 0;
+    console.log(trangThaiValue);
+    try {
+      const response = await updateStatusLoai(
+        { ...record, trangThai: checked ? 1 : 0 },
+        record.maLoai
+      );
+      if (response.status === 200) {
+        setSwitchStatus((prevStatus) => ({
+          ...prevStatus,
+          [record.maLoai]: checked,
+        }));
+        toast.success("Cập nhật trạng thái thành công!");
+        loadTable();
+      }
+    } catch (error) {
+      console.error("Lỗi khi cập nhật trạng thái người dùng: ", error);
+      toast.error("Cập nhật trạng thái thất bại.");
+    }
+  };
+
   const columns = [
     {
       title: "Tên",
       dataIndex: "tenLoai",
       key: "tenLoai",
+      filteredValue: [searchTenLoai],
+      onFilter: (value, record) => {
+        return String(record.tenLoai)
+          .toLowerCase()
+          .includes(value.toLowerCase());
+      },
     },
     {
       title: "Trạng Thái",
       dataIndex: "trangThai",
       key: "trangThai",
-      render: (trangThai) =>
-        trangThai === 0 ? "Hoạt động" : "Không hoạt động",
+      render: (_, record) => (
+        <Switch
+          checked={record.trangThai === 1}
+          onChange={(checked) => handleSwitchChange(record, checked)}
+        />
+      ),
     },
     {
       title: "Chức năng",
@@ -171,9 +216,17 @@ const TableLoai = () => {
     <div>
       <ToastContainer />
 
-      <Row>
+      <Row style={{ marginBottom: "20px" }}>
         <Col span={12}>
-          <SearchInput text="Tìm kiếm loại" />
+          <Input.Search
+            placeholder="Tìm kiếm loại ..."
+            onSearch={(value) => {
+              setSearchTenLoai(value);
+            }}
+            onChange={(e) => {
+              setSearchTenLoai(e.target.value);
+            }}
+          />
         </Col>
         <Col span={4} offset={8}>
           <Button type="primary" onClick={showModal}>

@@ -30,3 +30,7 @@ export const addImage = async (productId, imageIds) => {
 export const listImageSanPham = async (productId) => {
   return await api.get(`/admin/san-pham-chi-tiet/${productId}/images`);
 };
+
+export const updateSPCTStatus = async (sanPham, ma) => {
+  return await api.put(`/admin/san-pham-chi-tiet/sua/${ma}`, sanPham);
+};

@@ -1,5 +1,15 @@
 import React, { useEffect, useState } from "react";
-import { Table, Button, Modal, Space, Row, Col, Checkbox, Menu } from "antd";
+import {
+  Table,
+  Button,
+  Modal,
+  Space,
+  Row,
+  Col,
+  Checkbox,
+  Menu,
+  Switch,
+} from "antd";
 import {
   EditOutlined,
   DeleteOutlined,
@@ -13,6 +23,7 @@ import {
   findAllSPCT,
   listImageSanPham,
   updateSPCT,
+  updateSPCTStatus,
 } from "../../services/SanPhamChiTietService";
 import { ToastContainer, toast } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
@@ -35,6 +46,7 @@ const ListSPCT = () => {
   const [selectedImages, setSelectedImages] = useState([]);
   const [visibleModal, setVisibleModal] = useState(false);
   const [dataEdit, setDataEdit] = useState([]);
+  const [switchStatus, setSwitchStatus] = useState({});
 
   useEffect(() => {
     loadTable();
@@ -198,6 +210,27 @@ const ListSPCT = () => {
       onCancel: () => {},
     });
   };
+  const handleSwitchChange = async (record, checked) => {
+    const trangThaiValue = checked ? 1 : 0;
+    console.log(trangThaiValue);
+    try {
+      const response = await updateSPCTStatus(
+        { ...record, trangThai: checked ? 1 : 0 },
+        record.maSanPhamCT
+      );
+      if (response.status === 200) {
+        setSwitchStatus((prevStatus) => ({
+          ...prevStatus,
+          [record.maSanPhamCT]: checked,
+        }));
+        toast.success("Cập nhật trạng thái thành công!");
+        loadTable();
+      }
+    } catch (error) {
+      console.error("Lỗi khi cập nhật trạng thái người dùng: ", error);
+      toast.error("Cập nhật trạng thái thất bại.");
+    }
+  };
 
   const columns = [
     {
@@ -239,8 +272,12 @@ const ListSPCT = () => {
       title: "Trạng Thái",
       dataIndex: "trangThai",
       key: "trangThai",
-      render: (trangThai) =>
-        trangThai === 0 ? "Hoạt động" : "Không hoạt động",
+      render: (_, record) => (
+        <Switch
+          checked={record.trangThai === 1}
+          onChange={(checked) => handleSwitchChange(record, checked)}
+        />
+      ),
     },
     {
       title: "Danh sách ảnh",

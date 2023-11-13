@@ -10,10 +10,13 @@ import {
   Space,
 } from "antd";
 import React, { useEffect, useRef, useState } from "react";
-import { findAllMau } from "../../services/MauService";
-import { findAllSanPham } from "../../services/SanPhamService";
-import { findAllLoai } from "../../services/LoaiService";
-import { findAllThuongHieu } from "../../services/ThuongHieuService";
+import { findAllMau, loadAllMau } from "../../services/MauService";
+import { findAllSanPham, loadAllSanPham } from "../../services/SanPhamService";
+import { findAllLoai, loadAllLoai } from "../../services/LoaiService";
+import {
+  findAllThuongHieu,
+  loadAllThuongHieu,
+} from "../../services/ThuongHieuService";
 const { Option } = Select;
 const ModalUpdateSPCT = (props) => {
   const [dataSanPham, setDataSanPham] = useState([]);
@@ -47,7 +50,7 @@ const ModalUpdateSPCT = (props) => {
 
   const loadMau = async () => {
     try {
-      const response = await findAllMau();
+      const response = await loadAllMau();
       setDataMau(response.data);
     } catch (error) {
       console.error("Lỗi khi gọi API: ", error);
@@ -56,7 +59,7 @@ const ModalUpdateSPCT = (props) => {
 
   const loadSanPham = async () => {
     try {
-      const response = await findAllSanPham();
+      const response = await loadAllSanPham();
       setDataSanPham(response.data);
     } catch (error) {
       console.error("Lỗi khi gọi API: ", error);
@@ -65,7 +68,7 @@ const ModalUpdateSPCT = (props) => {
 
   const loadLoai = async () => {
     try {
-      const response = await findAllLoai();
+      const response = await loadAllLoai();
       setDataLoai(response.data);
     } catch (error) {
       console.error("Lỗi khi gọi API: ", error);
@@ -74,7 +77,7 @@ const ModalUpdateSPCT = (props) => {
 
   const loadThuongHieu = async () => {
     try {
-      const response = await findAllThuongHieu();
+      const response = await loadAllThuongHieu();
       setDataThuongHieu(response.data);
     } catch (error) {
       console.error("Lỗi khi gọi API: ", error);
@@ -215,9 +218,9 @@ const ModalUpdateSPCT = (props) => {
                   },
                   {
                     validator: (rule, value) => {
-                      if (value && (value < 1 || value > 99)) {
+                      if (value && (value < 0 || value > 99)) {
                         return Promise.reject(
-                          "Phần trăm giảm phải nằm trong khoảng từ 1 đến 99"
+                          "Phần trăm giảm phải nằm trong khoảng từ 0 đến 99"
                         );
                       } else {
                         return Promise.resolve();

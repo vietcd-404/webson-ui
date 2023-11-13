@@ -19,3 +19,11 @@ export const deleteThuongHieu = async (id) => {
 export const findThuongHieuById = async (id) => {
   return await api.get(`/admin/thuong-hieu${id}`);
 };
+
+export const updateStatusThuongHieu = async (thuongHieu, maThuongHieu) => {
+  return await api.put(`/admin/thuong-hieu/sua/${maThuongHieu}`, thuongHieu);
+};
+
+export const loadAllThuongHieu = async () => {
+  return await api.get("/admin/thuong-hieu/load-thuong-hieu");
+};

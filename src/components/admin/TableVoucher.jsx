@@ -56,7 +56,6 @@ const TableVoucher = () => {
       soLuong: record.soLuong,
       thoiGianBatDau: dayjs(record.thoiGianBatDau),
       thoiGianKetThuc: dayjs(record.thoiGianKetThuc),
-      giamToiDa: record.giamToiDa,
       giaTriGiam: record.giaTriGiam,
       kieuGiamGia: record.kieuGiamGia,
       moTa: record.moTa,
@@ -98,6 +97,10 @@ const TableVoucher = () => {
       onOk: async () => {
         try {
           const values = await form.validateFields();
+          if (values.thoiGianBatDau.isAfter(values.thoiGianKetThuc)) {
+            toast.error("Ngày bắt đầu không được lớn hơn ngày kết thúc");
+            return;
+          }
           const response = await createVoucher(values);
           if (response.status === 200) {
             console.log(response);
@@ -194,11 +197,6 @@ const TableVoucher = () => {
       key: "soLuong",
     },
     {
-      title: "Giảm tối đa",
-      dataIndex: "giamToiDa",
-      key: "giamToiDa",
-    },
-    {
       title: "Giá trị giảm",
       dataIndex: "giaTriGiam",
       key: "giaTriGiam",
@@ -286,21 +284,7 @@ const TableVoucher = () => {
                       },
                     ]}
                   >
-                    <Input placeholder="Số lượng" />
-                  </Form.Item>
-
-                  <Form.Item
-                    label="Giảm tối đa"
-                    name="giamToiDa"
-                    style={{ width: "360px", marginLeft: "40px" }}
-                    rules={[
-                      {
-                        required: true,
-                        message: "Giảm tối đa không được để trống!",
-                      },
-                    ]}
-                  >
-                    <Input placeholder="Giảm tối đa" />
+                    <Input type="number" placeholder="Số lượng" />
                   </Form.Item>
                   <Form.Item
                     label="Giá trị giảm"
@@ -313,7 +297,14 @@ const TableVoucher = () => {
                       },
                     ]}
                   >
-                    <Input placeholder="Giá trị giảm" />
+                    <Input type="number" placeholder="Giá trị giảm" />
+                  </Form.Item>
+                  <Form.Item
+                    label="Mô tả"
+                    name="moTa"
+                    style={{ width: "360px", marginLeft: "40px" }}
+                  >
+                    <TextArea rows={4} />
                   </Form.Item>
                 </Col>
                 <Col span={12}>
@@ -354,13 +345,6 @@ const TableVoucher = () => {
                       format="DD-MM-YYYY"
                       style={{ width: "360px" }}
                     />
-                  </Form.Item>
-                  <Form.Item
-                    label="Mô tả"
-                    name="moTa"
-                    style={{ width: "360px", marginLeft: "40px" }}
-                  >
-                    <TextArea rows={4} />
                   </Form.Item>
                 </Col>
               </Row>
@@ -403,20 +387,7 @@ const TableVoucher = () => {
                   { required: true, message: "Số lượng không được để trống!" },
                 ]}
               >
-                <Input placeholder="Số lượng" />
-              </Form.Item>
-              <Form.Item
-                label="Giảm tối đa"
-                name="giamToiDa"
-                style={{ width: "360px", marginLeft: "40px" }}
-                rules={[
-                  {
-                    required: true,
-                    message: "Giảm tối đa không được để trống!",
-                  },
-                ]}
-              >
-                <Input placeholder="Giảm tối đa" />
+                <Input type="number" placeholder="Số lượng" />
               </Form.Item>
               <Form.Item
                 label="Giá trị giảm"
@@ -429,7 +400,14 @@ const TableVoucher = () => {
                   },
                 ]}
               >
-                <Input placeholder="Giá trị giảm" />
+                <Input type="number" placeholder="Giá trị giảm" />
+              </Form.Item>
+              <Form.Item
+                label="Mô tả"
+                name="moTa"
+                style={{ width: "360px", marginLeft: "40px" }}
+              >
+                <TextArea rows={4} />
               </Form.Item>
             </Col>
             <Col span={12}>
@@ -462,13 +440,6 @@ const TableVoucher = () => {
                 rules={[{ required: true, message: "Chọn ngày kết thúc!" }]}
               >
                 <DatePicker format="DD-MM-YYYY" style={{ width: "360px" }} />
-              </Form.Item>
-              <Form.Item
-                label="Mô tả"
-                name="moTa"
-                style={{ width: "360px", marginLeft: "40px" }}
-              >
-                <TextArea rows={4} />
               </Form.Item>
             </Col>
           </Row>
