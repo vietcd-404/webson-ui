@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useState } from "react";
 import { BsSuitHeartFill } from "react-icons/bs";
 import { GiReturnArrow } from "react-icons/gi";
 import { FaShoppingCart } from "react-icons/fa";
@@ -8,13 +8,44 @@ import Badge from "./Badge";
 import { useNavigate, Link } from "react-router-dom";
 import { useDispatch } from "react-redux";
 import { addToCart } from "../../../../redux/orebiSlice";
+import Swal from "sweetalert2";
+import { findGioHang, themGioHang } from "../../../../services/GioHangService";
+import { message } from "antd";
+import { ToastContainer, toast } from "react-toastify";
+import "react-toastify/dist/ReactToastify.css";
+import { useEffect } from "react";
+import da from "date-fns/esm/locale/da/index.js";
 
 const Product = (props) => {
   console.log("Props: ", props);
+
+  const [maSanPhamID, setmaSanPhamID] = useState();
+  const [soLuong, setSoLuong] = useState();
+  const [data, setData] = useState([]);
+
   const dispatch = useDispatch();
   const maSanPhamCT = props.maSanPhamCT;
   const idString = (_id) => {
     return String(_id).toLowerCase().split(" ").join("");
+  };
+
+  const loadGioHang = async () => {
+    try {
+      const response = await findGioHang();
+      setData(response.data);
+    } catch (error) {
+      console.error("Lỗi khi gọi API: ", error);
+    }
+  };
+  useEffect(() => {
+    loadGioHang();
+  }, []);
+  const handleConfirm = () => {
+    Swal.fire({
+      title: "Thành công!",
+      text: "Thêm vào giỏ hàng thành công",
+      icon: "success",
+    });
   };
 
   const rootId = idString(maSanPhamCT);
@@ -29,8 +60,43 @@ const Product = (props) => {
       },
     });
   };
+
+  const handleAddToCart = async () => {
+    // await themGioHang(props.maSanPhamCT, props.soLuong)
+    // .then((response) => {
+    //   // toast.success(response.data.message);
+    //   Swal.fire({
+    //     title: "Thành công!",
+    //     text: "Thêm vào giỏ hàng thành công",
+    //     icon: "success",
+    //   });
+    // })
+    // .catch((error) => {
+    //   console.log("Lỗi ", error);
+    //   toast.error(error.response.data.message);
+    // });
+    try {
+      await themGioHang(props.maSanPhamCT, 1);
+
+      // Show a success message using Swal (SweetAlert) or toast
+      Swal.fire({
+        title: "Thành công!",
+        text: "Thêm vào giỏ hàng thành công",
+        icon: "success",
+      });
+      // Optionally, you can navigate to the cart page or update the cart state
+      // Example: navigate("/cart");
+    } catch (error) {
+      // Handle errors, such as displaying an error message
+      console.log("Lỗi ", error);
+      toast.error(error.response?.data?.message || "Error adding to cart");
+    }
+  };
+
   return (
     <div className="w-full relative group">
+      <ToastContainer />
+
       <div className="max-w-80 max-h-80 relative overflow-y-hidden ">
         <div>
           <img
@@ -54,19 +120,20 @@ const Product = (props) => {
               </span>
             </li>
             <li
-              onClick={() =>
-                dispatch(
-                  addToCart({
-                    _id: props._id,
-                    name: props.productName,
-                    quantity: 1,
-                    image: props.img,
-                    badge: props.badge,
-                    price: props.price,
-                    colors: props.color,
-                  })
-                )
-              }
+              onClick={() => handleAddToCart(props.maSanPhamCT, 1)}
+              // onClick={() =>
+              //   dispatch(
+              //     addToCart({
+              //       _id: props._id,
+              //       name: props.productName,
+              //       quantity: 1,
+              //       image: props.img,
+              //       badge: props.badge,
+              //       price: props.price,
+              //       colors: props.color,
+              //     })
+              //   )
+              // }
               className="text-[#767676] hover:text-primeColor text-sm font-normal border-b-[1px] border-b-gray-200 hover:border-b-primeColor flex items-center justify-end gap-2 hover:cursor-pointer pb-1 duration-300 w-full hover:text-pink-500"
             >
               Thêm vào giỏ hàng

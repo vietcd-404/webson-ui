@@ -7,6 +7,16 @@ import { resetCart } from "../../../redux/orebiSlice";
 import { emptyCart } from "../../../assets/images/index";
 import ItemCard from "./ItemCard";
 import ButtonShop from "../../../components/customer/designLayouts/buttons/ShopNow";
+import {
+  findGioHang,
+  updateSoLuong,
+  xoaGioHang,
+  xoaTatCaGioHang,
+} from "../../../services/GioHangService";
+import { message } from "antd";
+import { ToastContainer, toast } from "react-toastify";
+import "react-toastify/dist/ReactToastify.css";
+
 const Cart = () => {
   const dispatch = useDispatch();
   const products = useSelector((state) => state.orebiReducer.products);
@@ -20,44 +30,140 @@ const Cart = () => {
       "- Giao hàng từ 3-5 ngày các ngày trong tuần.",
     ],
   });
-  useEffect(() => {
-    let price = 0;
-    products.map((item) => {
-      price += item.price * item.quantity;
-      return price;
-    });
-    setTotalAmt(price);
-  }, [products]);
-  useEffect(() => {
-    if (totalAmt <= 200) {
-      setShippingCharge(30);
-    } else if (totalAmt <= 400) {
-      setShippingCharge(25);
-    } else if (totalAmt > 401) {
-      setShippingCharge(20);
+  const [data, setData] = useState([]);
+
+  const loadGioHang = async () => {
+    try {
+      const response = await findGioHang();
+      setData(response.data);
+    } catch (error) {
+      console.error("Lỗi khi gọi API: ", error);
     }
-  }, [totalAmt]);
+  };
+  const handleXoaTatCa = async () => {
+    try {
+      const response = await xoaTatCaGioHang();
+      if (response.status === 200) {
+        message.success("Xóa tất cả thành công!");
+      }
+      loadGioHang();
+    } catch (error) {
+      console.error("Lỗi khi xóa loại: ", error);
+      message.error("Xóa thất bại.");
+    }
+  };
+  const handleQuantityChange = async (event, sanPham) => {
+    const newQuantity = event.target.value;
+    setData((prevData) =>
+      prevData.map((item) =>
+        item.maSanPhamCT === sanPham ? { ...item, soLuong: newQuantity } : item
+      )
+    );
+    try {
+      await updateSoLuong(sanPham, newQuantity);
+      loadGioHang();
+    } catch (error) {
+      console.error("Failed to update quantity:", error);
+    }
+  };
+
+  const handleXoa = async (ma) => {
+    try {
+      const response = await xoaGioHang(ma);
+      if (response.status === 200) {
+        toast.success("Xóa thành công!");
+        loadGioHang();
+      }
+    } catch (error) {
+      console.error("Lỗi khi xóa loại: ", error);
+      toast.error("Xóa thất bại.");
+    }
+  };
+
+  useEffect(() => {
+    let tongTien = 0;
+    data.map((item) => {
+      tongTien += item.giaBan * item.soLuong;
+      return tongTien;
+    });
+    setTotalAmt(tongTien);
+  }, [data]);
+
+  useEffect(() => {
+    loadGioHang();
+  }, []);
+
+  // useEffect(() => {
+  //   if (totalAmt <= 200) {
+  //     setShippingCharge(30);
+  //   } else if (totalAmt <= 400) {
+  //     setShippingCharge(25);
+  //   } else if (totalAmt > 401) {
+  //     setShippingCharge(20);
+  //   }
+  // }, [totalAmt]);
   return (
     <div className="max-w-container mx-auto px-4">
+      <ToastContainer />
       <Breadcrumbs title="Giỏ Hàng" />
-      {products.length > 0 ? (
+      {data.length > 0 ? (
         <div className="pb-20">
-          <div className="w-full h-20 bg-[#F5F7F7] text-primeColor hidden lgl:grid grid-cols-5 place-content-center px-6 text-lg font-titleFont font-semibold">
-            <h2 className="col-span-2">Product</h2>
-            <h2>Price</h2>
-            <h2>Quantity</h2>
-            <h2>Sub Total</h2>
-          </div>
           <div className="mt-5">
-            {products.map((item) => (
-              <div key={item._id}>
-                <ItemCard item={item} />
+            <div className="container mx-auto mb-4 border py-2">
+              <div>
+                <div className="layout-page-checkout mt-4 mb-5">
+                  <div className="page-title mb-2 font-bold text-2xl">
+                    Giỏ hàng
+                  </div>
+
+                  <div className="table-container overflow-x-auto">
+                    <table className="page-table table table-hover mb-4">
+                      <thead>
+                        <tr className="font-bold">
+                          <th></th>
+                          <th>Sản phẩm</th>
+                          <th>Giá sản phẩm</th>
+                          <th>Số lượng</th>
+                          <th>Thành tiền</th>
+                          <th>Thao tác</th>
+                        </tr>
+                      </thead>
+                      <tbody>
+                        {data.map((item) => (
+                          <ItemCard
+                            item={item}
+                            xoa={() => handleXoa(item.maGioHang)}
+                            updateSoLuong={(e) =>
+                              handleQuantityChange(e, item.maSanPhamCT)
+                            }
+                          />
+                        ))}
+                      </tbody>
+                    </table>
+                  </div>
+
+                  <div className="page-confirm flex justify-end items-center">
+                    <div className="item-confirm pr-4 text-end font-bold">
+                      <p className="mb-1">Tổng tiền hàng</p>
+                      <p className="text-danger mb-1">{totalAmt}đ</p>
+                      {/* <p className="mb-1">Nhận thêm: 5892 COCO COIN</p> */}
+                    </div>
+                    <div className=" bg-[#C73030] rounded-lg hover:bg-red-700">
+                      <Link to="/paymentgateway">
+                        <button className="btn-confirm  text-white p-2  cursor-pointer ">
+                          Tiến hành đặt hàng
+                        </button>
+                      </Link>
+                    </div>
+                  </div>
+                </div>
               </div>
-            ))}
+            </div>
           </div>
 
           <button
-            onClick={() => dispatch(resetCart())}
+            // onClick={() => dispatch(resetCart())}
+            onClick={() => handleXoaTatCa()}
             className="py-2 px-10 bg-red-500 text-white font-semibold uppercase mb-4 hover:bg-red-700 duration-300"
           >
             Làm trống giỏ hàng
@@ -73,24 +179,6 @@ const Cart = () => {
                   <li key={index}>{item}</li>
                 ))}
               </ul>
-            </div>
-            <div className="col-4 ml-6">
-              <h1 className="text-2xl font-semibold text-right">
-                Thông tin đơn hàng
-              </h1>
-              <div className="pb-2">
-                <p className="flex items-center justify-between border-[1px] border-gray-400 py-1.5 text-lg px-4 font-medium">
-                  Tổng tiền:
-                  <span className="font-semibold tracking-wide font-titleFont text-[#ff6347]">
-                    ${totalAmt}
-                  </span>
-                </p>
-              </div>
-              <Link to="/paymentgateway">
-                <button className="bg-[#FFA500] text-white rounded-md cursor-pointer hover:bg-[#8B0000] active:bg-gray-900 px-8 py-2 font-titleFont font-semibold text-lg text-gray-200 hover:text-white duration-300">
-                  Thanh Toán
-                </button>
-              </Link>
             </div>
           </div>
           {/* <div className="flex flex-col mdl:flex-row justify-between border py-4 px-4 items-center gap-2 mdl:gap-0">
