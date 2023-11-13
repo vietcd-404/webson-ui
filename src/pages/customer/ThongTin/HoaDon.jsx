@@ -12,7 +12,6 @@ const HoaDon = ({ props }) => {
           { to: "/invoices/wait-for-confirmation", label: "Chờ xác nhận" },
           { to: "/invoices/confirmation", label: "Xác nhận" },
           { to: "/invoices/in-progress", label: "Đang giao" },
-          { to: "/invoices/delivered", label: "Đã giao" },
           { to: "/invoices/complete", label: "Hoàn thành" },
           { to: "/invoices/abort", label: "Đã hủy" },
         ].map((item) => (

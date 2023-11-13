@@ -60,7 +60,7 @@ const ChoXacNhan = () => {
         <p>Không có đơn hàng nào.</p>
       ) : (
         data.map((item) => (
-          <div className=" hover:shadow-lg border p-3 shadow-md mb-5">
+          <div className=" hover:shadow-lg border p-3 shadow-md mb-3">
             <div className="shop-header shop-row">
               <div className="flex items-center justify-between w-full">
                 <div className="flex items-center">
