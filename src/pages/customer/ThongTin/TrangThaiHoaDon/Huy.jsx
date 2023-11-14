@@ -17,8 +17,6 @@ const Huy = () => {
       case 3:
         return "bg-blue-500 text-white";
       case 4:
-        return "bg-indigo-500 text-white";
-      case 5:
         return "bg-red-500 text-white";
       default:
         return "bg-gray-700 text-white";
@@ -36,8 +34,6 @@ const Huy = () => {
       case 3:
         return "Đã giao";
       case 4:
-        return "Hoàn thành";
-      case 5:
         return "Đã hủy";
       default:
         return "Chờ xác nhận";
@@ -46,7 +42,7 @@ const Huy = () => {
   const [data, setData] = useState([]);
   const loadGioHang = async () => {
     try {
-      const response = await hienHoaDon(5);
+      const response = await hienHoaDon(4);
       setData(response.data);
     } catch (error) {
       console.error("Lỗi khi gọi API: ", error);
@@ -61,7 +57,7 @@ const Huy = () => {
         <p>Không có đơn hàng nào.</p>
       ) : (
         data.map((item) => (
-          <div className=" hover:shadow-lg border p-3 shadow-md mb-5">
+          <div className=" hover:shadow-lg border p-3 shadow-md mb-3">
             <div className="shop-header shop-row">
               <div className="flex items-center justify-between w-full">
                 <div className="flex items-center">

@@ -1,8 +1,12 @@
 import React from "react";
-import { hienHoaDonTatCa } from "../../../../services/HoaDonService";
+import {
+  hienHoaDonTatCa,
+  huytHoaDon,
+} from "../../../../services/HoaDonService";
 import { useState } from "react";
 import { useEffect } from "react";
 import { Link } from "react-router-dom";
+import { message } from "antd";
 
 const TatCa = () => {
   const getStatusClassName = (status) => {
@@ -43,6 +47,18 @@ const TatCa = () => {
     try {
       const response = await hienHoaDonTatCa();
       setData(response.data);
+    } catch (error) {
+      console.error("Lỗi khi gọi API: ", error);
+    }
+  };
+
+  const handleHuy = async (ma) => {
+    try {
+      const response = await huytHoaDon(ma);
+      if (response.status === 200) {
+        message.success("Hủy thành công!");
+        loadGioHang();
+      }
     } catch (error) {
       console.error("Lỗi khi gọi API: ", error);
     }
@@ -116,6 +132,7 @@ const TatCa = () => {
                     <button
                       className=" py-1 px-3 mr-2 text-red-600 uppercase"
                       type="button"
+                      onClick={() => handleHuy(item.maHoaDon)}
                     >
                       Hủy
                     </button>

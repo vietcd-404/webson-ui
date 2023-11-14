@@ -16,8 +16,6 @@ const ChoXacNhan = () => {
       case 3:
         return "bg-blue-500 text-white";
       case 4:
-        return "bg-indigo-500 text-white";
-      case 5:
         return "bg-red-500 text-white";
       default:
         return "bg-gray-700 text-white";
@@ -33,10 +31,8 @@ const ChoXacNhan = () => {
       case 2:
         return "Đang giao";
       case 3:
-        return "Đã giao";
-      case 4:
         return "Hoàn thành";
-      case 5:
+      case 4:
         return "Đã hủy";
       default:
         return "Chờ xác nhận";
