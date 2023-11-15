@@ -8,6 +8,7 @@ import React, {
 import { useNavigate } from "react-router-dom";
 import { APP_BASE_URL } from "../../../configs/constans";
 import { toast } from "react-toastify";
+import Swal from "sweetalert2";
 
 const AuthContext = createContext();
 
@@ -36,7 +37,11 @@ export const AuthProvider = ({ children }) => {
       const data = await response.json();
       localStorage.setItem("user", JSON.stringify(data));
       setUser(data);
-      toast.success("Đăng nhập thành công");
+      Swal.fire({
+        title: "Đăng nhập!",
+        text: "Đăng nhập thành công",
+        icon: "success",
+      });
       if (data.vaiTro === "ROLE_ADMIN") {
         navigate("/admin/tong-quan", {
           replace: true,
@@ -49,22 +54,22 @@ export const AuthProvider = ({ children }) => {
     } catch (error) {
       console.error(error);
     }
-    // startSessionTimer();
+    startSessionTimer();
   };
 
-  // const startSessionTimer = () => {
-  //   // Đặt thời gian tự động đăng xuất sau 30 phút (30 * 60 * 1000 ms)
-  //   const sessionTimeout = 5 * 60 * 1000;
+  const startSessionTimer = () => {
+    // Đặt thời gian tự động đăng xuất sau 30 phút (30 * 60 * 1000 ms)
+    const sessionTimeout = 5 * 60 * 1000;
 
-  //   // Xóa hết timer hiện tại (nếu có)
-  //   clearTimeout(sessionTimer);
+    // Xóa hết timer hiện tại (nếu có)
+    clearTimeout(sessionTimer);
 
-  //   // Thiết lập một timer mới để đăng xuất sau một khoảng thời gian
-  //   sessionTimer = setTimeout(() => {
-  //     signout();
-  //     toast.info("Đã tự động đăng xuất do hết phiên làm việc.");
-  //   }, sessionTimeout);
-  // };
+    // Thiết lập một timer mới để đăng xuất sau một khoảng thời gian
+    sessionTimer = setTimeout(() => {
+      signout();
+      toast.info("Đã tự động đăng xuất do hết phiên làm việc.");
+    }, sessionTimeout);
+  };
 
   const signup = async (username, password, email, sdt) => {
     try {
@@ -94,7 +99,7 @@ export const AuthProvider = ({ children }) => {
     navigate("/signin", {
       replace: true,
     });
-    // clearTimeout(sessionTimer);5
+    clearTimeout(sessionTimer);
   };
 
   const value = useMemo(
@@ -108,14 +113,14 @@ export const AuthProvider = ({ children }) => {
     // eslint-disable-next-line
     [user]
   );
-  // let sessionTimer;
+  let sessionTimer;
 
-  // useEffect(() => {
-  //   // Khi component AuthProvider được render hoặc user thay đổi, bắt đầu hoặc cập nhật timer
-  //   if (user) {
-  //     startSessionTimer();
-  //   }
-  // }, [user]);
+  useEffect(() => {
+    // Khi component AuthProvider được render hoặc user thay đổi, bắt đầu hoặc cập nhật timer
+    if (user) {
+      startSessionTimer();
+    }
+  }, [user]);
 
   return <AuthContext.Provider value={value}>{children}</AuthContext.Provider>;
 };

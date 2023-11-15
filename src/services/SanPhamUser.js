@@ -11,3 +11,7 @@ export const getDetailById = async (productId) => {
 export const listImageSanPhamGuest = async (productId) => {
   return await api.get(`/guest/san-pham-chi-tiet/${productId}/images`);
 };
+
+export const getAllLoc = async () => {
+  return await api.get(`/guest/san-pham/get-all/loc`);
+};

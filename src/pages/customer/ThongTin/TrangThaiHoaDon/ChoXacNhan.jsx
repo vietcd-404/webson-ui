@@ -1,8 +1,9 @@
 import React from "react";
 import { useEffect } from "react";
 import { Link } from "react-router-dom";
-import { hienHoaDon } from "../../../../services/HoaDonService";
+import { hienHoaDon, huytHoaDon } from "../../../../services/HoaDonService";
 import { useState } from "react";
+import Swal from "sweetalert2";
 
 const ChoXacNhan = () => {
   const getStatusClassName = (status) => {
@@ -47,6 +48,33 @@ const ChoXacNhan = () => {
       console.error("Lỗi khi gọi API: ", error);
     }
   };
+  const handleHuy = (ma) => {
+    Swal.fire({
+      title: "Bạn có chắc không?",
+      text: "Bạn có muốn hủy hóa đơn không!",
+      icon: "warning",
+      showCancelButton: true,
+      confirmButtonColor: "#3085d6",
+      cancelButtonColor: "#d33",
+      confirmButtonText: "Vâng, tôi muốn!",
+    }).then(async (result) => {
+      if (result.isConfirmed) {
+        try {
+          Swal.fire({
+            title: "Hủy!",
+            text: "Bạn đã hủy thành công.",
+            icon: "success",
+          });
+          const response = await huytHoaDon(ma);
+          console.log(response);
+          loadGioHang();
+        } catch (error) {
+          console.error("Lỗi khi gọi API: ", error);
+        }
+      }
+    });
+  };
+
   useEffect(() => {
     loadGioHang();
   }, []);
@@ -119,6 +147,7 @@ const ChoXacNhan = () => {
                       <button
                         className=" py-1 px-3 mr-2 text-red-600 uppercase"
                         type="button"
+                        onClick={() => handleHuy(item.maHoaDon)}
                       >
                         Hủy
                       </button>

@@ -37,3 +37,7 @@ export const updateSoLuongSanPham = async (maHoaDon, soLuong) => {
     `/user/order/update-so-luong?soLuong=${soLuong}&maHoaDon=${maHoaDon}`
   );
 };
+
+export const taoHoaDonKhach = async (maSanPhamCT, hoaDon) => {
+  return await api.post(`/guest/order/thanh-toan?ma=${maSanPhamCT}`, hoaDon);
+};

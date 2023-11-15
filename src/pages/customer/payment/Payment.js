@@ -5,9 +5,12 @@ import axios, { Axios } from "axios";
 import { format, set } from "date-fns";
 import Item from "antd/es/list/Item";
 import Swal from "sweetalert2";
-import { taoHoaDon } from "../../../services/HoaDonService";
+import { taoHoaDon, taoHoaDonKhach } from "../../../services/HoaDonService";
 import { message } from "antd";
 import { findGioHang } from "../../../services/GioHangService";
+import { useAuth } from "../Account/AuthProvider";
+import { useDispatch, useSelector } from "react-redux";
+import { resetCart } from "../../../redux/orebiSlice";
 
 /* <p>Payment gateway only applicable for Production build.</p>
         <Link to="/">
@@ -25,6 +28,10 @@ const Payment = () => {
   const [selectedDistrict, setSelectedDistrict] = useState("");
   const [selectedWard, setSelectedWard] = useState("");
   const [data, setData] = useState([]);
+  const [totalAmt, setTotalAmt] = useState("");
+  const [soLuong, setSoLuong] = useState("");
+
+  const products = useSelector((state) => state.orebiReducer.products);
 
   const configApi = {
     headers: {
@@ -33,8 +40,11 @@ const Payment = () => {
       ShopId: 124173,
     },
   };
+  const dispatch = useDispatch();
 
-  const [tongTien, setTongTien] = useState("");
+  const [tongTien1, setTongTien1] = useState("");
+
+  // const [soLuong, setSoLuong] = useState(0);
 
   const [formData, setFormData] = useState({
     tenNguoiNhan: "",
@@ -81,8 +91,26 @@ const Payment = () => {
       tongTien += item.giaBan * item.soLuong;
       return tongTien;
     });
-    setTongTien(tongTien);
+    setTongTien1(tongTien);
   }, [data]);
+
+  useEffect(() => {
+    let sl = 0;
+    products.map((item) => {
+      sl = item.soLuong;
+      return sl;
+    });
+    setSoLuong(sl);
+  }, [products]);
+
+  useEffect(() => {
+    let tt = 0;
+    products.map((item) => {
+      tt += item.giaBan * item.soLuong;
+      return tt;
+    });
+    setTotalAmt(tt);
+  }, [products]);
 
   const handleProvinceChange = (event) => {
     const selectedProvinceName = event.target.value;
@@ -168,6 +196,50 @@ const Payment = () => {
       message.error(error.response?.data?.message || "Error creating invoice");
     }
   };
+
+  const hanldeOrderKhachHAang = async () => {
+    if (products.length === 0) {
+      message.error("Không có sản phẩm trong giỏ hàng");
+      return;
+    }
+    try {
+      if (
+        !formData.tenNguoiNhan ||
+        !formData.sdt ||
+        !formData.email ||
+        !formData.diaChi
+      ) {
+        message.error("Không được bỏ trống");
+        return;
+      }
+      if (!formData.tenPhuongThuc) {
+        message.error("Vui lòng chọn phương thức thanh toán");
+        return;
+      }
+      const maSanPhamCTArray = products.map((product) => product.maSanPhamCT);
+      // const soLuong = products.map((product) => Number(product.soLuong));
+      const updatedFormData = {
+        ...formData,
+        tongTien: totalAmt,
+        soLuong: soLuong,
+      };
+
+      await taoHoaDonKhach(maSanPhamCTArray, updatedFormData);
+      Swal.fire({
+        title: "Tạo hóa đơn!",
+        text: "Tạo hóa đơn thành công",
+        icon: "success",
+      });
+      dispatch(resetCart());
+      // Redirect to the desired page
+      navigate("/shop");
+    } catch (error) {
+      // Handle errors, such as displaying an error message
+      console.log("Lỗi ", error);
+      message.error(error.response.data.message);
+    }
+  };
+  const { user } = useAuth();
 
   return (
     <div className="container mx-auto px-4 ">
@@ -343,65 +415,139 @@ const Payment = () => {
               <div className="font-bold text-lg">Danh sách sản phẩm</div>
             </div>
             <div class=" bg-white max-h-[345px] overflow-y-auto">
-              {data.map((item) => (
-                <div className="flex list-product mb-4">
-                  <img
-                    src={`data:image/png;base64,${item.anh}`}
-                    alt={item.tenSanPham}
-                    className="img-fluid flex-shrink-0 w-[30%]" // Use flex-shrink-0 to prevent image shrinking
-                  />
-                  <div className="item-info ml-4">
-                    <p className="item-brand mb-0 fw-bold text-uppercase">
-                      {item.tenthuongHieu}
-                    </p>
-                    <p className="item-title mb-0">{item.tenSanPham}</p>
-                    <p className="item-quantity mb-0">
-                      SL: <span className="fw-bold">{item.soLuong}</span>
-                    </p>
-                    <div className="item-price fw-bold">
-                      <div className="public-price">{item.giaBan}đ</div>
+              {user
+                ? data.map((item) => (
+                    <div className="flex list-product mb-4">
+                      <img
+                        src={`data:image/png;base64,${item.anh}`}
+                        alt={item.tenSanPham}
+                        className="img-fluid flex-shrink-0 w-[30%]" // Use flex-shrink-0 to prevent image shrinking
+                      />
+                      <div className="item-info ml-4">
+                        <p className="item-brand mb-0 fw-bold text-uppercase">
+                          {item.tenthuongHieu}
+                        </p>
+                        <p className="item-title mb-0">{item.tenSanPham}</p>
+                        <p className="item-quantity mb-0">
+                          SL: <span className="fw-bold">{item.soLuong}</span>
+                        </p>
+                        <div className="item-price fw-bold">
+                          <div className="public-price">{item.giaBan}đ</div>
+                        </div>
+                      </div>
                     </div>
-                  </div>
+                  ))
+                : products.map((item) => (
+                    <div className="flex list-product mb-4">
+                      <img
+                        src={`data:image/png;base64,${item.anh}`}
+                        alt={item.tenSanPham}
+                        className="img-fluid flex-shrink-0 w-[30%]" // Use flex-shrink-0 to prevent image shrinking
+                      />
+                      <div className="item-info ml-4">
+                        <p className="item-brand mb-0 fw-bold text-uppercase">
+                          {item.tenthuongHieu}
+                        </p>
+                        <p className="item-title mb-0">{item.tenSanPham}</p>
+                        <p className="item-quantity mb-0">
+                          SL:{" "}
+                          <span className="fw-bold" name="soLuong">
+                            {item.soLuong}
+                          </span>
+                        </p>
+                        <div className="item-price fw-bold">
+                          <div className="public-price">{item.giaBan}đ</div>
+                        </div>
+                      </div>
+                    </div>
+                  ))}
+            </div>
+
+            {user ? (
+              <>
+                <div className="d-flex align-items-center justify-content-between mb-3">
+                  <span>Tạm tính:</span>
+                  <span>{tongTien1}</span>
+                  <input
+                    type="hidden"
+                    value="318000"
+                    name="total_price"
+                    id="total_price"
+                  />
                 </div>
-              ))}
-            </div>
-            <div className="d-flex align-items-center justify-content-between mb-3">
-              <span>Tạm tính:</span>
-              <span>{tongTien}</span>
-              <input
-                type="hidden"
-                value="318000"
-                name="total_price"
-                id="total_price"
-              />
-            </div>
 
-            <div className="d-flex align-items-center justify-content-between mb-3">
-              <span>Phí vận chuyển:</span>
-              <span id="price_ship">0 đ</span>
-              <input
-                type="hidden"
-                value="0"
-                name="price_ship_coco"
-                id="price_ship_coco"
-              />
-            </div>
-            <hr />
+                <div className="d-flex align-items-center justify-content-between mb-3">
+                  <span>Phí vận chuyển:</span>
+                  <span id="price_ship">0 đ</span>
+                  <input
+                    type="hidden"
+                    value="0"
+                    name="price_ship_coco"
+                    id="price_ship_coco"
+                  />
+                </div>
+                <hr />
 
-            <div className="d-flex align-items-center justify-content-between mb-3">
-              <span class="text-uppercase">Tổng cộng</span>
-              <span class="fw-bold text-danger" id="total_price_ship">
-                {tongTien}
-              </span>
-            </div>
-            <div className=" bg-[#C73030] rounded-lg hover:bg-red-700 w-[85px]">
-              <button
-                className="text-white p-2  cursor-pointer "
-                onClick={printResultf}
-              >
-                Đặt hàng
-              </button>
-            </div>
+                <div className="d-flex align-items-center justify-content-between mb-3">
+                  <span class="text-uppercase">Tổng cộng</span>
+                  <span class="fw-bold text-danger" id="total_price_ship">
+                    {tongTien1}
+                  </span>
+                </div>
+                <div className=" bg-[#C73030] rounded-lg hover:bg-red-700 w-[85px]">
+                  <button
+                    className="text-white p-2  cursor-pointer "
+                    onClick={printResultf}
+                  >
+                    Đặt hàng
+                  </button>
+                </div>
+              </>
+            ) : (
+              <>
+                <div className="d-flex align-items-center justify-content-between mb-3">
+                  <span>Tạm tính:</span>
+                  <span>{totalAmt}</span>
+                  <input
+                    type="hidden"
+                    value="318000"
+                    name="total_price"
+                    id="total_price"
+                  />
+                </div>
+
+                <div className="d-flex align-items-center justify-content-between mb-3">
+                  <span>Phí vận chuyển:</span>
+                  <span id="price_ship">0 đ</span>
+                  <input
+                    type="hidden"
+                    value="0"
+                    name="price_ship_coco"
+                    id="price_ship_coco"
+                  />
+                </div>
+                <hr />
+
+                <div className="d-flex align-items-center justify-content-between mb-3">
+                  <span class="text-uppercase">Tổng cộng</span>
+                  <span
+                    class="fw-bold text-danger"
+                    id="total_price_ship"
+                    name="tongTien"
+                  >
+                    {totalAmt}
+                  </span>
+                </div>
+                <div className=" bg-[#C73030] rounded-lg hover:bg-red-700 w-[85px]">
+                  <button
+                    className="text-white p-2  cursor-pointer "
+                    onClick={hanldeOrderKhachHAang}
+                  >
+                    Đặt hàng
+                  </button>
+                </div>
+              </>
+            )}
           </div>
         </div>
       </div>
