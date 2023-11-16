@@ -58,8 +58,7 @@ export const AuthProvider = ({ children }) => {
   };
 
   const startSessionTimer = () => {
-    // Đặt thời gian tự động đăng xuất sau 30 phút (30 * 60 * 1000 ms)
-    const sessionTimeout = 5 * 60 * 1000;
+    const sessionTimeout = 60 * 60 * 1000;
 
     // Xóa hết timer hiện tại (nếu có)
     clearTimeout(sessionTimer);

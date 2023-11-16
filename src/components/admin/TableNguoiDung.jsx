@@ -110,13 +110,21 @@ const TableNguoiDung = () => {
     Modal.confirm({
       title: "Xác nhận",
       icon: <ExclamationCircleFilled />,
-      content: "Bạn có chắc muốn thêm thương hiệu mới?",
+      content: "Bạn có chắc muốn thêm người dùng mới?",
       okText: "OK",
       okType: "danger",
       cancelText: "Đóng",
       onOk: async () => {
         try {
           const values = await form.validateFields();
+          if (data.some((user) => user.email === values.email)) {
+            toast.error("Email đã tồn tại. Vui lòng chọn email khác.");
+            return;
+          }
+          if (data.some((user) => user.username === values.username)) {
+            toast.error("Username đã tồn tại. Vui lòng chọn username khác.");
+            return;
+          }
           const response = await createNguoiDung(values);
           if (response.status === 200) {
             console.log(response);
@@ -127,7 +135,7 @@ const TableNguoiDung = () => {
           }
         } catch (error) {
           console.error("Lỗi khi tạo người dùng : ", error);
-          toast.error(error.response.data.message);
+          toast.error("Lỗi khi tạo người dùng :");
         }
       },
       onCancel: () => {},
@@ -156,7 +164,7 @@ const TableNguoiDung = () => {
           }
         } catch (error) {
           console.error("Lỗi khi cập nhật người dùng : ", error);
-          toast.error(error.response.data.message);
+          toast.error("Lỗi khi cập nhật người dùng");
         }
       },
 
@@ -266,7 +274,7 @@ const TableNguoiDung = () => {
       title: "Giới tính",
       dataIndex: "gioiTinh",
       key: "gioiTinh",
-      render: (gioiTinh) => (gioiTinh === 1 ? "Nam" : "Nữ"),
+      render: (gioiTinh) => (gioiTinh === 0 ? "Nam" : "Nữ"),
     },
     {
       title: "Số điện thoại",

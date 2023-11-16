@@ -19,6 +19,9 @@ import { ToastContainer, toast } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
 import { useEffect } from "react";
 import da from "date-fns/esm/locale/da/index.js";
+
+import { themYthich } from "../../../../services/SanPhamYeuThichService";
+
 import { useAuth } from "../../../../pages/customer/Account/AuthProvider";
 
 const Product = (item) => {
@@ -71,6 +74,22 @@ const Product = (item) => {
     } catch (error) {
       console.log("Lỗi ", error);
       toast.error(error.response?.data?.message || "Error adding to cart");
+    }
+  };
+
+  const handleAddToFavorite = async () => {
+    try {
+      await themYthich(item.maSanPhamCT);
+      Swal.fire({
+        title: "Thành công!",
+        text: "Thêm vào danh sách yêu thích thành công",
+      });
+    } catch (error) {
+      console.log("Lỗi ", error);
+      toast.error(
+        error.response?.data?.message ||
+          "Lỗi thêm sản phẩm vào danh sách yêu thích"
+      );
     }
   };
 
@@ -149,7 +168,10 @@ const Product = (item) => {
               </li>
             )}
 
-            <li className="text-[#767676] hover:text-primeColor text-sm font-normal border-b-[1px] border-b-gray-200 hover:border-b-primeColor flex items-center justify-end gap-2 hover:cursor-pointer pb-1 duration-300 w-full hover:text-pink-500">
+            <li
+              onClick={() => handleAddToFavorite(item.maSanPhamCT)}
+              className="text-[#767676] hover:text-primeColor text-sm font-normal border-b-[1px] border-b-gray-200 hover:border-b-primeColor flex items-center justify-end gap-2 hover:cursor-pointer pb-1 duration-300 w-full hover:text-pink-500"
+            >
               Thêm vào sản phẩm yêu thích
               <span>
                 <BsSuitHeartFill />

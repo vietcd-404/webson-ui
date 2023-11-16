@@ -16,6 +16,9 @@ import { useAuth } from "../../../../pages/customer/Account/AuthProvider";
 import { ExclamationCircleFilled } from "@ant-design/icons";
 import { Modal } from "antd";
 import { findGioHang } from "../../../../services/GioHangService";
+
+import { findAllYThich } from "../../../../services/SanPhamYeuThichService";
+
 import Swal from "sweetalert2";
 import { getAll, getAllLoc } from "../../../../services/SanPhamUser";
 
@@ -27,6 +30,7 @@ const HeaderBottom = () => {
   const [data, setData] = useState([]);
   const [dataSanPham, setDataSanPham] = useState([]);
   const [isLoading, setIsLoading] = useState(true);
+  const [soLuongYeuThich, setSoLuongYeuThich] = useState(0);
   const ref = useRef();
   useEffect(() => {
     const handleBodyClick = (e) => {
@@ -88,6 +92,20 @@ const HeaderBottom = () => {
     );
     setFilteredProducts(filtered);
   }, [searchQuery]);
+
+  useEffect(() => {
+    async function fetchSoLuongYeuThich() {
+      try {
+        const response = await findAllYThich();
+        const yeuThichList = response.data;
+        const soLuong = yeuThichList.length;
+        setSoLuongYeuThich(soLuong);
+      } catch (error) {
+        console.error("Lỗi khi lấy số lượng sản phẩm yêu thích: ", error);
+      }
+    }
+    fetchSoLuongYeuThich();
+  }, []);
 
   const handleLogout = () => {
     Swal.fire({
@@ -221,6 +239,8 @@ const HeaderBottom = () => {
               <div className="relative ml-2 mr-2">
                 <FaHeart size={20} />
                 <span className="absolute font-titleFont -top-4 -right-2 text-xs flex items-center justify-center bg-[#FF0000] text-white font-bold w-3.5">
+                  {soLuongYeuThich > 0 ? soLuongYeuThich : 0}
+
                   {/* {products.length > 0 ? products.length : 0} */}
                 </span>
               </div>
