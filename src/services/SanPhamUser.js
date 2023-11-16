@@ -6,11 +6,15 @@ export const getAll = async (
   giaGiamDan,
   giaTangDan,
   maLoai,
-  maMau
+  maMau,
+  maThuongHieu,
+  giaCao,
+  giaThap
 ) => {
   return await api.get(`/guest/san-pham/get-all?page=${page}&size=${size}
   &giaGiamDan=${giaGiamDan}&giaTangDan=${giaTangDan}
-  &maLoai=${maLoai}&maMau=${maMau}`);
+  &maLoai=${maLoai}&maMau=${maMau}&maThuongHieu=${maThuongHieu}
+  &giaThap=${giaThap}&giaCao=${giaCao}`);
 };
 
 export const getDetailById = async (productId) => {
@@ -36,4 +40,8 @@ export const findLoai = async () => {
 
 export const findMauSac = async () => {
   return await api.get("/guest/filter/mau-sac");
+};
+
+export const findThuongHieu = async () => {
+  return await api.get("/guest/filter/thuong-hieu");
 };
