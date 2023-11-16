@@ -15,11 +15,11 @@ const Shop = () => {
       <Breadcrumbs title="Sản Phẩm" />
       {/* ================= Products Start here =================== */}
       <div className="w-full h-full flex pb-20 gap-10">
-        <div className="w-[20%] lgl:w-[25%] hidden mdl:inline-flex h-full">
+        {/* <div className="w-[20%] lgl:w-[25%] hidden mdl:inline-flex h-full">
           <ShopSideNav />
-        </div>
+        </div> */}
         <div className="w-full mdl:w-[80%] lgl:w-[75%] h-full flex flex-col gap-10">
-          <ProductBanner itemsPerPageFromBanner={itemsPerPageFromBanner} />
+          {/* <ProductBanner itemsPerPageFromBanner={itemsPerPageFromBanner} /> */}
           <Pagination itemsPerPage={itemsPerPage} />
         </div>
       </div>

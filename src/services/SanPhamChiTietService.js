@@ -4,6 +4,12 @@ export const listSanPhamShopping = async () => {
   return await api.get("/shop");
 };
 
+export const findAllthuongHieu = async (tenThuongHieu) => {
+  return await api.get(
+    `/guest/san-pham/get-thuong-hieu?tenThuongHieu=${tenThuongHieu}`
+  );
+};
+
 export const findAllSPCT = async () => {
   return await api.get("/admin/san-pham-chi-tiet/all");
 };
