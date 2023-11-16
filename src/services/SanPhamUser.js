@@ -1,7 +1,16 @@
 import api from "./api";
 
-export const getAll = async (page, size) => {
-  return await api.get(`/guest/san-pham/get-all?page=${page}&size=${size}`);
+export const getAll = async (
+  page,
+  size,
+  giaGiamDan,
+  giaTangDan,
+  maLoai,
+  maMau
+) => {
+  return await api.get(`/guest/san-pham/get-all?page=${page}&size=${size}
+  &giaGiamDan=${giaGiamDan}&giaTangDan=${giaTangDan}
+  &maLoai=${maLoai}&maMau=${maMau}`);
 };
 
 export const getDetailById = async (productId) => {
@@ -20,4 +29,11 @@ export const top5SPNoiNhat = async () => {
 };
 export const top4SPBanChay = async () => {
   return await api.get(`/auth/san-pham-chi-tiet/top-4-ban-chay`);
+};
+export const findLoai = async () => {
+  return await api.get("/guest/filter");
+};
+
+export const findMauSac = async () => {
+  return await api.get("/guest/filter/mau-sac");
 };
