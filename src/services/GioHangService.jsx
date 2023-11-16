@@ -25,3 +25,13 @@ export const updateSoLuong = async (sanPham, soLuong) => {
     `/user/gio-hang-chi-tiet/update-product-quantity?SPCTId=${sanPham}&soLuong=${soLuong}`
   );
 };
+
+export const themGioHangSession = async (sanPham, soLuong) => {
+  return await api.post(
+    `/guest/gio-hang/addToCart?SPCTId=${sanPham}&quantity=${soLuong}`
+  );
+};
+
+export const hienGioHangSession = async () => {
+  return await api.get("/guest/gio-hang/cart");
+};

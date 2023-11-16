@@ -16,7 +16,7 @@ const ProductDetails = (props) => {
     window.scrollTo(0, 0);
   }, [location.pathname]);
   // const { state } = location;
-  const { productInfo, maSanPhamCT } = state;
+  const { item, maSanPhamCT } = state;
   const [dataImg, setDataImg] = useState("");
 
   useEffect(() => {
@@ -38,12 +38,12 @@ const ProductDetails = (props) => {
           <div className="h-full xl:col-span-2">
             <img
               className="w-full h-[500px] object-cover rounded-lg shadow-md"
-              src={`data:image/png;base64,${productInfo.img}`}
-              alt={productInfo.img}
+              src={`data:image/png;base64,${item.img}`}
+              alt={item.tenSanPham}
             />
           </div>
           <div className="h-full w-full md:col-span-2 xl:col-span-3 xl:p-8 flex flex-col gap-6 justify-center">
-            <ProductInfo productInfo={productInfo} />
+            <ProductInfo item={item} />
           </div>
         </div>
       </div>

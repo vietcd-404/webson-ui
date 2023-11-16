@@ -21,7 +21,6 @@ import { useAuth } from "./pages/customer/Account/AuthProvider";
 import Otp from "./pages/customer/Account/Otp";
 import ThongTin from "./pages/customer/ThongTin/ThongTin";
 import HoaDon from "./pages/customer/ThongTin/HoaDon";
-import CaNhan from "./pages/customer/ThongTin/CaNhan";
 import SanPhamYeuThich from "./pages/customer/ThongTin/SanPhamYeuThich";
 import ChoXacNhan from "./pages/customer/ThongTin/TrangThaiHoaDon/ChoXacNhan";
 import TatCa from "./pages/customer/ThongTin/TrangThaiHoaDon/TatCa";
@@ -29,9 +28,8 @@ import DangGiao from "./pages/customer/ThongTin/TrangThaiHoaDon/DangGiao";
 import HoanThanh from "./pages/customer/ThongTin/TrangThaiHoaDon/HoanThanh";
 import Huy from "./pages/customer/ThongTin/TrangThaiHoaDon/Huy";
 import ThongTinDonHang from "./pages/customer/ThongTin/TrangThaiHoaDon/ThongTinDonHang";
-import DaGiao from "./pages/customer/ThongTin/TrangThaiHoaDon/DaGiao";
 import XacNhan from "./pages/customer/ThongTin/TrangThaiHoaDon/XacNhan";
-
+import CaNhan from "./pages/customer/ThongTin/CaNhan";
 const App = () => {
   const { user } = useAuth();
   return (
@@ -187,16 +185,6 @@ const App = () => {
             <ProtectedRoute userRole={["ROLE_USER", "ROLE_ADMIN"]}>
               <Main>
                 <ThongTin children={<HoaDon props={<DangGiao />} />} />
-              </Main>
-            </ProtectedRoute>
-          }
-        ></Route>
-        <Route
-          path="/invoices/delivered"
-          element={
-            <ProtectedRoute userRole={["ROLE_USER", "ROLE_ADMIN"]}>
-              <Main>
-                <ThongTin children={<HoaDon props={<DaGiao />} />} />
               </Main>
             </ProtectedRoute>
           }
