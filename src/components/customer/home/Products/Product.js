@@ -15,6 +15,7 @@ import { ToastContainer, toast } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
 import { useEffect } from "react";
 import da from "date-fns/esm/locale/da/index.js";
+import { themYthich } from "../../../../services/SanPhamYeuThichService";
 
 const Product = (props) => {
   console.log("Props: ", props);
@@ -93,6 +94,22 @@ const Product = (props) => {
     }
   };
 
+  const handleAddToFavorite = async () => {
+    try {
+      await themYthich(props.maSanPhamCT);
+      Swal.fire({
+        title: "Thành công!",
+        text: "Thêm vào danh sách yêu thích thành công",
+        icon: "success",
+      });
+    } catch (error) {
+      console.log("Lỗi ", error);
+      toast.error(
+        error.response?.data?.message || "Lỗi khi thêm vào danh sách yêu thích"
+      );
+    }
+  };
+
   return (
     <div className="w-full relative group">
       <ToastContainer />
@@ -142,7 +159,10 @@ const Product = (props) => {
               </span>
             </li>
 
-            <li className="text-[#767676] hover:text-primeColor text-sm font-normal border-b-[1px] border-b-gray-200 hover:border-b-primeColor flex items-center justify-end gap-2 hover:cursor-pointer pb-1 duration-300 w-full hover:text-pink-500">
+            <li
+              onClick={() => handleAddToFavorite(props.maSanPhamCT)}
+              className="text-[#767676] hover:text-primeColor text-sm font-normal border-b-[1px] border-b-gray-200 hover:border-b-primeColor flex items-center justify-end gap-2 hover:cursor-pointer pb-1 duration-300 w-full hover:text-pink-500"
+            >
               Thêm vào sản phẩm yêu thích
               <span>
                 <BsSuitHeartFill />
