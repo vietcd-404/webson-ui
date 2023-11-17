@@ -14,18 +14,8 @@ import ListSPCT from "../components/admin/ListSPCT";
 import SanPhamChiTietLayout from "../components/admin/LayoutSanPhamChiTiet";
 import KhoAnh from "../pages/admin/KhoAnh/KhoAnh";
 import Voucher from "../pages/admin/Voucher/Voucher";
-
+import LayoutHoaDonChiTiet from "../components/admin/HoaDon/LayoutHoaDonChiTiet";
 const AdminRouter = () => {
-  // const { signout } = useAuth();
-  // const handleLogout = () => {
-  //   Modal.confirm({
-  //     title: "Xác nhận đăng xuất",
-  //     content: "Bạn có chắc muốn đăng xuất?",
-  //     onOk: () => {
-  //       signout();
-  //     },
-  //   });
-  // };
   return (
     <div>
       <Routes>
@@ -37,14 +27,6 @@ const AdminRouter = () => {
             </LayoutAdmin>
           }
         />
-        {/* <Route
-          path="/san-pham-chi-tiet"
-          element={
-            <LayoutAdmin>
-              <SanPhamChiTiet />
-            </LayoutAdmin>
-          }
-        /> */}
         <Route
           path="/san-pham-chi-tiet"
           element={
@@ -94,6 +76,14 @@ const AdminRouter = () => {
           element={
             <LayoutAdmin>
               <ThuongHieu />
+            </LayoutAdmin>
+          }
+        />
+        <Route
+          path="/hoa-don"
+          element={
+            <LayoutAdmin>
+              <LayoutHoaDonChiTiet />
             </LayoutAdmin>
           }
         />

@@ -46,29 +46,30 @@ const LayoutAdmin = ({ children }) => {
       getItem(<Link to="/admin/thuong-hieu">Thương hiệu</Link>, "5"),
       getItem(<Link to="/admin/mau-sac">Màu</Link>, "6"),
     ]),
-    getItem("Quản lý hóa đơn", "sub2", <BankOutlined />, [
-      getItem("Team 1", "7"),
-      getItem("Team 2", "8"),
-    ]),
+    getItem(
+      <Link to="/admin/hoa-don">Quản lý hóa đơn</Link>,
+      "7",
+      <BankOutlined />
+    ),
     getItem(
       <Link to="/admin/nguoi-dung">Quản lí người dùng</Link>,
-      "9",
+      "8",
       <UserOutlined />
     ),
     getItem(
       <Link to="/admin/phuong-thuc-thanh-toan">Phương thức thanh toán</Link>,
-      "10",
+      "9",
       <PayCircleOutlined />
     ),
     getItem(
       <Link to="/admin/quan-li-kho-anh">Kho ảnh</Link>,
-      "11",
+      "10",
       <InboxOutlined />
     ),
-    getItem(<Link to="/admin/voucher">Voucher</Link>, "12", <GiftOutlined />),
+    getItem(<Link to="/admin/voucher">Voucher</Link>, "11", <GiftOutlined />),
     getItem(
       <Link onClick={() => handleLogout()}>Đăng xuất</Link>,
-      "13",
+      "12",
       <LoginOutlined />
     ),
   ];
