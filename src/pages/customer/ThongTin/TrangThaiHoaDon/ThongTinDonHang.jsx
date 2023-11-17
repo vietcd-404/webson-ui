@@ -19,6 +19,8 @@ import { CloseOutlined } from "@ant-design/icons";
 import Swal from "sweetalert2";
 import Model from "../../../../components/customer/Model";
 import FormSanPham from "./FormSanPham";
+import { ToastContainer, toast } from "react-toastify";
+import "react-toastify/dist/ReactToastify.css";
 const host = "https://provinces.open-api.vn/api/";
 
 function ThongTinDonHang() {
@@ -97,18 +99,21 @@ function ThongTinDonHang() {
     loadHoaDonChitiet();
   }, [maHoaDon]);
 
-  const handleQuantityChange = async (event, maHoaDon) => {
+  const handleQuantityChange = async (event, maHoaDonCT) => {
     const newQuantity = event.target.value;
     setData((prevData) =>
       prevData.map((item) =>
-        item.maHoaDon === maHoaDon ? { ...item, soLuong: newQuantity } : item
+        item.maHoaDonCT === maHoaDonCT
+          ? { ...item, soLuong: newQuantity }
+          : item
       )
     );
     try {
-      await updateSoLuongSanPham(maHoaDon, newQuantity);
+      await updateSoLuongSanPham(maHoaDonCT, newQuantity);
       loadSanPham();
     } catch (error) {
       console.error("Failed to update quantity:", error);
+      toast.error(error.response.data.message);
     }
   };
 
@@ -251,6 +256,7 @@ function ThongTinDonHang() {
       <h5>Thông tin đơn hàng</h5>
       <div>
         <div>
+          <ToastContainer />
           {donHang.map((hoaDon) => (
             <div className="container mx-auto mt-8">
               <div className="border rounded p-4" key={hoaDon.maHoaDon}>
@@ -431,7 +437,9 @@ function ThongTinDonHang() {
                 <FormSanPham
                   item={item}
                   xoa={() => xoaSanPhamCT(item.maHoaDonCT)}
-                  updateSoLuong={(e) => handleQuantityChange(e, item.maHoaDon)}
+                  updateSoLuong={(e) =>
+                    handleQuantityChange(e, item.maHoaDonCT)
+                  }
                   trangThai={item.trangThai !== 0}
                 />
               ))}
