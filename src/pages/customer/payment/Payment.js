@@ -11,6 +11,8 @@ import { findGioHang } from "../../../services/GioHangService";
 import { useAuth } from "../Account/AuthProvider";
 import { useDispatch, useSelector } from "react-redux";
 import { resetCart } from "../../../redux/orebiSlice";
+import { toast, ToastContainer } from "react-toastify";
+import "react-toastify/dist/ReactToastify.css";
 
 /* <p>Payment gateway only applicable for Production build.</p>
         <Link to="/">
@@ -40,6 +42,8 @@ const Payment = () => {
       ShopId: 124173,
     },
   };
+  const [errors, setErrors] = useState([]);
+
   const dispatch = useDispatch();
 
   const [tongTien1, setTongTien1] = useState("");
@@ -56,6 +60,54 @@ const Payment = () => {
     xa: "",
     tenPhuongThuc: "",
   });
+  const EmailValidation = (email) => {
+    return String(email)
+      .toLowerCase()
+      .match(/^[A-Z0-9._%+-]+@[A-Z0-9.-]+\.[A-Z]{2,4}$/i);
+  };
+  const validatePhone = (sdt) => {
+    return String(sdt).match(/^0?\d{10}$/);
+  };
+  const validateForm = () => {
+    let valid = true;
+    const newErrors = {};
+
+    if (!formData.tenNguoiNhan) {
+      newErrors.tenNguoiNhan = "Tên người nhận không được trống";
+      valid = false;
+    }
+
+    if (!formData.email) {
+      newErrors.email = "Email không được bỏ trống";
+      valid = false;
+    }
+
+    if (!EmailValidation(formData.email)) {
+      newErrors.email = "Email không hợp lệ";
+      valid = false;
+    }
+
+    if (!formData.sdt || !validatePhone(formData.sdt)) {
+      newErrors.sdt = "Số điện thoại không hợp lệ";
+      valid = false;
+    }
+
+    if (!formData.tinh) {
+      newErrors.tinh = "Vui lòng nhập địa chỉ";
+      valid = false;
+    }
+    if (!formData.huyen) {
+      newErrors.huyen = "Vui lòng nhập địa chỉ";
+      valid = false;
+    }
+    if (!formData.xa) {
+      newErrors.xa = "Vui lòng nhập địa chỉ";
+      valid = false;
+    }
+
+    setErrors(newErrors);
+    return valid;
+  };
 
   const handleChange = (e) => {
     const { name, value } = e.target;
@@ -161,89 +213,117 @@ const Payment = () => {
 
   const printResultf = async (ma) => {
     if (data.length === 0) {
-      message.error("Không có sản phẩm trong giỏ hàng");
+      toast.error("Không có sản phẩm trong giỏ hàng");
       return;
     }
-    try {
-      if (
-        !formData.tenNguoiNhan ||
-        !formData.sdt ||
-        !formData.email ||
-        !formData.diaChi
-      ) {
-        message.error("Không được bỏ trống");
-        return;
+    if (validateForm()) {
+      try {
+        // if (
+        //   !formData.tenNguoiNhan ||
+        //   !formData.sdt ||
+        //   !formData.email ||
+        //   !formData.diaChi
+        // ) {
+        //   message.error("Không được bỏ trống");
+        //   return;
+        // }
+        if (!formData.tenPhuongThuc) {
+          toast.error("Vui lòng chọn phương thức thanh toán");
+          return;
+        }
+
+        const maGH = data[0].maGH;
+
+        await taoHoaDon(maGH, formData);
+        Swal.fire({
+          title: "Tạo hóa đơn!",
+          text: "Tạo hóa đơn thành công",
+          icon: "success",
+        });
+
+        // Redirect to the desired page
+        navigate("/shop");
+      } catch (error) {
+        // Handle errors, such as displaying an error message
+        console.log("Lỗi ", error);
+        message.error(
+          error.response?.data?.message || "Error creating invoice"
+        );
       }
-      if (!formData.tenPhuongThuc) {
-        message.error("Vui lòng chọn phương thức thanh toán");
-        return;
-      }
-
-      const maGH = data[0].maGH;
-
-      await taoHoaDon(maGH, formData);
-      Swal.fire({
-        title: "Tạo hóa đơn!",
-        text: "Tạo hóa đơn thành công",
-        icon: "success",
-      });
-
-      // Redirect to the desired page
-      navigate("/shop");
-    } catch (error) {
-      // Handle errors, such as displaying an error message
-      console.log("Lỗi ", error);
-      message.error(error.response?.data?.message || "Error creating invoice");
     }
   };
 
   const hanldeOrderKhachHAang = async () => {
     if (products.length === 0) {
-      message.error("Không có sản phẩm trong giỏ hàng");
+      toast.error("Không có sản phẩm trong giỏ hàng");
       return;
     }
-    try {
-      if (
-        !formData.tenNguoiNhan ||
-        !formData.sdt ||
-        !formData.email ||
-        !formData.diaChi
-      ) {
-        message.error("Không được bỏ trống");
-        return;
-      }
-      if (!formData.tenPhuongThuc) {
-        message.error("Vui lòng chọn phương thức thanh toán");
-        return;
-      }
-      const maSanPhamCTArray = products.map((product) => product.maSanPhamCT);
-      // const soLuong = products.map((product) => Number(product.soLuong));
-      const updatedFormData = {
-        ...formData,
-        tongTien: totalAmt,
-        soLuong: soLuong,
-      };
+    if (validateForm()) {
+      try {
+        // if (
+        //   !formData.tenNguoiNhan ||
+        //   !formData.sdt ||
+        //   !formData.email ||
+        //   !formData.diaChi
+        // ) {
+        //   message.error("Không được bỏ trống");
+        //   return;
+        // }
+        if (!formData.tenPhuongThuc) {
+          toast.error("Vui lòng chọn phương thức thanh toán");
+          return;
+        }
+        const maSanPhamCTArray = products.map((product) => product.maSanPhamCT);
+        // const soLuong = products.map((product) => Number(product.soLuong));
+        const updatedFormData = {
+          ...formData,
+          tongTien: totalAmt,
+          soLuong: soLuong,
+        };
 
-      await taoHoaDonKhach(maSanPhamCTArray, updatedFormData);
-      Swal.fire({
-        title: "Tạo hóa đơn!",
-        text: "Tạo hóa đơn thành công",
-        icon: "success",
-      });
-      dispatch(resetCart());
-      // Redirect to the desired page
-      navigate("/shop");
-    } catch (error) {
-      // Handle errors, such as displaying an error message
-      console.log("Lỗi ", error);
-      message.error(error.response.data.message);
+        await taoHoaDonKhach(maSanPhamCTArray, updatedFormData);
+        Swal.fire({
+          title: "Tạo hóa đơn!",
+          text: "Tạo hóa đơn thành công",
+          icon: "success",
+        });
+        dispatch(resetCart());
+        // Redirect to the desired page
+        navigate("/shop");
+      } catch (error) {
+        // Handle errors, such as displaying an error message
+        console.log("Lỗi ", error);
+        message.error(error.response.data.message);
+      }
     }
+  };
+  const [customCode, setCustomCode] = useState("");
+  const [availableVouchers, setAvailableVouchers] = useState([
+    "Voucher1",
+    "Voucher2",
+    "Voucher3",
+    // Add your list of vouchers here
+  ]);
+
+  const handleInputChange = (e) => {
+    setCustomCode(e.target.value);
+  };
+
+  const handleSubmit = (e) => {
+    e.preventDefault();
+    // Add logic to apply the voucher code
+    console.log(`Voucher code applied: ${customCode}`);
+  };
+
+  const handleVoucherClick = (voucher) => {
+    setCustomCode(voucher);
   };
   const { user } = useAuth();
 
   return (
     <div className="container mx-auto px-4 ">
       {/* Breadcrumbs component */}
+      <ToastContainer />
       <Breadcrumbs title="Thanh toán hóa đơn" />
 
       <div className="pb-10">
@@ -264,6 +344,12 @@ const Payment = () => {
                   onChange={handleChange}
                 />
               </div>
+              {errors.tenNguoiNhan && (
+                <p className="text-sm text-red-500 font-titleFont font-semibold px-4">
+                  <span className="font-bold italic mr-1">!</span>
+                  {errors.tenNguoiNhan}
+                </p>
+              )}
               <div className="flex flex-wrap mt-6 pr-3 pl-3">
                 <label className="block text-gray-700 text-sm font-bold mb-2">
                   Số điện thoại<span className="text-red-500">*</span>
@@ -276,6 +362,12 @@ const Payment = () => {
                   onChange={handleChange}
                 />
               </div>
+              {errors.sdt && (
+                <p className="text-sm text-red-500 font-titleFont font-semibold px-4">
+                  <span className="font-bold italic mr-1">!</span>
+                  {errors.sdt}
+                </p>
+              )}
               <div className="flex flex-wrap mt-6 pr-3 pl-3">
                 <label className="block text-gray-700 text-sm font-bold mb-2">
                   Email <span className="text-red-500">*</span>
@@ -288,6 +380,12 @@ const Payment = () => {
                   onChange={handleChange}
                 />
               </div>
+              {errors.email && (
+                <p className="text-sm text-red-500 font-titleFont font-semibold px-4">
+                  <span className="font-bold italic mr-1">!</span>
+                  {errors.email}
+                </p>
+              )}
               <div className="flex flex-wrap mt-6 pr-3 pl-3">
                 <label
                   htmlFor="province"
@@ -309,6 +407,12 @@ const Payment = () => {
                   ))}
                 </select>
               </div>
+              {errors.tinh && (
+                <p className="text-sm text-red-500 font-titleFont font-semibold px-4">
+                  <span className="font-bold italic mr-1">!</span>
+                  {errors.tinh}
+                </p>
+              )}
 
               <div className="flex flex-wrap mt-6 pr-3 pl-3">
                 <label
@@ -331,6 +435,12 @@ const Payment = () => {
                   ))}
                 </select>
               </div>
+              {errors.huyen && (
+                <p className="text-sm text-red-500 font-titleFont font-semibold px-4">
+                  <span className="font-bold italic mr-1">!</span>
+                  {errors.huyen}
+                </p>
+              )}
 
               <div className="flex flex-wrap mt-6 pr-3 pl-3">
                 <label
@@ -353,6 +463,12 @@ const Payment = () => {
                   ))}
                 </select>
               </div>
+              {errors.xa && (
+                <p className="text-sm text-red-500 font-titleFont font-semibold px-4">
+                  <span className="font-bold italic mr-1">!</span>
+                  {errors.xa}
+                </p>
+              )}
               <div className="flex flex-wrap mt-6 pr-3 pl-3">
                 <label className="block text-gray-700 text-sm font-bold mb-2">
                   Địa chỉ <span className="text-red-500">*</span>
@@ -403,8 +519,8 @@ const Payment = () => {
                   className="inline-block text-sm font-medium text-gray-700"
                   htmlFor="payment1"
                 >
-                  Chuyển khoản: Tên tài khoản: Phạm Tiến Lợi - Vietcombank:
-                  103878062018 TP Hà Nội - Hội sở
+                  Chuyển khoản: Tên tài khoản: Cao Đức Việt - Techcombank:
+                  902928689999 TP Hà Nội - Hội sở
                 </label>
               </div>
             </div>
@@ -465,6 +581,35 @@ const Payment = () => {
 
             {user ? (
               <>
+                <div className=" bg-white mt-3 ">
+                  <form
+                    onSubmit={handleSubmit}
+                    className="flex flex-col md:flex-row md:justify-between relative"
+                  >
+                    <div className="mb-2 md:w-1/2">
+                      <input
+                        type="text"
+                        id="customCode"
+                        name="customCode"
+                        value={customCode}
+                        placeholder="Mã Voucher"
+                        onChange={handleInputChange}
+                        className="w-full p-2 border rounded-md"
+                      />
+                    </div>
+                    <div className="md:ml-2 ml-1">
+                      <button
+                        type="submit"
+                        className="bg-blue-500 p-2 rounded-md text-white"
+                      >
+                        Áp dụng
+                      </button>
+                    </div>
+                  </form>
+                  <label className="block text-blue-400 text-sm mb-2  md:text-right md:right-8">
+                    Chọn mã
+                  </label>
+                </div>
                 <div className="d-flex align-items-center justify-content-between mb-3">
                   <span>Tạm tính:</span>
                   <span>{tongTien1}</span>

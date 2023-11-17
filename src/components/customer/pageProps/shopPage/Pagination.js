@@ -112,7 +112,7 @@ const Pagination = () => {
 
   const handleMauClick = (maMau) => {
     if (selectedMau === maMau) {
-      setSelectedMau("maMau");
+      setSelectedMau("");
     } else {
       setSelectedMau(maMau);
     }
