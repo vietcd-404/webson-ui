@@ -22,6 +22,7 @@ import {
   updateStatusLoai,
 } from "../../services/LoaiService";
 import { ToastContainer, toast } from "react-toastify";
+import "react-toastify/dist/ReactToastify.css";
 
 const TableLoai = () => {
   const [data, setData] = useState([]);

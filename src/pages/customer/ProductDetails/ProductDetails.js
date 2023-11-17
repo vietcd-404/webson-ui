@@ -8,6 +8,12 @@ import {
   getDetailById,
 } from "../../../services/SanPhamUser";
 import Swal from "sweetalert2";
+import SanPhamCungThuongHieu from "./SanPhamCungThuongHieu";
+import { findAllthuongHieu } from "../../../services/SanPhamChiTietService";
+import SampleNextArrow from "../../../components/customer/home/NewArrivals/SampleNextArrow";
+import SamplePrevArrow from "../../../components/customer/home/NewArrivals/SamplePrevArrow";
+import Heading from "../../../components/customer/home/Products/Heading";
+import Slider from "react-slick";
 const ProductDetails = (props) => {
   const [prevLocation, setPrevLocation] = useState("");
   const location = useLocation();
@@ -17,16 +23,52 @@ const ProductDetails = (props) => {
   }, [location.pathname]);
   // const { state } = location;
   const { item, maSanPhamCT } = state;
-  const [dataImg, setDataImg] = useState("");
+
+  const [dataImg, setDataImg] = useState([]);
 
   useEffect(() => {
-    setDataImg();
+    loadAnhSanPhamThuongHieu();
     setPrevLocation(location.pathname);
   }, []);
 
-  const loadAnhSanPham = async (maSanPhamCT) => {
-    const response = await listImageSanPhamGuest(maSanPhamCT);
-    setDataImg(response);
+  const loadAnhSanPhamThuongHieu = async () => {
+    const response = await findAllthuongHieu(item.tenThuongHieu);
+    setDataImg(response.data);
+  };
+
+  const settings = {
+    infinite: true,
+    speed: 500,
+    slidesToShow: 4,
+    slidesToScroll: 1,
+    nextArrow: <SampleNextArrow />,
+    prevArrow: <SamplePrevArrow />,
+    responsive: [
+      {
+        breakpoint: 1025,
+        settings: {
+          slidesToShow: 3,
+          slidesToScroll: 1,
+          infinite: true,
+        },
+      },
+      {
+        breakpoint: 769,
+        settings: {
+          slidesToShow: 2,
+          slidesToScroll: 2,
+          infinite: true,
+        },
+      },
+      {
+        breakpoint: 480,
+        settings: {
+          slidesToShow: 1,
+          slidesToScroll: 1,
+          infinite: true,
+        },
+      },
+    ],
   };
   return (
     <div className="container mx-auto border-b-[1px] border-b-gray-300">
@@ -44,6 +86,18 @@ const ProductDetails = (props) => {
           </div>
           <div className="h-full w-full md:col-span-2 xl:col-span-3 xl:p-8 flex flex-col gap-6 justify-center">
             <ProductInfo item={item} />
+          </div>
+        </div>
+        <div className="mt-5">
+          <div className="w-full pb-16">
+            <Heading heading="Sản Phẩm Tương Tự" />
+            <Slider {...settings}>
+              {dataImg.map((item) => (
+                <div>
+                  <SanPhamCungThuongHieu item={item} />
+                </div>
+              ))}
+            </Slider>
           </div>
         </div>
       </div>
