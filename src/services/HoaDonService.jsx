@@ -55,3 +55,17 @@ export const capNhapTrangThaiHoaDonByAdmin = async (trangThai, maHoaDon) => {
     `/admin/order/thaydoiTrangThai?maHD=${maHoaDon}&trangThai=${trangThai}`
   );
 };
+
+export const capNhapThanhToanHoaDonByAdmin = async (thanhToan, maHoaDon) => {
+  return await api.put(
+    `/admin/order/thanhToan?maHD=${maHoaDon}&thanhToan=${thanhToan}`
+  );
+};
+
+export const productInforHoaDon = async (maHoaDon2) => {
+  return await api.get(`/admin/order/get-hoadon/${maHoaDon2}`);
+};
+
+export const inforUserHoaDon = async (maHoaDon1) => {
+  return await api.get(`/admin/order/get-hoadon/detail/${maHoaDon1}`);
+};

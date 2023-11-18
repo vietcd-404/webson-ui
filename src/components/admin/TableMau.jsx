@@ -254,7 +254,7 @@ const TableMau = () => {
       </Row>
 
       <Modal
-        title="Cập nhật loại"
+        title="Cập nhật màu"
         open={isEditModalOpen}
         onCancel={handleEditCancel}
         onOk={handleUpdate}

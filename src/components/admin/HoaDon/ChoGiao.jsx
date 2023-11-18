@@ -1,27 +1,76 @@
 import React from "react";
 import { useEffect, useState } from "react";
-import { Button, Tabs } from "antd";
+import { Button, Col, Form, Input, Row, Tabs } from "antd";
 import { Link } from "react-router-dom";
-import { ExclamationCircleFilled } from "@ant-design/icons";
+import {
+  ExclamationCircleFilled,
+  EyeOutlined,
+  DeleteOutlined,
+} from "@ant-design/icons";
 import { Modal, Space, Table } from "antd";
 import { ToastContainer, toast } from "react-toastify";
 import {
   capNhapTrangThaiHoaDonByAdmin,
   getAllOrderByAdmin,
   huytHoaDonByAdmin,
+  inforUserHoaDon,
+  productInforHoaDon,
 } from "../../../services/HoaDonService";
 
 const ChoXacNhan = () => {
-  const [data, setData] = useState([]);
   const [totalPage, setTotalPage] = useState(1);
+  const [totalPageProduct, setTotalPageProduct] = useState(1);
   const [loading, setLoading] = useState(true);
   const [tableData, setTableData] = useState([]);
+  const [tableDataProduct, setTableDataProduct] = useState([]);
+  const [tongTien, setTongTien] = useState(0);
+  const [giamGia, setGiamGia] = useState(0);
+  const [formUpdate] = Form.useForm();
+  const [editFormData, setEditFormData] = useState(null);
+  const [isEditModalOpen, setIsEditModalOpen] = useState(false);
+
+  const showEditModal = async (record) => {
+    const response = await inforUserHoaDon(record.maHoaDon);
+    setEditFormData(response.data[0]);
+    formUpdate.setFieldsValue({
+      tenNguoiDung: response.data[0].tenNguoiDung,
+      maHoaDon: response.data[0].maHoaDon,
+      tenNguoiNhan: response.data[0].tenNguoiNhan,
+      email: response.data[0].email,
+      sdt: response.data[0].sdt,
+      diaChi: response.data[0].diaChi,
+      diaChiChiTiet: response.data[0].diaChiChiTiet,
+      tinh: response.data[0].tinh,
+      huyen: response.data[0].huyen,
+      xa: response.data[0].xa,
+    });
+    try {
+      const response1 = await productInforHoaDon(record.maHoaDon);
+      setTableDataProduct(response1.data);
+      setTotalPageProduct(response1.totalPage);
+      setTongTien(response1.data[0].tongTien);
+      if (response1.data[0].tienGiam == null) {
+        setGiamGia(0);
+      } else {
+        setGiamGia(response1.data[0].tienGiam);
+      }
+      console.log(response1.data);
+      setLoading(false);
+    } catch (error) {
+      console.error("Lỗi khi gọi API: ", error);
+      setLoading(false);
+    }
+    setIsEditModalOpen(true);
+  };
+
+  const handleEditCancel = () => {
+    formUpdate.resetFields();
+    setIsEditModalOpen(false);
+  };
 
   const loadTable = async () => {
     try {
-      const x = 1;
-      const response = await getAllOrderByAdmin(x);
-      setData(response.data);
+      const response = await getAllOrderByAdmin(1);
       setTotalPage(response.totalPage);
       setLoading(false);
     } catch (error) {
@@ -121,6 +170,78 @@ const ChoXacNhan = () => {
       onCancel: () => {},
     });
   };
+
+  const handleUpdateProduct = () => {
+    Modal.confirm({
+      title: "Xác nhận",
+      icon: <ExclamationCircleFilled />,
+      content: "Bạn có chắc muốn cập nhập loại không?",
+      okText: "OK",
+      okType: "danger",
+      cancelText: "Đóng",
+      // onOk: async () => {
+      //   try {
+      //     // const values = await formUpdate.validateFields();
+      //     // const response = await updateMau(values, editFormData.maMau);
+      //     // if (response.status === 200) {
+      //     //   console.log(response);
+      //     //   setIsModalOpen(false);
+
+      //       toast.success("Cập nhật thành công!");
+      //       loadTable();
+      //     }
+      //   } catch (error) {
+      //     console.error("Lỗi khi cập nhật loại: ", error);
+      //     toast.error("Cập nhật thất bại.");
+      //   }
+      // },
+
+      onCancel: () => {},
+    });
+  };
+
+  const columnProduct = [
+    {
+      title: "Ảnh",
+      dataIndex: "anh",
+      key: "anh",
+      render: (imageSrc, record) => (
+        <img
+          width="30%"
+          src={`data:image/png;base64,${record.anh}`}
+          alt={record.tenSanPham}
+          className="img-fluid rounded"
+        />
+      ),
+    },
+    {
+      title: "Tên sản phẩm",
+      dataIndex: "tenSanPham",
+      key: "tenSanPham",
+    },
+    {
+      title: "Số lượng",
+      dataIndex: "soLuong",
+      key: "soLuong",
+    },
+    {
+      title: "Thành Tiền",
+      dataIndex: "giaBan",
+      key: "thanhTien",
+      render: (giaBan, record) => <span>{giaBan * record.soLuong}</span>,
+    },
+    {
+      title: "Chức năng",
+      key: "action",
+      render: (_, record) => (
+        <Space size="middle">
+          <Button>
+            <DeleteOutlined />
+          </Button>
+        </Space>
+      ),
+    },
+  ];
 
   const columns = [
     {
@@ -247,11 +368,144 @@ const ChoXacNhan = () => {
         </Space>
       ),
     },
+    {
+      title: "",
+      key: "action",
+      render: (_, record) => (
+        <Space size="middle">
+          <Button onClick={() => showEditModal(record)}>
+            <EyeOutlined />
+          </Button>
+        </Space>
+      ),
+    },
   ];
 
   return (
     <div>
       <ToastContainer />
+      <Modal
+        open={isEditModalOpen}
+        onCancel={handleEditCancel}
+        onOk={handleUpdateProduct}
+        width={1000}
+      >
+        <p className="text-bold mb-2" style={{ fontSize: "20px" }}>
+          Thông tin nhận hàng
+        </p>
+        <Form
+          form={formUpdate}
+          name="editForm"
+          initialValues={editFormData}
+          style={{
+            border: "1px solid #d9d9d9",
+            borderRadius: "5px",
+            padding: "16px",
+          }}
+        >
+          <Row gutter={[16, 16]}>
+            <Col span={12}>
+              <Form.Item
+                label="Khách hàng"
+                name="tenNguoiDung"
+                labelCol={{ span: 8 }} // Điều chỉnh độ rộng của nhãn
+                wrapperCol={{ span: 16 }} // Điều chỉnh độ rộng của dữ liệu
+              >
+                <Input disabled />
+              </Form.Item>
+              <Form.Item
+                label="Tên người nhận"
+                name="tenNguoiNhan"
+                labelCol={{ span: 8 }} // Điều chỉnh độ rộng của nhãn
+                wrapperCol={{ span: 16 }} // Điều chỉnh độ rộng của dữ liệu
+              >
+                <Input disabled />
+              </Form.Item>
+              <Form.Item
+                label="Email"
+                name="email"
+                labelCol={{ span: 8 }}
+                wrapperCol={{ span: 16 }}
+              >
+                <Input disabled />
+              </Form.Item>
+              <Form.Item
+                label="Số điện thoại"
+                name="sdt"
+                labelCol={{ span: 8 }}
+                wrapperCol={{ span: 16 }}
+              >
+                <Input disabled />
+              </Form.Item>
+            </Col>
+            <Col span={12}>
+              <Form.Item
+                label="Tỉnh"
+                name="tinh"
+                labelCol={{ span: 8 }}
+                wrapperCol={{ span: 16 }}
+              >
+                <Input disabled />
+              </Form.Item>
+              <Form.Item
+                label="Huyện"
+                name="huyen"
+                labelCol={{ span: 8 }}
+                wrapperCol={{ span: 16 }}
+              >
+                <Input disabled />
+              </Form.Item>
+              <Form.Item
+                label="Xã"
+                name="xa"
+                labelCol={{ span: 8 }}
+                wrapperCol={{ span: 16 }}
+              >
+                <Input disabled />
+              </Form.Item>
+              <Form.Item
+                label="Địa chỉ chi tiết"
+                name="diaChiChiTiet"
+                labelCol={{ span: 8 }}
+                wrapperCol={{ span: 16 }}
+              >
+                <Input.TextArea rows={4} disabled />
+              </Form.Item>
+            </Col>
+          </Row>
+        </Form>
+        <p className="text-bold mt-2 mb-2" style={{ fontSize: "20px" }}>
+          Thông tin sản phẩm
+        </p>
+        <div
+          style={{
+            border: "1px solid #d9d9d9",
+            borderRadius: "5px",
+            padding: "16px",
+          }}
+        >
+          <Table
+            columns={columnProduct}
+            dataSource={tableDataProduct}
+            pagination={{
+              pageSize: 5,
+              total: totalPageProduct * 5, // Assuming totalPage is the total number of pages
+              current: totalPageProduct,
+            }}
+          />
+          <p className="padding-right mt-2">
+            Tổng tiền trước khi giảm:{" "}
+            <span className="text-lg text-bold">{tongTien + giamGia}đ</span>{" "}
+          </p>
+          <p className="padding-right">
+            Voucher: <span className="text-lg text-bold">-{giamGia}đ</span>{" "}
+          </p>
+          <p className="padding-right">
+            Tổng tiền sau khi giảm:{" "}
+            <span className="text-lg text-bold">{tongTien}đ</span>{" "}
+          </p>
+        </div>
+      </Modal>
       {loading ? (
         <p>Loading...</p>
       ) : (
