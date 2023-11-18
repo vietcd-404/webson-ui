@@ -256,6 +256,7 @@ const Payment = () => {
         // Handle errors, such as displaying an error message
         console.log("Lỗi ", error);
         toast.error(error.response.data.message);
+        return;
       }
     }
   };
