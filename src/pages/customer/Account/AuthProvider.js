@@ -60,10 +60,8 @@ export const AuthProvider = ({ children }) => {
   const startSessionTimer = () => {
     const sessionTimeout = 60 * 60 * 1000;
 
-    // Xóa hết timer hiện tại (nếu có)
     clearTimeout(sessionTimer);
 
-    // Thiết lập một timer mới để đăng xuất sau một khoảng thời gian
     sessionTimer = setTimeout(() => {
       signout();
       toast.info("Đã tự động đăng xuất do hết phiên làm việc.");

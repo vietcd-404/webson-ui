@@ -243,6 +243,7 @@ const HoanThanh = () => {
       title: "Ngày Đặt",
       dataIndex: "ngayTao",
       key: "ngayTao",
+      width: 110,
     },
     {
       title: "Tổng Tiền",
@@ -337,8 +338,18 @@ const HoanThanh = () => {
           text = "Chưa thanh toán";
         }
 
-        return <span style={style}>{text}</span>;
+        return (
+          <span className="ml-5 mr-5" style={style}>
+            {text}
+          </span>
+        );
       },
+    },
+    {
+      title: "Ngày Thanh Toán",
+      dataIndex: "ngayThanhToan",
+      key: "ngayThanhToan",
+      width: 110,
     },
     {
       title: "Thao Tác",

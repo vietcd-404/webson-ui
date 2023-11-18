@@ -58,6 +58,8 @@ const TableVoucher = () => {
       thoiGianKetThuc: dayjs(record.thoiGianKetThuc),
       giaTriGiam: record.giaTriGiam,
       kieuGiamGia: record.kieuGiamGia,
+      dieuKien: record.dieuKien,
+      giamToiDa: record.giamToiDa,
       moTa: record.moTa,
       tenVoucher: record.tenVoucher,
     });
@@ -65,7 +67,6 @@ const TableVoucher = () => {
   };
 
   const handleEditCancel = () => {
-    // formUpdate.resetFields();
     setIsEditModalOpen(false);
   };
 
@@ -202,6 +203,16 @@ const TableVoucher = () => {
       key: "giaTriGiam",
     },
     {
+      title: "Điều kiện",
+      dataIndex: "dieuKien",
+      key: "dieuKien",
+    },
+    {
+      title: "Giảm tối đa",
+      dataIndex: "giamToiDa",
+      key: "giamToiDa",
+    },
+    {
       title: "Kiểu giảm giá",
       dataIndex: "kieuGiamGia",
       key: "kieuGiamGia",
@@ -300,11 +311,30 @@ const TableVoucher = () => {
                     <Input type="number" placeholder="Giá trị giảm" />
                   </Form.Item>
                   <Form.Item
-                    label="Mô tả"
-                    name="moTa"
+                    label="Giá trị giảm tối đa"
+                    name="giamToiDa"
                     style={{ width: "360px", marginLeft: "40px" }}
+                    rules={[
+                      {
+                        required: true,
+                        message: "Giá trị giảm tối đa không được để trống!",
+                      },
+                    ]}
                   >
-                    <TextArea rows={4} />
+                    <Input type="number" placeholder="Giá trị giảm tối đa" />
+                  </Form.Item>
+                  <Form.Item
+                    label="Điều kiện"
+                    name="dieuKien"
+                    style={{ width: "360px", marginLeft: "40px" }}
+                    rules={[
+                      {
+                        required: true,
+                        message: "Điều kiện giảm không được để trống!",
+                      },
+                    ]}
+                  >
+                    <Input type="number" placeholder="Giá trị giảm tối đa" />
                   </Form.Item>
                 </Col>
                 <Col span={12}>
@@ -345,6 +375,13 @@ const TableVoucher = () => {
                       format="DD-MM-YYYY"
                       style={{ width: "360px" }}
                     />
+                  </Form.Item>
+                  <Form.Item
+                    label="Mô tả"
+                    name="moTa"
+                    style={{ width: "360px", marginLeft: "40px" }}
+                  >
+                    <TextArea rows={4} />
                   </Form.Item>
                 </Col>
               </Row>
@@ -403,11 +440,30 @@ const TableVoucher = () => {
                 <Input type="number" placeholder="Giá trị giảm" />
               </Form.Item>
               <Form.Item
-                label="Mô tả"
-                name="moTa"
+                label="Giá trị giảm tối đa"
+                name="giamToiDa"
                 style={{ width: "360px", marginLeft: "40px" }}
+                rules={[
+                  {
+                    required: true,
+                    message: "Giá trị giảm tối đa không được để trống!",
+                  },
+                ]}
               >
-                <TextArea rows={4} />
+                <Input type="number" placeholder="Giá trị giảm tối đa" />
+              </Form.Item>
+              <Form.Item
+                label="Điều kiện"
+                name="dieuKien"
+                style={{ width: "360px", marginLeft: "40px" }}
+                rules={[
+                  {
+                    required: true,
+                    message: "Điều kiện giảm không được để trống!",
+                  },
+                ]}
+              >
+                <Input type="number" placeholder="Giá trị giảm tối đa" />
               </Form.Item>
             </Col>
             <Col span={12}>
@@ -440,6 +496,13 @@ const TableVoucher = () => {
                 rules={[{ required: true, message: "Chọn ngày kết thúc!" }]}
               >
                 <DatePicker format="DD-MM-YYYY" style={{ width: "360px" }} />
+              </Form.Item>
+              <Form.Item
+                label="Mô tả"
+                name="moTa"
+                style={{ width: "360px", marginLeft: "40px" }}
+              >
+                <TextArea rows={4} />
               </Form.Item>
             </Col>
           </Row>
