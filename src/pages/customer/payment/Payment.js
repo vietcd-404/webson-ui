@@ -311,17 +311,9 @@ const Payment = () => {
       console.error("Lỗi khi gọi API: ", error);
     }
   };
-
-  const [voucherApplied, setVoucherApplied] = useState(false);
-
-  const handleSubmit = (e) => {
-    e.preventDefault();
-    const tongTienSauKhiGiamGia = calculateTotalPrice();
-    setTongTien1(tongTienSauKhiGiamGia);
-    setVoucherApplied(true);
-  };
-
   const { user } = useAuth();
+  const [selectedVoucherCode, setSelectedVoucherCode] = useState("");
+
   const openModal = () => {
     setIsModalOpen(true);
   };
@@ -329,10 +321,43 @@ const Payment = () => {
   const closeModal = () => {
     setIsModalOpen(false);
   };
-  const [selectedVoucherCode, setSelectedVoucherCode] = useState("");
+  const [voucherDaSuDung, setVoucherDaSuDung] = useState(false);
+
+  const handleSubmit = (e) => {
+    e.preventDefault();
+    const voucherCode = selectedVoucherCode;
+
+    // Tìm thông tin voucher từ mảng voucher
+    const selectedVoucher = voucher.find(
+      (item) => item.tenVoucher === voucherCode
+    );
+
+    if (voucherDaSuDung) {
+      toast.warning("Voucher không khả dụng hoặc đã được sử dụng trước đó");
+      return;
+    }
+    if (!selectedVoucher || !selectedVoucherCode) {
+      toast.warning("Voucher không khả dụng hoặc đã được sử dụng trước đó");
+      return;
+    }
+
+    const tongTienSauKhiGiamGia = calculateTotalPrice();
+
+    if (tongTienSauKhiGiamGia === false) {
+      // Handle the case where the voucher conditions are not met
+      return;
+    }
+    if (!voucherDaSuDung) {
+      setTongTien1(tongTienSauKhiGiamGia);
+      toast.success("Sử dụng voucher thành công");
+
+      setVoucherDaSuDung(true);
+    }
+  };
+
   const handleVoucherSelection = (selectedVoucherCode) => {
     setSelectedVoucherCode(selectedVoucherCode);
-    setVoucherApplied(false);
+    setVoucherDaSuDung(false);
     setTongTien1(tamTinh);
     closeModal();
   };
@@ -345,28 +370,26 @@ const Payment = () => {
       (item) => item.tenVoucher === voucherCode
     );
 
-    if (!voucherApplied) {
-      if (selectedVoucher) {
-        const giamToiDa = selectedVoucher.giamToiDa;
-        const giaTriGiam = selectedVoucher.giaTriGiam;
-        const dieuKien = selectedVoucher.dieuKien;
+    if (selectedVoucher) {
+      const giamToiDa = selectedVoucher.giamToiDa;
+      const giaTriGiam = selectedVoucher.giaTriGiam;
+      const dieuKien = selectedVoucher.dieuKien;
 
-        let giamGia = 0;
-        if (tongTien1 >= dieuKien) {
-          giamGia = (giaTriGiam / 100) * tongTien1;
-        } else {
-          toast.error("Không đủ điều kiện áp mã");
-        }
-        console.log(giamGia);
-        if (giamGia > giamToiDa) {
-          giamGia = giamToiDa;
-        }
-        console.log(giamGia);
-        const tongTienSauKhiGiamGia = tongTien1 - giamGia;
-        console.log(tongTienSauKhiGiamGia);
-        toast.success("Sử sụng voucher thành công");
-        return tongTienSauKhiGiamGia;
+      let giamGia = 0;
+      if (tongTien1 >= dieuKien) {
+        giamGia = (giaTriGiam / 100) * tongTien1;
+      } else {
+        toast.error("Không đủ điều kiện áp mã");
+        return tongTien1;
       }
+      console.log(giamGia);
+      if (giamGia > giamToiDa) {
+        giamGia = giamToiDa;
+      }
+      console.log(giamGia);
+      const tongTienSauKhiGiamGia = tongTien1 - giamGia;
+      console.log(tongTienSauKhiGiamGia);
+      return tongTienSauKhiGiamGia;
     }
 
     return tongTien1;
@@ -375,7 +398,7 @@ const Payment = () => {
   const handleInput = (e) => {
     setSelectedVoucherCode(e.target.value);
     setTongTien1(tamTinh);
-    setVoucherApplied(false);
+    setVoucherDaSuDung(true);
     // if (setSelectedVoucherCode("")) {
     //   setTongTien1(tamTinh);
     // }

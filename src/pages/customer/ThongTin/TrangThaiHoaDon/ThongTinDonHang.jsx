@@ -99,7 +99,7 @@ function ThongTinDonHang() {
     loadHoaDonChitiet();
   }, [maHoaDon]);
 
-  const handleQuantityChange = async (event, maHoaDonCT) => {
+  const handleQuantityChange = async (event, maHoaDonCT, maHoaDon) => {
     const newQuantity = event.target.value;
     setData((prevData) =>
       prevData.map((item) =>
@@ -109,7 +109,7 @@ function ThongTinDonHang() {
       )
     );
     try {
-      await updateSoLuongSanPham(maHoaDonCT, newQuantity);
+      await updateSoLuongSanPham(maHoaDonCT, newQuantity, maHoaDon);
       loadSanPham();
     } catch (error) {
       console.error("Failed to update quantity:", error);
@@ -438,7 +438,7 @@ function ThongTinDonHang() {
                   item={item}
                   xoa={() => xoaSanPhamCT(item.maHoaDonCT)}
                   updateSoLuong={(e) =>
-                    handleQuantityChange(e, item.maHoaDonCT)
+                    handleQuantityChange(e, item.maHoaDonCT, item.maHoaDon)
                   }
                   trangThai={item.trangThai !== 0}
                 />
