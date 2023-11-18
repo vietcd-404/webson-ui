@@ -19,3 +19,7 @@ export const deleteVoucher = async (id) => {
 export const findVoucherById = async (id) => {
   return await api.get(`/admin/voucher/${id}`);
 };
+
+export const findVoucher = async () => {
+  return await api.get(`/user/voucher`);
+};

@@ -77,7 +77,7 @@ const Pagination = () => {
 
   const toggleSidebar = () => {
     setIsOpen(!isOpen);
-    if (!isOpen) {
+    if (isOpen) {
       setSelectedLoai("");
     }
   };
@@ -87,13 +87,13 @@ const Pagination = () => {
   };
   const toggleSidebarMau = () => {
     setIsOpenMau(!isOpenMau);
-    if (!isOpenMau) {
+    if (isOpenMau) {
       setSelectedMau("");
     }
   };
   const toggleSidebarThuongHieu = () => {
     setIsOpenthuongHieu(!isOpenThuongHieu);
-    if (!isOpenThuongHieu) {
+    if (isOpenThuongHieu) {
       setSelectedThuongHieu("");
     }
   };
