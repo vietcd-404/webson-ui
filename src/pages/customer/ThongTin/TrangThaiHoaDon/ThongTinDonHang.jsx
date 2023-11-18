@@ -88,6 +88,7 @@ function ThongTinDonHang() {
           const response = await xoaSanPham(ma);
           console.log(response);
           loadSanPham();
+          loadHoaDonChitiet();
         } catch (error) {
           console.error("Lỗi khi gọi API: ", error);
         }
@@ -111,6 +112,7 @@ function ThongTinDonHang() {
     try {
       await updateSoLuongSanPham(maHoaDonCT, newQuantity, maHoaDon);
       loadSanPham();
+      loadHoaDonChitiet();
     } catch (error) {
       console.error("Failed to update quantity:", error);
       toast.error(error.response.data.message);
