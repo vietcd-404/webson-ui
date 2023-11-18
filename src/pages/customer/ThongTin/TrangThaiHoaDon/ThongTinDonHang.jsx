@@ -100,8 +100,19 @@ function ThongTinDonHang() {
     loadHoaDonChitiet();
   }, [maHoaDon]);
 
-  const handleQuantityChange = async (event, maHoaDonCT, maHoaDon) => {
+  const handleQuantityChange = async (
+    event,
+    maHoaDonCT,
+    maHoaDon,
+    maxQuantity
+  ) => {
     const newQuantity = event.target.value;
+    if (newQuantity > maxQuantity) {
+      // You can choose to show an error message or handle it in a way suitable for your application
+      console.error("Quantity exceeds the maximum limit");
+      toast.error("Số lượng vượt giới hạn");
+      return;
+    }
     setData((prevData) =>
       prevData.map((item) =>
         item.maHoaDonCT === maHoaDonCT
@@ -109,6 +120,7 @@ function ThongTinDonHang() {
           : item
       )
     );
+
     try {
       await updateSoLuongSanPham(maHoaDonCT, newQuantity, maHoaDon);
       loadSanPham();
@@ -127,7 +139,7 @@ function ThongTinDonHang() {
   //         loadGioHang();
   //       }
   //     } catch (error) {
-  //       console.error("Lỗi khi xóa loại: ", error);
+  //       console.error("Lỗi khi xóa loại: ", errogur);
   //       toast.error("Xóa thất bại.");
   //     }
   //   };
@@ -420,7 +432,6 @@ function ThongTinDonHang() {
             </div>
           ))}
         </div>
-
         <div className="table-container overflow-x-auto">
           <p className="font-bold">Danh sách sản phẩm</p>
           <table className="page-table table table-hover mb-4">
@@ -440,7 +451,12 @@ function ThongTinDonHang() {
                   item={item}
                   xoa={() => xoaSanPhamCT(item.maHoaDonCT)}
                   updateSoLuong={(e) =>
-                    handleQuantityChange(e, item.maHoaDonCT, item.maHoaDon)
+                    handleQuantityChange(
+                      e,
+                      item.maHoaDonCT,
+                      item.maHoaDon,
+                      item.soLuongTon
+                    )
                   }
                   trangThai={item.trangThai !== 0}
                 />
