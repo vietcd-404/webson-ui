@@ -32,9 +32,9 @@ export const xoaSanPham = async (maHoaDon) => {
   return await api.delete(`/user/order/delete?maHoaDonCT=${maHoaDon}`);
 };
 
-export const updateSoLuongSanPham = async (maHoaDon, soLuong) => {
+export const updateSoLuongSanPham = async (maHoaDonCT, soLuong, maHoaDon) => {
   return await api.post(
-    `/user/order/update-so-luong?soLuong=${soLuong}&maHoaDonCT=${maHoaDon}`
+    `/user/order/update-so-luong?soLuong=${soLuong}&maHoaDonCT=${maHoaDonCT}&maHoaDon=${maHoaDon}`
   );
 };
 
