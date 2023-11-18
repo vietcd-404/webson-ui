@@ -47,7 +47,7 @@ const LayoutAdmin = ({ children }) => {
       getItem(<Link to="/admin/mau-sac">Màu</Link>, "6"),
     ]),
     getItem(
-      <Link to="/admin/hoa-don">Quản lý hóa đơn</Link>,
+      <Link to="/admin/hoa-don/cho-xac-nhan">Quản lý hóa đơn</Link>,
       "7",
       <BankOutlined />
     ),

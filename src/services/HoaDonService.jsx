@@ -41,3 +41,17 @@ export const updateSoLuongSanPham = async (maHoaDon, soLuong) => {
 export const taoHoaDonKhach = async (maSanPhamCT, hoaDon) => {
   return await api.post(`/guest/order/thanh-toan?ma=${maSanPhamCT}`, hoaDon);
 };
+
+export const getAllOrderByAdmin = async (trangThai) => {
+  return await api.get(`/admin/order/getAll?trangThai=${trangThai}`);
+};
+
+export const huytHoaDonByAdmin = async (maHoaDon) => {
+  return await api.put(`/admin/order/huy-hoa-don?maHD=${maHoaDon}`);
+};
+
+export const capNhapTrangThaiHoaDonByAdmin = async (trangThai, maHoaDon) => {
+  return await api.put(
+    `/admin/order/thaydoiTrangThai?maHD=${maHoaDon}&trangThai=${trangThai}`
+  );
+};

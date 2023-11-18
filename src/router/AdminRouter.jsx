@@ -14,7 +14,12 @@ import ListSPCT from "../components/admin/ListSPCT";
 import SanPhamChiTietLayout from "../components/admin/LayoutSanPhamChiTiet";
 import KhoAnh from "../pages/admin/KhoAnh/KhoAnh";
 import Voucher from "../pages/admin/Voucher/Voucher";
-import LayoutHoaDonChiTiet from "../components/admin/HoaDon/LayoutHoaDonChiTiet";
+import LayOutHoaDon from "../components/admin/HoaDon/LayOutHoaDon";
+import ChoXacNhan from "../components/admin/HoaDon/ChoXacNhan";
+import ChoGiao from "../components/admin/HoaDon/ChoGiao";
+import DangGiao from "../components/admin/HoaDon/DangGiao";
+import HoanThanh from "../components/admin/HoaDon/HoanThanh";
+import Huy from "../components/admin/HoaDon/Huy";
 const AdminRouter = () => {
   return (
     <div>
@@ -79,11 +84,61 @@ const AdminRouter = () => {
             </LayoutAdmin>
           }
         />
-        <Route
+        {/* <Route
           path="/hoa-don"
           element={
             <LayoutAdmin>
               <LayoutHoaDonChiTiet />
+            </LayoutAdmin>
+          }
+        /> */}
+        <Route
+          path="/hoa-don/cho-xac-nhan"
+          element={
+            <LayoutAdmin>
+              <LayOutHoaDon>
+                <ChoXacNhan></ChoXacNhan>
+              </LayOutHoaDon>
+            </LayoutAdmin>
+          }
+        />
+        <Route
+          path="/hoa-don/cho-giao"
+          element={
+            <LayoutAdmin>
+              <LayOutHoaDon>
+                <ChoGiao></ChoGiao>
+              </LayOutHoaDon>
+            </LayoutAdmin>
+          }
+        />
+        <Route
+          path="/hoa-don/dang-giao"
+          element={
+            <LayoutAdmin>
+              <LayOutHoaDon>
+                <DangGiao></DangGiao>
+              </LayOutHoaDon>
+            </LayoutAdmin>
+          }
+        />
+        <Route
+          path="/hoa-don/hoan-thanh"
+          element={
+            <LayoutAdmin>
+              <LayOutHoaDon>
+                <HoanThanh></HoanThanh>
+              </LayOutHoaDon>
+            </LayoutAdmin>
+          }
+        />
+        <Route
+          path="/hoa-don/huy"
+          element={
+            <LayoutAdmin>
+              <LayOutHoaDon>
+                <Huy></Huy>
+              </LayOutHoaDon>
             </LayoutAdmin>
           }
         />

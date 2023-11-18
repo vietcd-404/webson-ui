@@ -39,7 +39,6 @@ function TableSPCT() {
     try {
       const response = await findAllSPCT();
       setData(response.data);
-      console.log(response);
     } catch (error) {
       console.error("Lỗi khi gọi API: ", error);
     }
