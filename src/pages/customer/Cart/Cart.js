@@ -80,8 +80,13 @@ const Cart = () => {
       message.error("Xóa thất bại.");
     }
   };
-  const handleQuantityChange = async (event, sanPham) => {
+  const handleQuantityChange = async (event, sanPham, maxQuantity) => {
     const newQuantity = event.target.value;
+    if (newQuantity > maxQuantity) {
+      console.error("Quantity exceeds the maximum limit");
+      toast.error("Số lượng vượt giới hạn");
+      return;
+    }
     setData((prevData) =>
       prevData.map((item) =>
         item.maSanPhamCT === sanPham ? { ...item, soLuong: newQuantity } : item
@@ -183,7 +188,11 @@ const Cart = () => {
                                 item={item}
                                 xoa={() => handleXoa(item.maGioHang)}
                                 updateSoLuong={(e) =>
-                                  handleQuantityChange(e, item.maSanPhamCT)
+                                  handleQuantityChange(
+                                    e,
+                                    item.maSanPhamCT,
+                                    item.soLuongTon
+                                  )
                                 }
                               />
                             ))
