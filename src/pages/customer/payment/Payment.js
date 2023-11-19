@@ -16,6 +16,7 @@ import "react-toastify/dist/ReactToastify.css";
 import Model from "../../../components/customer/Model";
 import ModelVoucher from "../../../components/customer/ModelVoucher";
 import { findVoucher } from "../../../services/VoucherService";
+import { thanhToanVnPay } from "../../../services/VnPayService";
 
 /* <p>Payment gateway only applicable for Production build.</p>
         <Link to="/">
@@ -260,6 +261,36 @@ const Payment = () => {
     }
   };
 
+  const thanhToanVNPay = async () => {
+    try {
+      var totalAmount = parseInt(totalAmt, 10);
+
+      if (
+        isNaN(totalAmount) ||
+        totalAmount < 5000 ||
+        totalAmount >= 1000000000
+      ) {
+        // Nếu số tiền không hợp lệ, xử lý lỗi ở đây (ví dụ: hiển thị thông báo)
+        console.error("Số tiền không hợp lệ");
+        console.log(totalAmount);
+
+        // Hiển thị thông báo lỗi cho người dùng hoặc thực hiện các bước khác để xử lý lỗi.
+      } else {
+        const response = await thanhToanVnPay(totalAmount);
+        const thanhToanUrl = response.data.url;
+        window.location.href = thanhToanUrl;
+        console.log(totalAmount);
+      }
+      // Nếu số tiền hợp lệ, thực hiện thanh toán
+
+      // Tiếp tục xử lý dữ liệu hoặc thực hiện các bước tiếp theo sau khi thanh toán thành công.
+    } catch (error) {
+      // Handle errors, such as displaying an error message
+      console.log("Lỗi ", error);
+      toast.error(error.response.data.message);
+    }
+  };
+
   const hanldeOrderKhachHAang = async () => {
     if (products.length === 0) {
       toast.error("Không có sản phẩm trong giỏ hàng");
@@ -278,16 +309,24 @@ const Payment = () => {
           tongTien: totalAmt,
           soLuong: soLuong,
         };
+        if (formData.tenPhuongThuc === "MONEY") {
+          await taoHoaDonKhach(maSanPhamCTArray, updatedFormData);
+          Swal.fire({
+            title: "Tạo hóa đơn!",
+            text: "Tạo hóa đơn thành công",
+            icon: "success",
+          });
+          navigate("/shop");
+          dispatch(resetCart());
+        } else if (formData.tenPhuongThuc === "ELECTRONIC_WALLET") {
+          await taoHoaDonKhach(maSanPhamCTArray, updatedFormData);
+          thanhToanVNPay();
+          dispatch(resetCart());
+        } else {
+        }
 
-        await taoHoaDonKhach(maSanPhamCTArray, updatedFormData);
-        Swal.fire({
-          title: "Tạo hóa đơn!",
-          text: "Tạo hóa đơn thành công",
-          icon: "success",
-        });
         dispatch(resetCart());
         // Redirect to the desired page
-        navigate("/shop");
       } catch (error) {
         // Handle errors, such as displaying an error message
         console.log("Lỗi ", error);
@@ -402,6 +441,19 @@ const Payment = () => {
     // if (setSelectedVoucherCode("")) {
     //   setTongTien1(tamTinh);
     // }
+  };
+  const hanldeOrderKhach = () => {
+    const selectedPaymentMethod = formData.tenPhuongThuc;
+
+    if (selectedPaymentMethod === "MONEY") {
+      hanldeOrderKhachHAang();
+    } else if (selectedPaymentMethod === "ELECTRONIC_WALLET") {
+      thanhToanVNPay();
+    } else {
+    }
+  };
+  const hanldeOrder = () => {
+    const selectedPaymentMethod = formData.tenPhuongThuc;
   };
 
   return (

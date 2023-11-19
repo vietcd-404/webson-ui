@@ -5,6 +5,7 @@ import Swal from "sweetalert2";
 const initialState = {
   userInfo: [],
   products: [],
+  updateStatus: [],
 };
 
 export const orebiSlice = createSlice({
@@ -65,6 +66,10 @@ export const orebiSlice = createSlice({
     resetCart: (state) => {
       state.products = [];
     },
+    updateStatus: (state, action) => {
+      // Lấy dữ liệu từ action và cập nhật vào trạng thái
+      state.updateStatus = action.payload;
+    },
   },
 });
 
@@ -75,5 +80,6 @@ export const {
   deleteItem,
   resetCart,
   updateQuantity,
+  updateStatus,
 } = orebiSlice.actions;
 export default orebiSlice.reducer;
