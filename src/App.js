@@ -30,6 +30,7 @@ import Huy from "./pages/customer/ThongTin/TrangThaiHoaDon/Huy";
 import ThongTinDonHang from "./pages/customer/ThongTin/TrangThaiHoaDon/ThongTinDonHang";
 import XacNhan from "./pages/customer/ThongTin/TrangThaiHoaDon/XacNhan";
 import CaNhan from "./pages/customer/ThongTin/CaNhan";
+import ThongBaoXacNhan from "./pages/customer/payment/ThongBaoXacNhan";
 const App = () => {
   const { user } = useAuth();
   return (
@@ -59,6 +60,14 @@ const App = () => {
           element={
             <Main>
               <Shop />
+            </Main>
+          }
+        ></Route>
+        <Route
+          path="/done"
+          element={
+            <Main>
+              <ThongBaoXacNhan />
             </Main>
           }
         ></Route>

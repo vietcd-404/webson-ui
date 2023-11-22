@@ -8,6 +8,7 @@ import { useEffect } from "react";
 import { Link } from "react-router-dom";
 import { message } from "antd";
 import Swal from "sweetalert2";
+import WebSocketService from "../../../../services/WebSocketService";
 
 const TatCa = () => {
   const getStatusClassName = (status) => {
@@ -44,6 +45,8 @@ const TatCa = () => {
     }
   };
   const [data, setData] = useState([]);
+  const [messageValue, setMessageValue] = useState(null);
+
   const loadGioHang = async () => {
     try {
       const response = await hienHoaDonTatCa();
@@ -82,9 +85,11 @@ const TatCa = () => {
 
   useEffect(() => {
     loadGioHang();
-  }, []);
+  }, [messageValue]);
   return (
     <div>
+      <WebSocketService setValue={setMessageValue} connetTo="orderStatus" />
+
       {data.length === 0 ? (
         <p>Không có đơn hàng nào.</p>
       ) : (

@@ -1,4 +1,7 @@
+import { Stomp } from "@stomp/stompjs";
 import api from "./api";
+import SockJS from "sockjs-client";
+import EventEmitter from "eventemitter3";
 
 export const taoHoaDon = async (maGioHang, hoaDon) => {
   return await api.post(`/user/order/place/${maGioHang}`, hoaDon);
@@ -45,15 +48,34 @@ export const taoHoaDonKhach = async (maSanPhamCT, hoaDon) => {
 export const getAllOrderByAdmin = async (trangThai) => {
   return await api.get(`/admin/order/getAll?trangThai=${trangThai}`);
 };
-
+const stompClient = SockJS("http://localhost:8000/api/anh/ws");
 export const huytHoaDonByAdmin = async (maHoaDon) => {
-  return await api.put(`/admin/order/huy-hoa-don?maHD=${maHoaDon}`);
+  const response = await api.put(`/admin/order/huy-hoa-don?maHD=${maHoaDon}`);
+
+  stompClient.send(
+    "/app/updateHuy",
+    {},
+    JSON.stringify({
+      maHoaDon: response.data.maHoaDon,
+      trangThai: response.data.trangThai,
+    })
+  );
+  return response;
 };
 
 export const capNhapTrangThaiHoaDonByAdmin = async (trangThai, maHoaDon) => {
-  return await api.put(
+  const response = await api.put(
     `/admin/order/thaydoiTrangThai?maHD=${maHoaDon}&trangThai=${trangThai}`
   );
+  stompClient.send(
+    "/app/updateOrderStatus",
+    {},
+    JSON.stringify({
+      maHoaDon: response.data.maHoaDon,
+      trangThai: response.data.trangThai,
+    })
+  );
+  return response;
 };
 
 export const capNhapThanhToanHoaDonByAdmin = async (thanhToan, maHoaDon) => {

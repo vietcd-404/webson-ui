@@ -1,6 +1,7 @@
 import React from "react";
 
 const ItemCard = ({ item, xoa, updateSoLuong }) => {
+  const giaBan = item.giaBan * (item.phanTramGiam / 100);
   return (
     <>
       <tr key={item.maGioHang}>
@@ -14,7 +15,7 @@ const ItemCard = ({ item, xoa, updateSoLuong }) => {
         </td>
         <td className="font-bold">{item.tenSanPham}</td>
         <td className="min-w-[100px]">
-          <div className="public-price">{item.giaBan}đ</div>
+          <div className="public-price">{giaBan}đ</div>
         </td>
         <td className="min-w-[100px]">
           <input
@@ -32,7 +33,7 @@ const ItemCard = ({ item, xoa, updateSoLuong }) => {
           />
         </td>
         <td className="min-w-[100px]" id={`product-price-${item.maGioHang}`}>
-          {item.giaBan * item.soLuong}
+          {giaBan * item.soLuong}
         </td>
         <td className="min-w-[100px]">
           <button

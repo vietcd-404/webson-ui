@@ -14,6 +14,8 @@ import SampleNextArrow from "../../../components/customer/home/NewArrivals/Sampl
 import SamplePrevArrow from "../../../components/customer/home/NewArrivals/SamplePrevArrow";
 import Heading from "../../../components/customer/home/Products/Heading";
 import Slider from "react-slick";
+import { toast, ToastContainer } from "react-toastify";
+import "react-toastify/dist/ReactToastify.css";
 const ProductDetails = (props) => {
   const [prevLocation, setPrevLocation] = useState("");
   const location = useLocation();
@@ -72,6 +74,7 @@ const ProductDetails = (props) => {
   };
   return (
     <div className="container mx-auto border-b-[1px] border-b-gray-300">
+      <ToastContainer />
       <div className="max-w-container mx-auto px-4">
         <div className="xl:-mt-10 -mt-7">
           <Breadcrumbs title="" prevLocation={prevLocation} />

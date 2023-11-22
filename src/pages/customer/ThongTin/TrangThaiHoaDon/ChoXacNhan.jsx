@@ -4,6 +4,7 @@ import { Link } from "react-router-dom";
 import { hienHoaDon, huytHoaDon } from "../../../../services/HoaDonService";
 import { useState } from "react";
 import Swal from "sweetalert2";
+import WebSocketService from "../../../../services/WebSocketService";
 
 const ChoXacNhan = () => {
   const getStatusClassName = (status) => {
@@ -74,12 +75,15 @@ const ChoXacNhan = () => {
       }
     });
   };
+  const [messageValue, setMessageValue] = useState(null);
 
   useEffect(() => {
     loadGioHang();
-  }, []);
+  }, [messageValue]);
   return (
     <div>
+      <WebSocketService setValue={setMessageValue} connetTo="orderStatus" />
+
       {data.length === 0 ? (
         <p>Không có đơn hàng nào.</p>
       ) : (

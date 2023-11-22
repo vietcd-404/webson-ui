@@ -6,6 +6,7 @@ import {
   hienHoaDonTatCa,
 } from "../../../../services/HoaDonService";
 import { useState } from "react";
+import WebSocketService from "../../../../services/WebSocketService";
 
 const DangGiao = () => {
   const getStatusClassName = (status) => {
@@ -42,6 +43,8 @@ const DangGiao = () => {
     }
   };
   const [data, setData] = useState([]);
+  const [messageValue, setMessageValue] = useState(null);
+
   const loadGioHang = async () => {
     try {
       const response = await hienHoaDon(2);
@@ -52,9 +55,11 @@ const DangGiao = () => {
   };
   useEffect(() => {
     loadGioHang();
-  }, []);
+  }, [messageValue]);
   return (
     <div>
+      <WebSocketService setValue={setMessageValue} connetTo="orderStatus" />
+
       {data.length === 0 ? (
         <p>Không có đơn hàng nào.</p>
       ) : (

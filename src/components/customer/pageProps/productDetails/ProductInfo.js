@@ -91,7 +91,7 @@ const ProductInfo = ({ item }) => {
                 tenSanPham: item.tenSanPham,
                 soLuong: 1,
                 anh: item.img,
-                giaBan: item.giaBan,
+                giaBan: item.giaBan * (item.phanTramGiam / 100),
                 tenThuongHieu: item.tenThuongHieu,
               })
             )

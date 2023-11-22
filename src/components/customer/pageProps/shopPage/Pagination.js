@@ -375,6 +375,7 @@ const Pagination = () => {
                       maSanPhamCT={item.maSanPhamCT}
                       img={item.danhSachAnh[0]}
                       tenSanPham={item.tenSanPham}
+                      phanTramGiam={item.phanTramGiam}
                       giaBan={item.giaBan}
                       tenMau={item.tenMau}
                       tenThuongHieu={item.tenThuongHieu}

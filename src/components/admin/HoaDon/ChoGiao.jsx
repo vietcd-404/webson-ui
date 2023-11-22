@@ -353,7 +353,9 @@ const ChoXacNhan = () => {
             </Button>
           )}
           {record.trangThai === 1 && (
-            <Button onClick={() => handleCancel(record.maHoaDon)}>Hủy</Button>
+            <Button onClick={() => handleUpdate(4, record.maHoaDon)}>
+              Hủy
+            </Button>
           )}
           {record.trangThai === 2 && (
             <Button onClick={() => handleUpdate(3, record.maHoaDon)}>

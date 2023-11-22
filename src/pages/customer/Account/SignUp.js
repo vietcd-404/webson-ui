@@ -6,6 +6,7 @@ import { ToastContainer, toast } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
 const SignUp = () => {
   const [checked, setChecked] = useState(false);
+  const [loading, setLoading] = useState(false);
   const [formData, setFormData] = useState({
     username: "",
     email: "",
@@ -67,6 +68,7 @@ const SignUp = () => {
     e.preventDefault();
 
     if (validateForm()) {
+      setLoading(true);
       // try {
       //   const response = await dangKy(formData);
 
@@ -86,8 +88,11 @@ const SignUp = () => {
       // }
       await dangKy(formData)
         .then((response) => {
+          setLoading(true);
           toast.success(response.data.message);
+
           setTimeout(() => {
+            setLoading(true);
             const email = formData.email;
             // Sử dụng `navigate` hoặc chức năng chuyển hướng khác ở đây
             navigate(`/active?email=${email}`);
@@ -95,12 +100,20 @@ const SignUp = () => {
         })
         .catch((error) => {
           toast.error(error.response.data.message);
+          setLoading(false);
         });
     }
   };
 
   return (
     <div className="container mx-auto h-screen flex items-center justify-start">
+      <div
+        className={`fixed top-0 left-0 w-full h-full flex justify-center items-center bg-black bg-opacity-50 z-50 ${
+          loading ? "" : "hidden"
+        }`}
+      >
+        <div className="border-t-4 border-r-[3px] border-l-2 border-gray-700 border-solid rounded-full h-14 w-14 animate-spin"></div>
+      </div>
       <ToastContainer />
       <div className="w-full lgl:w-[500px] h-full flex flex-col justify-center">
         <form

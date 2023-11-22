@@ -9,24 +9,27 @@ import {
 } from "../../../../services/HoaDonService";
 import { useState } from "react";
 import { useEffect } from "react";
-import ItemCard from "../../Cart/ItemCard";
-import { updateSoLuong } from "../../../../services/GioHangService";
-import FormHoaDon from "./FormSanPham";
+
 import axios from "axios";
-import { Modal, message } from "antd";
-import { CloseOutlined } from "@ant-design/icons";
+import { message } from "antd";
 
 import Swal from "sweetalert2";
 import Model from "../../../../components/customer/Model";
 import FormSanPham from "./FormSanPham";
 import { ToastContainer, toast } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
+import SockJS from "sockjs-client";
+import { Stomp } from "@stomp/stompjs";
+
+import WebSocketService from "../../../../services/WebSocketService";
 const host = "https://provinces.open-api.vn/api/";
 
 function ThongTinDonHang() {
   const { maHoaDon } = useParams();
 
   console.log(maHoaDon);
+  const [messageValue, setMessageValue] = useState(null);
+
   const [donHang, setDonHang] = useState([]);
   const [data, setData] = useState([]);
   const [provinces, setProvinces] = useState([]);
@@ -98,7 +101,58 @@ function ThongTinDonHang() {
   useEffect(() => {
     loadSanPham();
     loadHoaDonChitiet();
-  }, [maHoaDon]);
+  }, [maHoaDon, messageValue]);
+
+  useEffect(() => {
+    // Socket.on('/topic/update', (payload) => {
+    //   payload.id === '';
+    //   setForm
+    // })
+  }, []);
+  // useEffect(() => {
+  //   const handleOrderStatusUpdate = (order) => {
+  //     // Xử lý thông điệp cập nhật trạng thái hóa đơn
+  //     console.log("Received order status update:", order);
+  //     // Cập nhật giao diện người dùng dựa trên thông điệp nhận được
+  //   };
+
+  //   // Đăng ký callback để xử lý thông điệp cập nhật trạng thái
+  //   const unsubscribe = webSocketService.subscribeToOrderStatus(
+  //     handleOrderStatusUpdate
+  //   );
+
+  //   // Đảm bảo huỷ đăng ký khi component bị unmounted
+  //   return () => {
+  //     // unsubscribe.;
+  //   };
+  // }, []);
+
+  // useEffect(() => {
+  //   const socket = new SockJS("http://localhost:8000/api/anh/ws");
+  //   const stompClient = Stomp.over(socket);
+
+  //   const connectCallback = (frame) => {
+  //     console.log("Connected: " + frame);
+
+  //     stompClient.subscribe("/topic/statusUpdates", (message) => {
+  //       // Handle the received HoaDon update, e.g., update the UI
+
+  //       const hoaDon = JSON.parse(message.body);
+  //       console.log("Received HoaDon update:", hoaDon);
+
+  //       // Update the UI or dispatch an action to update the state
+  //     });
+  //   };
+
+  //   stompClient.connect({}, connectCallback);
+
+  //   // Cleanup on component unmount
+  //   return () => {
+  //     if (stompClient.connected) {
+  //       stompClient.disconnect();
+  //     }
+  //   };
+  // }, []);
 
   const handleQuantityChange = async (
     event,
@@ -254,6 +308,27 @@ function ThongTinDonHang() {
       message.error(error.response?.data?.message || "Error creating invoice");
     }
   };
+  const socket = new SockJS("http://localhost:8000/api/anh/ws");
+  const stompClient = Stomp.over(socket);
+
+  useEffect(() => {
+    stompClient.connect({}, (frame) => {
+      console.log("Connected: " + frame);
+
+      // Đăng ký người nghe cho đường dẫn "/topic/tao-hoa-don"
+      stompClient.subscribe("/topic/update", (message) => {
+        const maHoaDon1 = JSON.parse(message.body).maHoaDon;
+        try {
+          const response = hoaDonChiTiet(maHoaDon1);
+          setData(response.data);
+          console.log(response);
+        } catch (error) {
+          console.error("Lỗi khi gọi API: ", error);
+        }
+        // Xử lý thông điệp ở đây, có thể cập nhật UI hoặc thực hiện các tác vụ khác
+      });
+    });
+  });
 
   const [isModalOpen, setIsModalOpen] = useState(false);
 
@@ -270,11 +345,16 @@ function ThongTinDonHang() {
       <h5>Thông tin đơn hàng</h5>
       <div>
         <div>
+          <WebSocketService setValue={setMessageValue} connetTo="orderStatus" />
           <ToastContainer />
           {donHang.map((hoaDon) => (
             <div className="container mx-auto mt-8">
               <div className="border rounded p-4" key={hoaDon.maHoaDon}>
                 <div className="border-b-2 p-2 mb-4">
+                  {/* <WebSocketService
+                    setValue={loadSanPham}
+                    connetTo="orderStatus"
+                  /> */}
                   <span className="font-bold text-lg">Thông tin nhận hàng</span>
                 </div>
 

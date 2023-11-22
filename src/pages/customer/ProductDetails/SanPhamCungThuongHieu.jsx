@@ -9,6 +9,7 @@ const SanPhamCungThuongHieu = ({ item }) => {
         img={item.img[0]}
         tenSanPham={item.tenSanPham}
         giaBan={item.giaBan}
+        phanTramGiam={item.phanTramGiam}
         tenMau={item.tenMau}
         tenThuongHieu={item.tenThuongHieu}
         tenLoai={item.tenLoai}

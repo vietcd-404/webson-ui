@@ -17,6 +17,7 @@ import Model from "../../../components/customer/Model";
 import ModelVoucher from "../../../components/customer/ModelVoucher";
 import { findVoucher } from "../../../services/VoucherService";
 import { thanhToanVnPay } from "../../../services/VnPayService";
+import { RingLoader } from "react-spinners";
 
 /* <p>Payment gateway only applicable for Production build.</p>
         <Link to="/">
@@ -147,7 +148,8 @@ const Payment = () => {
   useEffect(() => {
     let tongTien = 0;
     data.map((item) => {
-      tongTien += item.giaBan * item.soLuong;
+      const giaBan = item.giaBan * (item.phanTramGiam / 100);
+      tongTien += giaBan * item.soLuong;
       return tongTien;
     });
     setTongTien1(tongTien);
@@ -155,7 +157,8 @@ const Payment = () => {
   useEffect(() => {
     let tongTien = 0;
     data.map((item) => {
-      tongTien += item.giaBan * item.soLuong;
+      const giaBan = item.giaBan * (item.phanTramGiam / 100);
+      tongTien += giaBan * item.soLuong;
       return tongTien;
     });
     setTamTinh(tongTien);
@@ -173,6 +176,7 @@ const Payment = () => {
   useEffect(() => {
     let tt = 0;
     products.map((item) => {
+      const giaBan = item.giaBan * (item.phanTramGiam / 100);
       tt += item.giaBan * item.soLuong;
       return tt;
     });
@@ -232,6 +236,7 @@ const Payment = () => {
       return;
     }
     if (validateForm()) {
+      setLoading(true);
       try {
         if (!formData.tenPhuongThuc) {
           toast.error("Vui lòng chọn phương thức thanh toán");
@@ -245,6 +250,7 @@ const Payment = () => {
         const maGH = data[0].maGH;
 
         await taoHoaDon(maGH, updatedFormData);
+        setLoading(true);
         Swal.fire({
           title: "Tạo hóa đơn!",
           text: "Tạo hóa đơn thành công",
@@ -257,6 +263,7 @@ const Payment = () => {
         // Handle errors, such as displaying an error message
         console.log("Lỗi ", error);
         toast.error(error.response.data.message);
+        setLoading(false);
       }
     }
   };
@@ -290,6 +297,8 @@ const Payment = () => {
       toast.error(error.response.data.message);
     }
   };
+  const [loading, setLoading] = useState(false);
+  const [thanhCong, setThanhCong] = useState(false);
 
   const hanldeOrderKhachHAang = async () => {
     if (products.length === 0) {
@@ -297,6 +306,7 @@ const Payment = () => {
       return;
     }
     if (validateForm()) {
+      setLoading(true);
       try {
         if (!formData.tenPhuongThuc) {
           toast.error("Vui lòng chọn phương thức thanh toán");
@@ -311,6 +321,7 @@ const Payment = () => {
         };
         if (formData.tenPhuongThuc === "MONEY") {
           await taoHoaDonKhach(maSanPhamCTArray, updatedFormData);
+          setLoading(true);
           Swal.fire({
             title: "Tạo hóa đơn!",
             text: "Tạo hóa đơn thành công",
@@ -319,8 +330,10 @@ const Payment = () => {
           navigate("/shop");
           dispatch(resetCart());
         } else if (formData.tenPhuongThuc === "ELECTRONIC_WALLET") {
-          await taoHoaDonKhach(maSanPhamCTArray, updatedFormData);
+          setLoading(true);
           thanhToanVNPay();
+          await taoHoaDonKhach(maSanPhamCTArray, updatedFormData);
+
           dispatch(resetCart());
         } else {
         }
@@ -331,6 +344,7 @@ const Payment = () => {
         // Handle errors, such as displaying an error message
         console.log("Lỗi ", error);
         message.error(error.response.data.message);
+        setLoading(false);
       }
     }
   };
@@ -370,7 +384,12 @@ const Payment = () => {
     const selectedVoucher = voucher.find(
       (item) => item.tenVoucher === voucherCode
     );
+    const dieuKien = selectedVoucher.dieuKien;
 
+    if (tongTien1 <= dieuKien) {
+      toast.error("Không đủ điều kiện áp mã");
+      return tongTien1;
+    }
     if (voucherDaSuDung) {
       toast.warning("Voucher không khả dụng hoặc đã được sử dụng trước đó");
       return;
@@ -391,6 +410,7 @@ const Payment = () => {
       toast.success("Sử dụng voucher thành công");
 
       setVoucherDaSuDung(true);
+      return;
     }
   };
 
@@ -418,7 +438,6 @@ const Payment = () => {
       if (tongTien1 >= dieuKien) {
         giamGia = (giaTriGiam / 100) * tongTien1;
       } else {
-        toast.error("Không đủ điều kiện áp mã");
         return tongTien1;
       }
       console.log(giamGia);
@@ -461,7 +480,13 @@ const Payment = () => {
       {/* Breadcrumbs component */}
       <ToastContainer />
       <Breadcrumbs title="Thanh toán hóa đơn" />
-
+      <div
+        className={`fixed top-0 left-0 w-full h-full flex justify-center items-center bg-black bg-opacity-50 z-50 ${
+          loading ? "" : "hidden"
+        }`}
+      >
+        <div className="border-t-4 border-r-[3px] border-l-2 border-gray-700 border-solid rounded-full h-14 w-14 animate-spin"></div>
+      </div>
       <div className="pb-10">
         <div className="grid grid-cols-1 md:grid-cols-12 gap-8 mt-4 mb-5">
           <div className="md:col-span-9 layout-form">
@@ -670,11 +695,14 @@ const Payment = () => {
               {user
                 ? data.map((item) => (
                     <div className="flex list-product mb-4">
-                      <img
-                        src={`data:image/png;base64,${item.anh}`}
-                        alt={item.tenSanPham}
-                        className="img-fluid flex-shrink-0 w-[30%]" // Use flex-shrink-0 to prevent image shrinking
-                      />
+                      <Link to={`/product/${item.maSanPhamCT}`}>
+                        <img
+                          src={`data:image/png;base64,${item.anh}`}
+                          alt={item.tenSanPham}
+                          className="img-fluid flex-shrink-0 w-[30%]" // Use flex-shrink-0 to prevent image shrinking
+                        />
+                      </Link>
+
                       <div className="item-info ml-4">
                         <p className="item-brand mb-0 fw-bold text-uppercase">
                           {item.tenthuongHieu}
@@ -691,16 +719,21 @@ const Payment = () => {
                   ))
                 : products.map((item) => (
                     <div className="flex list-product mb-4">
-                      <img
-                        src={`data:image/png;base64,${item.anh[0]}`}
-                        alt={item.tenSanPham}
-                        className="img-fluid flex-shrink-0 w-[30%]" // Use flex-shrink-0 to prevent image shrinking
-                      />
+                      <Link to={`/product/${item.maSanPhamCT}`}>
+                        <img
+                          src={`data:image/png;base64,${item.anh}`}
+                          alt={item.tenSanPham}
+                          className="img-fluid flex-shrink-0 w-[30%]" // Use flex-shrink-0 to prevent image shrinking
+                        />
+                      </Link>
+
                       <div className="item-info ml-4">
                         <p className="item-brand mb-0 fw-bold text-uppercase">
                           {item.tenthuongHieu}
                         </p>
-                        <p className="item-title mb-0">{item.tenSanPham}</p>
+                        <Link to={`/product/${item.maSanPhamCT}`}>
+                          <p className="item-title mb-0">{item.tenSanPham}</p>
+                        </Link>
                         <p className="item-quantity mb-0">
                           SL:{" "}
                           <span className="fw-bold" name="soLuong">

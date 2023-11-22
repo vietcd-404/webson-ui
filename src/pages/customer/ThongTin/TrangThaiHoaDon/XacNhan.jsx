@@ -3,6 +3,7 @@ import { useEffect } from "react";
 import { Link } from "react-router-dom";
 import { hienHoaDon } from "../../../../services/HoaDonService";
 import { useState } from "react";
+import WebSocketService from "../../../../services/WebSocketService";
 
 const XacNhan = () => {
   const getStatusClassName = (status) => {
@@ -51,11 +52,15 @@ const XacNhan = () => {
       console.error("Lỗi khi gọi API: ", error);
     }
   };
+  const [messageValue, setMessageValue] = useState(null);
+
   useEffect(() => {
     loadGioHang();
-  }, []);
+  }, [messageValue]);
   return (
     <div>
+      <WebSocketService setValue={setMessageValue} connetTo="orderStatus" />
+
       {data.length === 0 ? (
         <p>Không có đơn hàng nào.</p>
       ) : (

@@ -1,7 +1,6 @@
 import React from "react";
 import { useEffect, useState } from "react";
 import { Button, Col, Form, Input, Row, Tabs } from "antd";
-import { Link } from "react-router-dom";
 import {
   ExclamationCircleFilled,
   EyeOutlined,
@@ -16,6 +15,9 @@ import {
   inforUserHoaDon,
   productInforHoaDon,
 } from "../../../services/HoaDonService";
+import WebSocketService from "../../../services/WebSocketService";
+import { Stomp } from "@stomp/stompjs";
+import SockJS from "sockjs-client";
 
 const ChoXacNhan = () => {
   const [totalPage, setTotalPage] = useState(1);
@@ -28,6 +30,7 @@ const ChoXacNhan = () => {
   const [formUpdate] = Form.useForm();
   const [editFormData, setEditFormData] = useState(null);
   const [isEditModalOpen, setIsEditModalOpen] = useState(false);
+  const [messageValue, setMessageValue] = useState(null);
 
   const showEditModal = async (record) => {
     const response = await inforUserHoaDon(record.maHoaDon);
@@ -199,6 +202,8 @@ const ChoXacNhan = () => {
       onCancel: () => {},
     });
   };
+  const socket = new SockJS("http://localhost:8000/api/anh/ws");
+  const stompClient = Stomp.over(socket);
 
   const columnProduct = [
     {
@@ -345,7 +350,9 @@ const ChoXacNhan = () => {
           )}
 
           {record.trangThai === 0 && (
-            <Button onClick={() => handleCancel(record.maHoaDon)}>Hủy</Button>
+            <Button onClick={() => handleUpdateStatus(4, record.maHoaDon)}>
+              Hủy
+            </Button>
           )}
         </Space>
       ),
@@ -365,6 +372,8 @@ const ChoXacNhan = () => {
 
   return (
     <div>
+      <WebSocketService setValue={setMessageValue} connetTo="orderStatus" />
+
       <ToastContainer />
       <Modal
         open={isEditModalOpen}

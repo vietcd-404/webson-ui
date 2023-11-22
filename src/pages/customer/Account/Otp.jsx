@@ -10,6 +10,8 @@ function Otp() {
   const [otp, setOtp] = useState(["", "", "", "", "", ""]);
   const [message, setMessage] = useState("");
   const [email, setEmail] = useState("");
+  const [loading, setLoading] = useState("");
+
   const navigate = useNavigate();
   useEffect(() => {
     // Sử dụng useEffect để lấy email từ tham số URL khi component được tạo
@@ -53,16 +55,16 @@ function Otp() {
         )}`
       )
       .then((response) => {
-        // setMessage(response.data.message);
+        setLoading(true);
         toast.success(response.data.message);
         setTimeout(() => {
-          // Sử dụng `navigate` hoặc chức năng chuyển hướng khác ở đây
           navigate("/signin");
         }, 3000);
       })
       .catch((error) => {
         // setMessage(error.response.data.message);
         toast.error(error.response.data.message);
+        setLoading(false);
       });
   };
 
@@ -70,15 +72,24 @@ function Otp() {
     axios
       .get(`http://localhost:8000/api/auth/resend-otp?email=${email}`)
       .then((response) => {
+        setLoading(true);
         toast.success(response.data.message);
       })
       .catch((error) => {
         toast.error(error.response.data.message);
+        setLoading(false);
       });
   };
 
   return (
     <div className="flex justify-center items-center h-screen border">
+      <div
+        className={`fixed top-0 left-0 w-full h-full flex justify-center items-center bg-black bg-opacity-50 z-50 ${
+          loading ? "" : "hidden"
+        }`}
+      >
+        <div className="border-t-4 border-r-[3px] border-l-2 border-gray-700 border-solid rounded-full h-14 w-14 animate-spin"></div>
+      </div>
       <ToastContainer />
       <div className="text-center">
         <h1 className="mb-4 text-2xl font-bold">

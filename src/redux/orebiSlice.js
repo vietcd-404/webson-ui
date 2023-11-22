@@ -1,5 +1,6 @@
 import { createSlice } from "@reduxjs/toolkit";
 import { message } from "antd";
+import { toast } from "react-toastify";
 import Swal from "sweetalert2";
 
 const initialState = {
@@ -17,7 +18,12 @@ export const orebiSlice = createSlice({
         (item) => item.maSanPhamCT === action.payload.maSanPhamCT
       );
       if (item) {
-        item.soLuong += action.payload.soLuong;
+        if (item.soLuong < 10) {
+          item.soLuong += action.payload.soLuong;
+        } else {
+          toast.error("Vượt giới hạn mua, vui lòng đăng nhập để mua thêm");
+          return;
+        }
       } else {
         state.products.push(action.payload);
       }
@@ -35,7 +41,7 @@ export const orebiSlice = createSlice({
         if (item.soLuong < 10) {
           item.soLuong++;
         } else {
-          message.error("Vượt giới hạn mua, vui lòng đăng nhập để mua thêm");
+          toast.error("Vượt giới hạn mua, vui lòng đăng nhập để mua thêm");
         }
       }
     },

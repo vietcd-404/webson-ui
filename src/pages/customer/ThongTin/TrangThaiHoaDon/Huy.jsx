@@ -4,6 +4,7 @@ import {
   hienHoaDonTatCa,
 } from "../../../../services/HoaDonService";
 import { Link } from "react-router-dom";
+import WebSocketService from "../../../../services/WebSocketService";
 
 const Huy = () => {
   const getStatusClassName = (status) => {
@@ -40,6 +41,8 @@ const Huy = () => {
     }
   };
   const [data, setData] = useState([]);
+  const [messageValue, setMessageValue] = useState(null);
+
   const loadGioHang = async () => {
     try {
       const response = await hienHoaDon(4);
@@ -50,9 +53,11 @@ const Huy = () => {
   };
   useEffect(() => {
     loadGioHang();
-  }, []);
+  }, [messageValue]);
   return (
     <div>
+      <WebSocketService setValue={setMessageValue} connetTo="orderStatus" />
+
       {data.length === 0 ? (
         <p>Không có đơn hàng nào.</p>
       ) : (
