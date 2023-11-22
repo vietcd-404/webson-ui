@@ -16,7 +16,7 @@ const About = () => {
           <span className="text-primeColor font-semibold text-xl">
             Shop HEVA
           </span>{" "}
-          có trụ sở chính tại Hà Nội. Nhận Ship hàng tại TPHCM, Hà Nội và các
+          có trụ sở chính tại Hà Nội. Nhận Ship hàng tại nội thành Hà Nội và các
           tỉnh thành tại Việt Nam.
           <br />{" "}
           <span className="text-primeColor font-semibold text-lg">

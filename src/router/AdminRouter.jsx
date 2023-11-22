@@ -9,7 +9,7 @@ import Mau from "../pages/admin/ThuocTinh/Mau";
 import ThuongHieu from "../pages/admin/ThuocTinh/ThuongHieu";
 import NguoiDung from "../pages/admin/NguoiDung/NguoiDung";
 import ThanhToan from "../pages/admin/PhuongThucThanhToan/ThanhToan";
-import TableSPCT from "../components/admin/TableSPCT";
+import AddSPCT from "../components/admin/AddSPCT";
 import ListSPCT from "../components/admin/ListSPCT";
 import SanPhamChiTietLayout from "../components/admin/LayoutSanPhamChiTiet";
 import KhoAnh from "../pages/admin/KhoAnh/KhoAnh";
@@ -37,7 +37,7 @@ const AdminRouter = () => {
           element={
             <LayoutAdmin>
               <SanPhamChiTietLayout>
-                <TableSPCT></TableSPCT>
+                <AddSPCT></AddSPCT>
               </SanPhamChiTietLayout>
             </LayoutAdmin>
           }
