@@ -18,6 +18,10 @@ export const creatSPCT = async (sanPham) => {
   return await api.post("/admin/san-pham-chi-tiet/add", sanPham);
 };
 
+export const creatListSPCT = async (sanPham) => {
+  return await api.post("/admin/san-pham-chi-tiet/add-all", sanPham);
+};
+
 export const updateSPCT = async (sanPham, ma) => {
   return await api.put(`/admin/san-pham-chi-tiet/update/${sanPham}`, ma);
 };

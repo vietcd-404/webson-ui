@@ -9,6 +9,9 @@ import {
   Checkbox,
   Menu,
   Switch,
+  Input,
+  Select,
+  Card,
 } from "antd";
 import {
   EditOutlined,
@@ -32,9 +35,16 @@ import {
   xoaAnhSanPham,
 } from "../../services/AnhSanPhamService";
 import ModalUpdateSPCT from "./ModalUpdateSPCT";
+import { loadAllMau } from "../../services/MauService";
+import { loadAllSanPham } from "../../services/SanPhamService";
+import { loadAllLoai } from "../../services/LoaiService";
+import { loadAllThuongHieu } from "../../services/ThuongHieuService";
+
+const { Option } = Select;
 
 const ListSPCT = () => {
   const [data, setData] = useState([]);
+  const [dataFilter, setDataFilter] = useState([]);
   // const [dataAnh, setDataAnh] = useState([]);
   const [loading, setLoading] = useState(true);
   const [totalPage, setTotalPage] = useState(1);
@@ -45,15 +55,45 @@ const ListSPCT = () => {
   const [availableImages, setAvailableImages] = useState([]);
   const [selectedImages, setSelectedImages] = useState([]);
   const [visibleModal, setVisibleModal] = useState(false);
+
   const [dataEdit, setDataEdit] = useState([]);
+
+  // Search tên
+  const [searchTenSP, setSearchTenSP] = useState("");
+
+  // Thay đổi trạng thái
   const [switchStatus, setSwitchStatus] = useState({});
+
+  // Tìm kiếm phân trang
+  const [filterValues, setFilterValues] = useState({
+    tenSanPham: "",
+    tenLoai: "",
+    tenMau: "",
+    tenThuongHieu: "",
+  });
+
+  const [mauList, setMauList] = useState([]);
+  const [sanPhamList, setSanPhamList] = useState([]);
+  const [loaiList, setLoaiList] = useState([]);
+  const [thuongHieuList, setThuongHieuList] = useState([]);
+
+  // Select Combobox
+  const [selectedSanPham, setSelectedSanPham] = useState(null);
+  const [selectedLoai, setSelectedLoai] = useState(null);
+  const [selectedMau, setSelectedMau] = useState(null);
+  const [selectedThuongHieu, setSelectedThuongHieu] = useState(null);
 
   useEffect(() => {
     loadTable();
     loadAvailableImages();
     showImageModal();
+    fetchMauList();
+    fetchSanPhamList();
+    fetchLoaiList();
+    fetchThuongHieuList();
   }, []);
 
+  // Thêm, sửa, xóa ảnh
   const loadAvailableImages = async () => {
     try {
       const response = await findAllAnhSanPham();
@@ -77,14 +117,7 @@ const ListSPCT = () => {
       setSelectedImages([...selectedImages, ma]);
     }
   };
-  const showEditSPCT = (record) => {
-    setVisibleModal(true);
-    setDataEdit(record);
-  };
-  const cancelEditSPCT = () => {
-    setVisibleModal(false);
-  };
-
+  // Sửa thông tin sản phẩm chi tiết
   const handleAddSelectedImages = async () => {
     if (
       !selectedProduct ||
@@ -113,6 +146,15 @@ const ListSPCT = () => {
     }
   };
 
+  const showEditSPCT = (record) => {
+    setVisibleModal(true);
+    setDataEdit(record);
+  };
+  const cancelEditSPCT = () => {
+    setVisibleModal(false);
+  };
+
+  // Hiển thị thông tin lên table
   const loadTable = async () => {
     try {
       const response = await findAllSPCT();
@@ -125,6 +167,7 @@ const ListSPCT = () => {
     }
   };
 
+  // Hiển thị model cập nhập ảnh
   const showImageModal = async (record) => {
     try {
       const productImages = await listImageSanPham(record.maSanPhamCT);
@@ -232,16 +275,103 @@ const ListSPCT = () => {
     }
   };
 
+  // Filter và tìm kiếm
+  const fetchMauList = async () => {
+    try {
+      const response = await loadAllMau();
+      setMauList(response.data);
+    } catch (error) {
+      console.error("Lỗi khi tải danh sách màu: ", error);
+    }
+  };
+
+  const fetchSanPhamList = async () => {
+    try {
+      const response = await loadAllSanPham();
+      setSanPhamList(response.data);
+    } catch (error) {
+      console.error("Lỗi khi tải danh sách sản phẩm: ", error);
+    }
+  };
+
+  const fetchLoaiList = async () => {
+    try {
+      const response = await loadAllLoai();
+      setLoaiList(response.data);
+    } catch (error) {
+      console.error("Lỗi khi tải danh sách loại: ", error);
+    }
+  };
+
+  const fetchThuongHieuList = async () => {
+    try {
+      const response = await loadAllThuongHieu();
+      setThuongHieuList(response.data);
+    } catch (error) {
+      console.error("Lỗi khi tải danh sách thương hiệu: ", error);
+    }
+  };
+
+  const handleFilterChange = (name, value) => {
+    setFilterValues({ ...filterValues, [name]: String(value) }); // Convert value to string
+  };
+
+  const handleFilter = () => {
+    const filtered = data.filter(
+      (item) =>
+        item.tenSanPham
+          .toLowerCase()
+          .includes(filterValues.tenSanPham.toLowerCase()) &&
+        item.tenLoai
+          .toLowerCase()
+          .includes(filterValues.tenLoai.toLowerCase()) &&
+        item.tenMau.toLowerCase().includes(filterValues.tenMau.toLowerCase()) &&
+        item.tenThuongHieu
+          .toLowerCase()
+          .includes(filterValues.tenThuongHieu.toLowerCase())
+    );
+    if (filtered.length === 0) {
+      setDataFilter([{}]);
+    } else {
+      setDataFilter(filtered);
+    }
+  };
+
+  // Đặt lại dữ liệu lọc về rỗng để hiển thị toàn bộ dữ liệu
+
+  const handleResetFilter = () => {
+    setFilterValues({
+      tenSanPham: "",
+      tenLoai: "",
+      tenMau: "",
+      tenThuongHieu: "",
+    });
+    setDataFilter([]);
+    setSelectedSanPham(null);
+    setSelectedLoai(null);
+    setSelectedMau(null);
+    setSelectedThuongHieu(null);
+    loadTable();
+  };
+
   const columns = [
     {
       title: "Tên sản phẩm",
       dataIndex: "tenSanPham",
       key: "tenSanPham",
+      filteredValue: [searchTenSP],
+      onFilter: (value, record) => {
+        return String(record.tenSanPham)
+          .toLowerCase()
+          .includes(value.toLowerCase());
+      },
+      width: 120,
     },
     {
       title: "Tên loại",
       dataIndex: "tenLoai",
       key: "tenLoai",
+      width: 70,
     },
     {
       title: "Tên thương hiệu",
@@ -252,21 +382,29 @@ const ListSPCT = () => {
       title: "Tên màu",
       dataIndex: "tenMau",
       key: "tenMau",
+      width: 70,
     },
     {
       title: "Giá bán",
       dataIndex: "giaBan",
       key: "giaBan",
+      sorter: (a, b) => a.giaBan - b.giaBan,
+      ellipsis: true,
+      width: 95,
     },
     {
-      title: "Số lượng tồn",
+      title: "Số lượng",
       dataIndex: "soLuongTon",
       key: "soLuongTon",
+      sorter: (a, b) => a.soLuongTon - b.soLuongTon,
+      ellipsis: true,
+      width: 105,
     },
     {
       title: "Phần trăm giảm",
       dataIndex: "phanTramGiam",
       key: "phanTramGiam",
+      width: 80,
     },
     {
       title: "Trạng Thái",
@@ -278,6 +416,7 @@ const ListSPCT = () => {
           onChange={(checked) => handleSwitchChange(record, checked)}
         />
       ),
+      width: 70,
     },
     {
       title: "Danh sách ảnh",
@@ -293,6 +432,7 @@ const ListSPCT = () => {
           </Button>
         </Space>
       ),
+      width: 250,
     },
 
     {
@@ -382,15 +522,108 @@ const ListSPCT = () => {
           </Row>
         )}
       </Modal>
+      <div className="mb-2 mt-2">
+        <Input.Search
+          placeholder="Tìm kiếm sản phẩm ..."
+          onSearch={(value) => {
+            setSearchTenSP(value);
+          }}
+          onChange={(e) => {
+            setSearchTenSP(e.target.value);
+          }}
+        />
+      </div>
+      <Card title="Lọc sản phẩm" bordered={true} className="mb-2">
+        <form
+          className="mb-2"
+          onSubmit={(e) => {
+            e.preventDefault();
+            handleFilter();
+          }}
+        >
+          <Select
+            style={{ width: 200, marginRight: 8 }}
+            placeholder="Chọn tên sản phẩm"
+            onChange={(value) => {
+              handleFilterChange("tenSanPham", value);
+              setSelectedSanPham(value);
+            }}
+            value={selectedSanPham} // Thiết lập giá trị đã chọn
+          >
+            {sanPhamList.map((sanPham) => (
+              <Option key={sanPham.maSanPham} value={sanPham.tenSanPham}>
+                {sanPham.tenSanPham}
+              </Option>
+            ))}
+          </Select>
+
+          {/* Combobox cho lựa chọn loại */}
+          <Select
+            style={{ width: 200, marginRight: 8 }}
+            placeholder="Chọn tên loại"
+            onChange={(value) => {
+              handleFilterChange("tenLoai", value);
+              setSelectedLoai(value);
+            }}
+            value={selectedLoai}
+          >
+            {loaiList.map((loai) => (
+              <Option key={loai.maLoai} value={loai.tenLoai}>
+                {loai.tenLoai}
+              </Option>
+            ))}
+          </Select>
+
+          <Select
+            style={{ width: 200, marginRight: 8 }}
+            placeholder="Chọn màu"
+            onChange={(value) => {
+              handleFilterChange("tenMau", value);
+              setSelectedMau(value);
+            }}
+            value={selectedMau}
+          >
+            {mauList.map((mau) => (
+              <Option key={mau.maMau} value={mau.tenMau}>
+                {mau.tenMau}
+              </Option>
+            ))}
+          </Select>
+
+          <Select
+            style={{ width: 200, marginRight: 8 }}
+            placeholder="Chọn tên thương hiệu"
+            onChange={(value) => {
+              handleFilterChange("tenThuongHieu", value);
+              setSelectedThuongHieu(value);
+            }}
+            value={selectedThuongHieu}
+          >
+            {thuongHieuList.map((th) => (
+              <Option key={th.maThuongHieu} value={th.tenThuongHieu}>
+                {th.tenThuongHieu}
+              </Option>
+            ))}
+          </Select>
+
+          <Button className="mr-2" type="primary" htmlType="submit">
+            Lọc
+          </Button>
+          <Button onClick={handleResetFilter} htmlType="submit">
+            Clear
+          </Button>
+        </form>
+      </Card>
+
       <ToastContainer />
       {loading ? (
         <p>Loading...</p>
       ) : (
         <Table
           columns={columns}
-          dataSource={data}
+          dataSource={dataFilter.length > 0 ? dataFilter : data}
           pagination={{
-            pageSize: 8,
+            pageSize: 6,
             total: totalPage,
           }}
         />
