@@ -333,7 +333,6 @@ const Payment = () => {
           setLoading(true);
           thanhToanVNPay();
           await taoHoaDonKhach(maSanPhamCTArray, updatedFormData);
-
           dispatch(resetCart());
         } else {
         }
