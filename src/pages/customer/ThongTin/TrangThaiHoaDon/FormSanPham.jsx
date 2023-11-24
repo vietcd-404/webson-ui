@@ -15,7 +15,9 @@ const FormSanPham = ({ item, xoa, updateSoLuong, trangThai }) => {
         </td>
         <td className="font-bold">{item.tenSanPham}</td>
         <td className="min-w-[100px]">
-          <div className="public-price">{item.giaBan}đ</div>
+          <div className="public-price">
+            {item.giaBan * ((100 - item.phanTramGiam) / 100)}đ
+          </div>
         </td>
         <td className="min-w-[100px]">
           <input
@@ -34,7 +36,7 @@ const FormSanPham = ({ item, xoa, updateSoLuong, trangThai }) => {
           />
         </td>
         <td className="min-w-[100px]" id={`product-price-${item.maGioHang}`}>
-          {item.giaBan * item.soLuong}
+          {item.giaBan * ((100 - item.phanTramGiam) / 100) * item.soLuong}
         </td>
         <td className="min-w-[100px]">
           <button

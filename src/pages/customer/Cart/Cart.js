@@ -117,7 +117,7 @@ const Cart = () => {
   useEffect(() => {
     let tongTien = 0;
     data.map((item) => {
-      const giaBan = item.giaBan * (item.phanTramGiam / 100);
+      const giaBan = item.giaBan * ((100 - item.phanTramGiam) / 100);
       tongTien += giaBan * item.soLuong;
       return tongTien;
     });

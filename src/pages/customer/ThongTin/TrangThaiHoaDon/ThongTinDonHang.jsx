@@ -351,10 +351,6 @@ function ThongTinDonHang() {
             <div className="container mx-auto mt-8">
               <div className="border rounded p-4" key={hoaDon.maHoaDon}>
                 <div className="border-b-2 p-2 mb-4">
-                  {/* <WebSocketService
-                    setValue={loadSanPham}
-                    connetTo="orderStatus"
-                  /> */}
                   <span className="font-bold text-lg">Thông tin nhận hàng</span>
                 </div>
 

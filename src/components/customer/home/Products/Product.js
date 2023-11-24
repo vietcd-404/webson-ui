@@ -154,7 +154,7 @@ const Product = (item) => {
                       tenSanPham: item.tenSanPham,
                       soLuong: 1,
                       anh: item.img,
-                      giaBan: item.giaBan * (item.phanTramGiam / 100),
+                      giaBan: item.giaBan * ((100 - item.phanTramGiam) / 100),
                       phanTramGiam: item.phanTramGiam,
                       tenThuongHieu: item.tenThuongHieu,
                     })
@@ -198,7 +198,7 @@ const Product = (item) => {
           <div className="flex justify-between">
             <p className="text-[#767676] text-[14px]">{item.tenMau}</p>
             <p className="text-[#767676] text-[16px]">
-              {item.giaBan * (item.phanTramGiam / 100)} đ
+              {item.giaBan * ((100 - item.phanTramGiam) / 100)} đ
             </p>
           </div>
           <p className="text-[#767676] text-[14px]">{item.tenLoai}</p>

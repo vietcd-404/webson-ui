@@ -18,6 +18,7 @@ import ModelVoucher from "../../../components/customer/ModelVoucher";
 import { findVoucher } from "../../../services/VoucherService";
 import { thanhToanVnPay } from "../../../services/VnPayService";
 import { RingLoader } from "react-spinners";
+import WebSocketService from "../../../services/WebSocketService";
 
 /* <p>Payment gateway only applicable for Production build.</p>
         <Link to="/">
@@ -148,7 +149,7 @@ const Payment = () => {
   useEffect(() => {
     let tongTien = 0;
     data.map((item) => {
-      const giaBan = item.giaBan * (item.phanTramGiam / 100);
+      const giaBan = item.giaBan * ((100 - item.phanTramGiam) / 100);
       tongTien += giaBan * item.soLuong;
       return tongTien;
     });
@@ -157,7 +158,7 @@ const Payment = () => {
   useEffect(() => {
     let tongTien = 0;
     data.map((item) => {
-      const giaBan = item.giaBan * (item.phanTramGiam / 100);
+      const giaBan = item.giaBan * ((100 - item.phanTramGiam) / 100);
       tongTien += giaBan * item.soLuong;
       return tongTien;
     });
@@ -176,7 +177,7 @@ const Payment = () => {
   useEffect(() => {
     let tt = 0;
     products.map((item) => {
-      const giaBan = item.giaBan * (item.phanTramGiam / 100);
+      const giaBan = item.giaBan * ((100 - item.phanTramGiam) / 100);
       tt += item.giaBan * item.soLuong;
       return tt;
     });
@@ -333,6 +334,7 @@ const Payment = () => {
           setLoading(true);
           thanhToanVNPay();
           await taoHoaDonKhach(maSanPhamCTArray, updatedFormData);
+
           dispatch(resetCart());
         } else {
         }
@@ -383,6 +385,14 @@ const Payment = () => {
     const selectedVoucher = voucher.find(
       (item) => item.tenVoucher === voucherCode
     );
+    if (voucherCode === null) {
+      toast.error("Voucher không khả dụng hoặc đã được sử dụng trước đó");
+      return;
+    }
+    if (!selectedVoucher || !selectedVoucherCode) {
+      toast.warning("Voucher không khả dụng hoặc đã được sử dụng trước đó");
+      return;
+    }
     const dieuKien = selectedVoucher.dieuKien;
 
     if (tongTien1 <= dieuKien) {
@@ -390,10 +400,6 @@ const Payment = () => {
       return tongTien1;
     }
     if (voucherDaSuDung) {
-      toast.warning("Voucher không khả dụng hoặc đã được sử dụng trước đó");
-      return;
-    }
-    if (!selectedVoucher || !selectedVoucherCode) {
       toast.warning("Voucher không khả dụng hoặc đã được sử dụng trước đó");
       return;
     }
@@ -473,11 +479,14 @@ const Payment = () => {
   const hanldeOrder = () => {
     const selectedPaymentMethod = formData.tenPhuongThuc;
   };
+  const [messageValue, setMessageValue] = useState(null);
 
   return (
     <div className="container mx-auto px-4 ">
       {/* Breadcrumbs component */}
       <ToastContainer />
+      <WebSocketService setValue={setMessageValue} connetTo="orderStatus" />
+
       <Breadcrumbs title="Thanh toán hóa đơn" />
       <div
         className={`fixed top-0 left-0 w-full h-full flex justify-center items-center bg-black bg-opacity-50 z-50 ${
@@ -711,7 +720,9 @@ const Payment = () => {
                           SL: <span className="fw-bold">{item.soLuong}</span>
                         </p>
                         <div className="item-price fw-bold">
-                          <div className="public-price">{item.giaBan}đ</div>
+                          <div className="public-price">
+                            {item.giaBan * ((100 - item.phanTramGiam) / 100)}đ
+                          </div>
                         </div>
                       </div>
                     </div>
