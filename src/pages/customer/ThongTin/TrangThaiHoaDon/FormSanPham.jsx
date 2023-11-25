@@ -41,7 +41,7 @@ const FormSanPham = ({ item, xoa, updateSoLuong, trangThai }) => {
         <td className="min-w-[100px]">
           <button
             className="text-lg font-bold"
-            disabled={item.trangThai !== 0}
+            disabled={item.trangThai !== 0 || item.dieuKien}
             // onClick={() => handleXoa(item.maGioHang)}
             onClick={xoa}
           >

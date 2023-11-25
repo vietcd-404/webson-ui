@@ -111,3 +111,9 @@ export const productInforHoaDon = async (maHoaDon2) => {
 export const inforUserHoaDon = async (maHoaDon1) => {
   return await api.get(`/admin/order/get-hoadon/detail/${maHoaDon1}`);
 };
+
+export const themSanPhamVaoHoaDon = async (maSPCT, soLuong, maHoaDon) => {
+  return await api.post(
+    `/user/order/them-san-pham-vao-hoa-don?maSPCT=${maSPCT}&soLuong=${soLuong}&maHoaDon=${maHoaDon}`
+  );
+};

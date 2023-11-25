@@ -376,10 +376,16 @@ const Payment = () => {
     setIsModalOpen(false);
   };
   const [voucherDaSuDung, setVoucherDaSuDung] = useState(false);
-
+  const [voucherApplied, setVoucherApplied] = useState(false);
   const handleSubmit = (e) => {
     e.preventDefault();
+
     const voucherCode = selectedVoucherCode;
+    if (!voucherApplied) {
+      toast.warning("Please press the 'Apply' button to use the voucher");
+      setSelectedVoucherCode("");
+      return;
+    }
 
     // Tìm thông tin voucher từ mảng voucher
     const selectedVoucher = voucher.find(
@@ -389,6 +395,7 @@ const Payment = () => {
       toast.error("Voucher không khả dụng hoặc đã được sử dụng trước đó");
       return;
     }
+
     if (!selectedVoucher || !selectedVoucherCode) {
       toast.warning("Voucher không khả dụng hoặc đã được sử dụng trước đó");
       return;
