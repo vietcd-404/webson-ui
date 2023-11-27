@@ -56,20 +56,20 @@ const LayoutAdmin = ({ children }) => {
       "8",
       <UserOutlined />
     ),
-    getItem(
-      <Link to="/admin/phuong-thuc-thanh-toan">Phương thức thanh toán</Link>,
-      "9",
-      <PayCircleOutlined />
-    ),
+    // getItem(
+    //   <Link to="/admin/phuong-thuc-thanh-toan">Phương thức thanh toán</Link>,
+    //   "9",
+    //   <PayCircleOutlined />
+    // ),
     getItem(
       <Link to="/admin/quan-li-kho-anh">Kho ảnh</Link>,
-      "10",
+      "9",
       <InboxOutlined />
     ),
-    getItem(<Link to="/admin/voucher">Voucher</Link>, "11", <GiftOutlined />),
+    getItem(<Link to="/admin/voucher">Voucher</Link>, "10", <GiftOutlined />),
     getItem(
       <Link onClick={() => handleLogout()}>Đăng xuất</Link>,
-      "12",
+      "11",
       <LoginOutlined />
     ),
   ];
