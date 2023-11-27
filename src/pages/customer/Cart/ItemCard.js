@@ -1,7 +1,7 @@
 import React from "react";
 
 const ItemCard = ({ item, xoa, updateSoLuong }) => {
-  const giaBan = item.giaBan * (item.phanTramGiam / 100);
+  const giaBan = item.giaBan * ((100 - item.phanTramGiam) / 100);
   return (
     <>
       <tr key={item.maGioHang}>

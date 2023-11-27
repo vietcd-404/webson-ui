@@ -4,7 +4,15 @@ import SockJS from "sockjs-client";
 import EventEmitter from "eventemitter3";
 
 export const taoHoaDon = async (maGioHang, hoaDon) => {
-  return await api.post(`/user/order/place/${maGioHang}`, hoaDon);
+  const response = await api.post(`/user/order/place/${maGioHang}`, hoaDon);
+  stompClient.send(
+    "/app/newOrder",
+    {},
+    JSON.stringify({
+      maGioHang: response.data.maGioHang,
+      hoaDon: response.data,
+    })
+  );
 };
 
 export const hienHoaDon = async (trangThai) => {
@@ -42,7 +50,19 @@ export const updateSoLuongSanPham = async (maHoaDonCT, soLuong, maHoaDon) => {
 };
 
 export const taoHoaDonKhach = async (maSanPhamCT, hoaDon) => {
-  return await api.post(`/guest/order/thanh-toan?ma=${maSanPhamCT}`, hoaDon);
+  const response = await api.post(
+    `/guest/order/thanh-toan?ma=${maSanPhamCT}`,
+    hoaDon
+  );
+  stompClient.send(
+    "/app/newGuest",
+    {},
+    JSON.stringify({
+      maSanPhamCT: response.data.ma,
+      hoaDon: response.data,
+    })
+  );
+  return response;
 };
 
 export const getAllOrderByAdmin = async (trangThai) => {
@@ -94,4 +114,10 @@ export const productInforHoaDon = async (maHoaDon2) => {
 
 export const inforUserHoaDon = async (maHoaDon1) => {
   return await api.get(`/admin/order/get-hoadon/detail/${maHoaDon1}`);
+};
+
+export const themSanPhamVaoHoaDon = async (maSPCT, soLuong, maHoaDon) => {
+  return await api.post(
+    `/user/order/them-san-pham-vao-hoa-don?maSPCT=${maSPCT}&soLuong=${soLuong}&maHoaDon=${maHoaDon}`
+  );
 };

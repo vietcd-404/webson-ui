@@ -1,12 +1,10 @@
 import React, { useState } from "react";
 import { BsSuitHeartFill } from "react-icons/bs";
-import { GiReturnArrow } from "react-icons/gi";
 import { FaShoppingCart } from "react-icons/fa";
 import { MdOutlineLabelImportant } from "react-icons/md";
-import Image from "../../designLayouts/Image";
 import Badge from "./Badge";
-import { useNavigate, Link } from "react-router-dom";
-import { useDispatch, useSelector } from "react-redux";
+import { useNavigate } from "react-router-dom";
+import { useDispatch } from "react-redux";
 import { addToCart } from "../../../../redux/orebiSlice";
 import Swal from "sweetalert2";
 import {
@@ -14,11 +12,9 @@ import {
   themGioHang,
   themGioHangSession,
 } from "../../../../services/GioHangService";
-import { message } from "antd";
 import { ToastContainer, toast } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
 import { useEffect } from "react";
-import da from "date-fns/esm/locale/da/index.js";
 
 import { themYthich } from "../../../../services/SanPhamYeuThichService";
 
@@ -154,7 +150,7 @@ const Product = (item) => {
                       tenSanPham: item.tenSanPham,
                       soLuong: 1,
                       anh: item.img,
-                      giaBan: item.giaBan * (item.phanTramGiam / 100),
+                      giaBan: item.giaBan * ((100 - item.phanTramGiam) / 100),
                       phanTramGiam: item.phanTramGiam,
                       tenThuongHieu: item.tenThuongHieu,
                     })
@@ -198,7 +194,7 @@ const Product = (item) => {
           <div className="flex justify-between">
             <p className="text-[#767676] text-[14px]">{item.tenMau}</p>
             <p className="text-[#767676] text-[16px]">
-              {item.giaBan * (item.phanTramGiam / 100)} đ
+              {item.giaBan * ((100 - item.phanTramGiam) / 100)} đ
             </p>
           </div>
           <p className="text-[#767676] text-[14px]">{item.tenLoai}</p>

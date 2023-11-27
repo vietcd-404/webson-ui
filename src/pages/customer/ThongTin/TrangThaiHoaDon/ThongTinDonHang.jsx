@@ -22,6 +22,8 @@ import SockJS from "sockjs-client";
 import { Stomp } from "@stomp/stompjs";
 
 import WebSocketService from "../../../../services/WebSocketService";
+import ThemSanPhamVaoHoaDon from "./ThemSanPhamVaoHoaDon";
+import { findVoucher } from "../../../../services/VoucherService";
 const host = "https://provinces.open-api.vn/api/";
 
 function ThongTinDonHang() {
@@ -41,11 +43,21 @@ function ThongTinDonHang() {
   const [show, setShow] = useState(false);
   const [showDiaChi, setShowDiaChi] = useState(false);
 
+  // const loadSanPham = async () => {
+  //   try {
+  //     const response = await chiTietHoaDon(maHoaDon);
+  //     setData(response.data[0].hoaDonChiTiet);
+  //     console.error("APINNNNNNsdfsdfd: ", response.data[0].hoaDonChiTiet);
+  //   } catch (error) {
+  //     console.error("Lỗi khi gọi API: ", error);
+  //   }
+  // };
+
   const loadSanPham = async () => {
     try {
       const response = await hoaDonChiTiet(maHoaDon);
       setData(response.data);
-      console.log(response);
+      console.error("APINNNNNNsdfsdfd: ", response.data);
     } catch (error) {
       console.error("Lỗi khi gọi API: ", error);
     }
@@ -71,6 +83,24 @@ function ThongTinDonHang() {
       console.error("Lỗi khi gọi API: ", error);
     }
   };
+
+  const [voucher, setVoucher] = useState([]);
+  useEffect(() => {
+    loadTableVoucher();
+  }, []);
+
+  //Hiện list danh sách lên
+  const loadTableVoucher = async () => {
+    try {
+      const response = await findVoucher();
+      setVoucher(response.data);
+      console.log(response);
+    } catch (error) {
+      console.error("Lỗi khi gọi API: ", error);
+    }
+  };
+  const [selectedVoucherCode, setSelectedVoucherCode] = useState("");
+
   const xoaSanPhamCT = (ma) => {
     Swal.fire({
       title: "Bạn có chắc không?",
@@ -82,18 +112,43 @@ function ThongTinDonHang() {
       confirmButtonText: "Vâng, tôi muốn!",
     }).then(async (result) => {
       if (result.isConfirmed) {
-        try {
+        // const voucherCode = selectedVoucherCode;
+
+        // // Tìm thông tin voucher từ mảng voucher
+        // const selectedVoucher = voucher.find(
+        //   (item) => item.tenVoucher === voucherCode
+        // );
+        // if (!selectedVoucher) {
+        //   // Handle case when selected voucher is not found
+        //   toast.error("Voucher not found");
+        //   return;
+        // }
+        // const dieuKien = selectedVoucher.dieuKien;
+
+        // Assuming donHang and data are defined somewhere in your component
+        const dieuKien = voucher.find((item) => item.dieuKien);
+        const tt = donHang.find((item) => item.tongTien); // Adjust this based on your data structure
+
+        if (data && data.length > 1) {
+          try {
+            Swal.fire({
+              title: "Xóa!",
+              text: "Bạn đã xóa thành công.",
+              icon: "success",
+            });
+            const response = await xoaSanPham(ma);
+            console.log(response);
+            loadSanPham();
+            loadHoaDonChitiet();
+          } catch (error) {
+            toast.error(error.response.data.message);
+          }
+        } else {
           Swal.fire({
-            title: "Xóa!",
-            text: "Bạn đã xóa thành công.",
-            icon: "success",
+            title: "Không thể xóa!",
+            text: "Phải có ít nhất một sản phẩm trong hóa đơn.",
+            icon: "warning",
           });
-          const response = await xoaSanPham(ma);
-          console.log(response);
-          loadSanPham();
-          loadHoaDonChitiet();
-        } catch (error) {
-          console.error("Lỗi khi gọi API: ", error);
         }
       }
     });
@@ -103,69 +158,47 @@ function ThongTinDonHang() {
     loadHoaDonChitiet();
   }, [maHoaDon, messageValue]);
 
+  const [tongTien, setTongTien] = useState("");
   useEffect(() => {
-    // Socket.on('/topic/update', (payload) => {
-    //   payload.id === '';
-    //   setForm
-    // })
-  }, []);
-  // useEffect(() => {
-  //   const handleOrderStatusUpdate = (order) => {
-  //     // Xử lý thông điệp cập nhật trạng thái hóa đơn
-  //     console.log("Received order status update:", order);
-  //     // Cập nhật giao diện người dùng dựa trên thông điệp nhận được
-  //   };
-
-  //   // Đăng ký callback để xử lý thông điệp cập nhật trạng thái
-  //   const unsubscribe = webSocketService.subscribeToOrderStatus(
-  //     handleOrderStatusUpdate
-  //   );
-
-  //   // Đảm bảo huỷ đăng ký khi component bị unmounted
-  //   return () => {
-  //     // unsubscribe.;
-  //   };
-  // }, []);
-
-  // useEffect(() => {
-  //   const socket = new SockJS("http://localhost:8000/api/anh/ws");
-  //   const stompClient = Stomp.over(socket);
-
-  //   const connectCallback = (frame) => {
-  //     console.log("Connected: " + frame);
-
-  //     stompClient.subscribe("/topic/statusUpdates", (message) => {
-  //       // Handle the received HoaDon update, e.g., update the UI
-
-  //       const hoaDon = JSON.parse(message.body);
-  //       console.log("Received HoaDon update:", hoaDon);
-
-  //       // Update the UI or dispatch an action to update the state
-  //     });
-  //   };
-
-  //   stompClient.connect({}, connectCallback);
-
-  //   // Cleanup on component unmount
-  //   return () => {
-  //     if (stompClient.connected) {
-  //       stompClient.disconnect();
-  //     }
-  //   };
-  // }, []);
-
+    let tongTien = 0;
+    let sanPham = 0;
+    data.map((item) => {
+      const giaBan = item.giaBan * ((100 - item.phanTramGiam) / 100);
+      tongTien += giaBan * item.soLuong;
+      return tongTien;
+    });
+    setTongTien(tongTien);
+  }, [data]);
   const handleQuantityChange = async (
     event,
     maHoaDonCT,
     maHoaDon,
-    maxQuantity
+    maxQuantity,
+    dieuKienVoucher,
+    giaBan
   ) => {
     const newQuantity = event.target.value;
-    if (newQuantity > maxQuantity) {
+    if (newQuantity > maxQuantity || newQuantity < 1) {
       // You can choose to show an error message or handle it in a way suitable for your application
       console.error("Quantity exceeds the maximum limit");
       toast.error("Số lượng vượt giới hạn");
       return;
+    }
+
+    try {
+      await updateSoLuongSanPham(
+        maHoaDonCT,
+        newQuantity,
+        maHoaDon,
+        dieuKienVoucher,
+        giaBan
+      );
+
+      loadSanPham();
+      loadHoaDonChitiet();
+    } catch (error) {
+      console.error("Failed to update quantity:", error);
+      toast.error(error.response.data.message);
     }
     setData((prevData) =>
       prevData.map((item) =>
@@ -174,15 +207,6 @@ function ThongTinDonHang() {
           : item
       )
     );
-
-    try {
-      await updateSoLuongSanPham(maHoaDonCT, newQuantity, maHoaDon);
-      loadSanPham();
-      loadHoaDonChitiet();
-    } catch (error) {
-      console.error("Failed to update quantity:", error);
-      toast.error(error.response.data.message);
-    }
   };
 
   //   const handleXoa = async (ma) => {
@@ -338,6 +362,8 @@ function ThongTinDonHang() {
 
   const closeModal = () => {
     setIsModalOpen(false);
+    loadSanPham();
+    loadHoaDonChitiet();
   };
 
   return (
@@ -347,14 +373,19 @@ function ThongTinDonHang() {
         <div>
           <WebSocketService setValue={setMessageValue} connetTo="orderStatus" />
           <ToastContainer />
+          {data.map((item, index) => (
+            <React.Fragment key={index} className="p-2 bg-slate-400">
+              {index === 0 && item.dieuKien && (
+                <div className="text-3xl">
+                  Bạn đã áp voucher không thể sửa được số lượng hóa đơn này
+                </div>
+              )}
+            </React.Fragment>
+          ))}
           {donHang.map((hoaDon) => (
             <div className="container mx-auto mt-8">
               <div className="border rounded p-4" key={hoaDon.maHoaDon}>
                 <div className="border-b-2 p-2 mb-4">
-                  {/* <WebSocketService
-                    setValue={loadSanPham}
-                    connetTo="orderStatus"
-                  /> */}
                   <span className="font-bold text-lg">Thông tin nhận hàng</span>
                 </div>
 
@@ -535,10 +566,12 @@ function ThongTinDonHang() {
                       e,
                       item.maHoaDonCT,
                       item.maHoaDon,
-                      item.soLuongTon
+                      item.soLuongTon,
+                      item.dieuKien,
+                      item.giaBan
                     )
                   }
-                  trangThai={item.trangThai !== 0}
+                  trangThai={item.trangThai !== 0 || item.dieuKien}
                 />
               ))}
             </tbody>
@@ -546,17 +579,24 @@ function ThongTinDonHang() {
         </div>
         <div>
           <div className="p-4">
-            <button
-              className="bg-blue-500 text-white px-4 py-2 rounded hover:bg-blue-700"
-              onClick={openModal}
-            >
-              Thêm sản phẩm
-            </button>
+            {data.map((item, index) => (
+              <React.Fragment key={index}>
+                {index === 0 && !item.dieuKien && item.trangThai === 0 && (
+                  <button
+                    className="bg-blue-500 text-white px-4 py-2 rounded hover:bg-blue-700"
+                    onClick={openModal}
+                  >
+                    Thêm sản phẩm
+                  </button>
+                )}
+              </React.Fragment>
+            ))}
+
             <Model
               isOpen={isModalOpen}
               closeModal={closeModal}
-              title="Example Modal"
-              content="This is the content of the modal."
+              title="Thêm sản phẩm vào hóa đơn"
+              content={<ThemSanPhamVaoHoaDon maHoaDon={maHoaDon} />}
             />
           </div>
         </div>

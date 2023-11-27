@@ -37,7 +37,7 @@ const Model = ({ isOpen, closeModal, title, content }) => {
                 Thoát
               </button>
             </div>
-            <div>{content}</div>
+            <div className="overflow-auto h-[600px]">{content}</div>
           </div>
         </div>
       )}

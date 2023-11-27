@@ -106,7 +106,10 @@ const ChoXacNhan = () => {
   useEffect(() => {
     loadTable();
     fetchData();
-  }, []);
+    if (messageValue) {
+      notify();
+    }
+  }, [messageValue]);
 
   const getStatusText = (status) => {
     switch (status) {
@@ -373,6 +376,16 @@ const ChoXacNhan = () => {
       ),
     },
   ];
+  const notify = () => {
+    toast.success("Đã nhận được đơn hàng mới!", {
+      position: "top-right",
+      autoClose: 3000,
+      hideProgressBar: false,
+      closeOnClick: true,
+      pauseOnHover: true,
+      draggable: true,
+    });
+  };
 
   return (
     <div>
