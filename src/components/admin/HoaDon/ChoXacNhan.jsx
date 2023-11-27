@@ -106,9 +106,9 @@ const ChoXacNhan = () => {
   useEffect(() => {
     loadTable();
     fetchData();
-    if (messageValue) {
-      notify();
-    }
+    // if (messageValue) {
+    //   notify();
+    // }
   }, [messageValue]);
 
   const getStatusText = (status) => {
@@ -166,6 +166,7 @@ const ChoXacNhan = () => {
           if (response.status === 200) {
             toast.success("Cập nhật trạng thái đơn hàng thành công!");
             fetchData();
+            return;
           }
         } catch (error) {
           console.error("Lỗi khi cập nhật: ", error);

@@ -365,13 +365,13 @@ const ListSPCT = () => {
           .toLowerCase()
           .includes(value.toLowerCase());
       },
-      width: 120,
+      width: 150,
     },
     {
       title: "Tên loại",
       dataIndex: "tenLoai",
       key: "tenLoai",
-      width: 70,
+      // width: 70,
     },
     {
       title: "Tên thương hiệu",
@@ -382,7 +382,7 @@ const ListSPCT = () => {
       title: "Tên màu",
       dataIndex: "tenMau",
       key: "tenMau",
-      width: 70,
+      // width: 70,
     },
     {
       title: "Giá bán",
@@ -390,7 +390,7 @@ const ListSPCT = () => {
       key: "giaBan",
       sorter: (a, b) => a.giaBan - b.giaBan,
       ellipsis: true,
-      width: 95,
+      // width: 95,
     },
     {
       title: "Số lượng",
@@ -398,7 +398,7 @@ const ListSPCT = () => {
       key: "soLuongTon",
       sorter: (a, b) => a.soLuongTon - b.soLuongTon,
       ellipsis: true,
-      width: 105,
+      // width: 105,
     },
     {
       title: "Phần trăm giảm",
