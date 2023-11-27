@@ -29,6 +29,8 @@ import {
   updateVoucher,
 } from "../../services/VoucherService";
 import SearchInput from "./SearchInput";
+import moment from "moment";
+import { da, fi } from "date-fns/locale";
 
 const TableVoucher = () => {
   const [data, setData] = useState([]);
@@ -41,6 +43,11 @@ const TableVoucher = () => {
   const [form] = Form.useForm();
   const [formUpdate] = Form.useForm();
 
+  // Tìm kiếm
+  const [searchTenVoucher, setSearchTenVoucher] = useState("");
+  const [startDate, setStartDate] = useState(null);
+  const [endDate, setEndDate] = useState(null);
+
   const showModal = () => {
     setIsModalOpen(true);
   };
@@ -48,6 +55,8 @@ const TableVoucher = () => {
   const handleCancel = () => {
     setIsModalOpen(false);
   };
+
+  // Edit
 
   const showEditModal = (record) => {
     setEditFormData(record);
@@ -57,7 +66,6 @@ const TableVoucher = () => {
       thoiGianBatDau: dayjs(record.thoiGianBatDau),
       thoiGianKetThuc: dayjs(record.thoiGianKetThuc),
       giaTriGiam: record.giaTriGiam,
-      kieuGiamGia: record.kieuGiamGia,
       dieuKien: record.dieuKien,
       giamToiDa: record.giamToiDa,
       moTa: record.moTa,
@@ -73,6 +81,42 @@ const TableVoucher = () => {
   useEffect(() => {
     loadTable();
   }, []);
+
+  const filterVouchersByTimeRange = () => {
+    if (startDate && endDate) {
+      // Chuyển đổi định dạng của startDate và endDate sang "MM-DD-YYYY"
+      const convertedStartDate = startDate.split("-").reverse().join("-");
+      const convertedEndDate = endDate.split("-").reverse().join("-");
+
+      // console.log(convertedStartDate + "1");
+      // console.log(convertedEndDate + "2");
+      if (data.length === 0) {
+        loadTable();
+      }
+
+      const filteredData = data.filter((voucher) => {
+        const voucherStartDate = new Date(voucher.thoiGianBatDau);
+        const filterEndDate = new Date(convertedEndDate);
+        const voucherEndDate = new Date(voucher.thoiGianKetThuc);
+        const filterStartDate = new Date(convertedStartDate);
+        console.log(filterEndDate);
+
+        return (
+          voucherStartDate.getTime() >= filterStartDate.getTime() &&
+          voucherEndDate.getTime() <= filterEndDate.getTime()
+        );
+      });
+
+      setData(filteredData);
+    } else {
+      console.log("Ngày bắt đầu hoặc ngày kết thúc không hợp lệ");
+    }
+  };
+  const handelClear = () => {
+    setStartDate(null);
+    setEndDate(null);
+    loadTable();
+  };
 
   //Hiện list danh sách lên
   const loadTable = async () => {
@@ -91,7 +135,7 @@ const TableVoucher = () => {
     Modal.confirm({
       title: "Xác nhận",
       icon: <ExclamationCircleFilled />,
-      content: "Bạn có chắc muốn thêm thương hiệu mới?",
+      content: "Bạn có chắc muốn thêm voucher mới?",
       okText: "OK",
       okType: "danger",
       cancelText: "Đóng",
@@ -111,7 +155,7 @@ const TableVoucher = () => {
             form.resetFields();
           }
         } catch (error) {
-          console.error("Lỗi khi tạo thương hiệu : ", error);
+          console.error("Lỗi khi tạo voucher : ", error);
           toast.error("Thêm mới thất bại.");
         }
       },
@@ -123,13 +167,17 @@ const TableVoucher = () => {
     Modal.confirm({
       title: "Xác nhận",
       icon: <ExclamationCircleFilled />,
-      content: "Bạn có chắc muốn cập nhập thương hiệu không?",
+      content: "Bạn có chắc muốn cập nhập voucher không?",
       okText: "OK",
       okType: "danger",
       cancelText: "Đóng",
       onOk: async () => {
         try {
           const values = await formUpdate.validateFields();
+          if (values.thoiGianBatDau.isAfter(values.thoiGianKetThuc)) {
+            toast.error("Ngày bắt đầu không được lớn hơn ngày kết thúc");
+            return;
+          }
           const response = await updateVoucher(values, editFormData.maVoucher);
           if (response.status === 200) {
             console.log(response);
@@ -138,7 +186,7 @@ const TableVoucher = () => {
             loadTable();
           }
         } catch (error) {
-          console.error("Lỗi khi cập nhật thương hiệu : ", error);
+          console.error("Lỗi khi cập nhật voucher : ", error);
           toast.error("Cập nhật thất bại.");
         }
       },
@@ -177,6 +225,12 @@ const TableVoucher = () => {
       title: "Tên",
       dataIndex: "tenVoucher",
       key: "tenVoucher",
+      filteredValue: [searchTenVoucher],
+      onFilter: (value, record) => {
+        return String(record.tenVoucher)
+          .toLowerCase()
+          .includes(value.toLowerCase());
+      },
     },
     {
       title: "Thời gian bắt đầu",
@@ -201,21 +255,19 @@ const TableVoucher = () => {
       title: "Giá trị giảm",
       dataIndex: "giaTriGiam",
       key: "giaTriGiam",
+      render: (giaTriGiam) => `${giaTriGiam}%`,
     },
     {
       title: "Điều kiện",
       dataIndex: "dieuKien",
       key: "dieuKien",
+      render: (text) => parseFloat(text).toLocaleString("en-US"),
     },
     {
       title: "Giảm tối đa",
       dataIndex: "giamToiDa",
       key: "giamToiDa",
-    },
-    {
-      title: "Kiểu giảm giá",
-      dataIndex: "kieuGiamGia",
-      key: "kieuGiamGia",
+      render: (text) => parseFloat(text).toLocaleString("en-US"),
     },
     {
       title: "Mô tả",
@@ -248,12 +300,21 @@ const TableVoucher = () => {
   return (
     <div>
       <ToastContainer />
-      <Row>
-        <Col span={12}>
-          <SearchInput text="Tìm kiếm voucher" />
+      <Row className="mb-2">
+        <Col span={10}>
+          <Input.Search
+            placeholder="Tìm kiếm tên voucher ..."
+            onSearch={(value) => {
+              setSearchTenVoucher(value);
+            }}
+            onChange={(e) => {
+              setSearchTenVoucher(e.target.value);
+            }}
+            width={100}
+          />
         </Col>
-        <Col span={4} offset={8}>
-          <Button className="bg-blue-500 text-white" onClick={showModal}>
+        <Col span={4} offset={10}>
+          <Button className="ml-5 bg-blue-500 text-white" onClick={showModal}>
             Thêm
           </Button>
           <Modal
@@ -284,6 +345,83 @@ const TableVoucher = () => {
                   >
                     <Input placeholder="Tên" />
                   </Form.Item>
+
+                  <Form.Item
+                    label="Giảm Phần Trăm"
+                    name="giaTriGiam"
+                    style={{ width: "360px", marginLeft: "40px" }}
+                    rules={[
+                      {
+                        required: true,
+                        message: "Giá trị giảm không được để trống!",
+                      },
+                      ({ giaTriGiam }) => ({
+                        validator(_, value) {
+                          if (value >= 100) {
+                            return Promise.reject(
+                              "Giá trị giảm không được lớn hơn hoặc bằng 100!"
+                            );
+                          }
+                          if (value < 0) {
+                            return Promise.reject(
+                              "Giá trị giảm không được nhỏ hơn 0!"
+                            );
+                          }
+                          return Promise.resolve();
+                        },
+                      }),
+                    ]}
+                  >
+                    <Input type="number" placeholder="Giá trị giảm" />
+                  </Form.Item>
+                  <Form.Item
+                    label="Giá trị giảm tối đa"
+                    name="giamToiDa"
+                    style={{ width: "360px", marginLeft: "40px" }}
+                    rules={[
+                      {
+                        required: true,
+                        message: "Giá trị giảm tối đa không được để trống!",
+                      },
+                      ({ giamToiDa }) => ({
+                        validator(_, value) {
+                          if (value < 0) {
+                            return Promise.reject(
+                              "Giá trị giảm tối đa không được nhỏ hơn 0!"
+                            );
+                          }
+                          return Promise.resolve();
+                        },
+                      }),
+                    ]}
+                  >
+                    <Input type="number" placeholder="Giá trị giảm tối đa" />
+                  </Form.Item>
+                  <Form.Item
+                    label="Điều kiện"
+                    name="dieuKien"
+                    style={{ width: "360px", marginLeft: "40px" }}
+                    rules={[
+                      {
+                        required: true,
+                        message: "Điều kiện giảm không được để trống!",
+                      },
+                      ({ dieuKien }) => ({
+                        validator(_, value) {
+                          if (value <= 0) {
+                            return Promise.reject(
+                              "Điều kiện giảm tối đa không được nhỏ hơn 0!"
+                            );
+                          }
+                          return Promise.resolve();
+                        },
+                      }),
+                    ]}
+                  >
+                    <Input type="number" placeholder="Giá trị giảm tối đa" />
+                  </Form.Item>
+                </Col>
+                <Col span={12}>
                   <Form.Item
                     label="Số lượng"
                     name="soLuong"
@@ -298,60 +436,6 @@ const TableVoucher = () => {
                     <Input type="number" placeholder="Số lượng" />
                   </Form.Item>
                   <Form.Item
-                    label="Giá trị giảm"
-                    name="giaTriGiam"
-                    style={{ width: "360px", marginLeft: "40px" }}
-                    rules={[
-                      {
-                        required: true,
-                        message: "Giá trị giảm không được để trống!",
-                      },
-                    ]}
-                  >
-                    <Input type="number" placeholder="Giá trị giảm" />
-                  </Form.Item>
-                  <Form.Item
-                    label="Giá trị giảm tối đa"
-                    name="giamToiDa"
-                    style={{ width: "360px", marginLeft: "40px" }}
-                    rules={[
-                      {
-                        required: true,
-                        message: "Giá trị giảm tối đa không được để trống!",
-                      },
-                    ]}
-                  >
-                    <Input type="number" placeholder="Giá trị giảm tối đa" />
-                  </Form.Item>
-                  <Form.Item
-                    label="Điều kiện"
-                    name="dieuKien"
-                    style={{ width: "360px", marginLeft: "40px" }}
-                    rules={[
-                      {
-                        required: true,
-                        message: "Điều kiện giảm không được để trống!",
-                      },
-                    ]}
-                  >
-                    <Input type="number" placeholder="Giá trị giảm tối đa" />
-                  </Form.Item>
-                </Col>
-                <Col span={12}>
-                  <Form.Item
-                    label="Kiểu giảm giá"
-                    name="kieuGiamGia"
-                    style={{ width: "360px", marginLeft: "40px" }}
-                    rules={[
-                      {
-                        required: true,
-                        message: "Kiểu giảm giá không được để trống!",
-                      },
-                    ]}
-                  >
-                    <Input placeholder="Kiểu giảm giá" />
-                  </Form.Item>
-                  <Form.Item
                     name="thoiGianBatDau"
                     label="Ngày bắt đầu"
                     style={{
@@ -362,6 +446,9 @@ const TableVoucher = () => {
                     <DatePicker
                       format="DD-MM-YYYY"
                       style={{ width: "360px" }}
+                      disabledDate={(current) =>
+                        current && current < moment().startOf("day")
+                      }
                     />
                   </Form.Item>
 
@@ -374,6 +461,9 @@ const TableVoucher = () => {
                     <DatePicker
                       format="DD-MM-YYYY"
                       style={{ width: "360px" }}
+                      disabledDate={(current) =>
+                        current && current < moment().startOf("day")
+                      }
                     />
                   </Form.Item>
                   <Form.Item
@@ -387,6 +477,41 @@ const TableVoucher = () => {
               </Row>
             </Form>
           </Modal>
+        </Col>
+      </Row>
+      <Row justify="center" align="middle" className="mt-2 mb-2 border-1 p-2">
+        <Col>
+          <Row
+            justify="center"
+            align="middle"
+            className="mt-2 mb-2 border-1 p-2"
+          >
+            <Col>
+              Ngày bắt đầu Ngày bắt đầu{" "}
+              <DatePicker
+                format="DD-MM-YYYY"
+                style={{ width: "200px" }}
+                className="mr-5"
+                onChange={(date, dateString) => setStartDate(dateString)}
+                value={startDate ? moment(startDate, "DD-MM-YYYY") : null}
+              />
+              Ngày kết thúc{" "}
+              <DatePicker
+                format="DD-MM-YYYY"
+                style={{ width: "200px" }}
+                className="mr-5"
+                onChange={(date, dateString) => setEndDate(dateString)}
+                value={endDate ? moment(endDate, "DD-MM-YYYY") : null}
+              />
+              <Button
+                className="ml-5 mr-2 bg-red-500 text-white"
+                onClick={filterVouchersByTimeRange}
+              >
+                Lọc
+              </Button>
+              <Button onClick={handelClear}>Xóa</Button>
+            </Col>
+          </Row>
         </Col>
       </Row>
 
@@ -411,23 +536,17 @@ const TableVoucher = () => {
                 name="tenVoucher"
                 style={{ width: "360px", marginLeft: "40px" }}
                 rules={[
-                  { required: true, message: "Tên loại không được để trống!" },
+                  {
+                    required: true,
+                    message: "Tên loại không được để trống!",
+                  },
                 ]}
               >
                 <Input placeholder="Tên" />
               </Form.Item>
+
               <Form.Item
-                label="Số lượng"
-                name="soLuong"
-                style={{ width: "360px", marginLeft: "40px" }}
-                rules={[
-                  { required: true, message: "Số lượng không được để trống!" },
-                ]}
-              >
-                <Input type="number" placeholder="Số lượng" />
-              </Form.Item>
-              <Form.Item
-                label="Giá trị giảm"
+                label="Giảm Phần Trăm"
                 name="giaTriGiam"
                 style={{ width: "360px", marginLeft: "40px" }}
                 rules={[
@@ -435,6 +554,21 @@ const TableVoucher = () => {
                     required: true,
                     message: "Giá trị giảm không được để trống!",
                   },
+                  ({ giaTriGiam }) => ({
+                    validator(_, value) {
+                      if (value >= 100) {
+                        return Promise.reject(
+                          "Giá trị giảm không được lớn hơn hoặc bằng 100!"
+                        );
+                      }
+                      if (value < 0) {
+                        return Promise.reject(
+                          "Giá trị giảm không được nhỏ hơn 0!"
+                        );
+                      }
+                      return Promise.resolve();
+                    },
+                  }),
                 ]}
               >
                 <Input type="number" placeholder="Giá trị giảm" />
@@ -448,6 +582,16 @@ const TableVoucher = () => {
                     required: true,
                     message: "Giá trị giảm tối đa không được để trống!",
                   },
+                  ({ giamToiDa }) => ({
+                    validator(_, value) {
+                      if (value < 0) {
+                        return Promise.reject(
+                          "Giá trị giảm tối đa không được nhỏ hơn 0!"
+                        );
+                      }
+                      return Promise.resolve();
+                    },
+                  }),
                 ]}
               >
                 <Input type="number" placeholder="Giá trị giảm tối đa" />
@@ -461,6 +605,16 @@ const TableVoucher = () => {
                     required: true,
                     message: "Điều kiện giảm không được để trống!",
                   },
+                  ({ dieuKien }) => ({
+                    validator(_, value) {
+                      if (value <= 0) {
+                        return Promise.reject(
+                          "Điều kiện giảm tối đa không được nhỏ hơn 0!"
+                        );
+                      }
+                      return Promise.resolve();
+                    },
+                  }),
                 ]}
               >
                 <Input type="number" placeholder="Giá trị giảm tối đa" />
@@ -468,25 +622,33 @@ const TableVoucher = () => {
             </Col>
             <Col span={12}>
               <Form.Item
-                label="Kiểu giảm giá"
-                name="kieuGiamGia"
+                label="Số lượng"
+                name="soLuong"
                 style={{ width: "360px", marginLeft: "40px" }}
                 rules={[
                   {
                     required: true,
-                    message: "Kiểu giảm giá không được để trống!",
+                    message: "Số lượng không được để trống!",
                   },
                 ]}
               >
-                <Input placeholder="Kiểu giảm giá" />
+                <Input type="number" placeholder="Số lượng" />
               </Form.Item>
               <Form.Item
                 name="thoiGianBatDau"
                 label="Ngày bắt đầu"
-                style={{ width: "360px", marginLeft: "40px" }}
+                style={{
+                  marginLeft: "40px",
+                }}
                 rules={[{ required: true, message: "Chọn ngày bắt đầu!" }]}
               >
-                <DatePicker format="DD-MM-YYYY" style={{ width: "360px" }} />
+                <DatePicker
+                  format="DD-MM-YYYY"
+                  style={{ width: "360px" }}
+                  disabledDate={(current) =>
+                    current && current < moment().startOf("day")
+                  }
+                />
               </Form.Item>
 
               <Form.Item
@@ -495,7 +657,13 @@ const TableVoucher = () => {
                 style={{ width: "360px", marginLeft: "40px" }}
                 rules={[{ required: true, message: "Chọn ngày kết thúc!" }]}
               >
-                <DatePicker format="DD-MM-YYYY" style={{ width: "360px" }} />
+                <DatePicker
+                  format="DD-MM-YYYY"
+                  style={{ width: "360px" }}
+                  disabledDate={(current) =>
+                    current && current < moment().startOf("day")
+                  }
+                />
               </Form.Item>
               <Form.Item
                 label="Mô tả"

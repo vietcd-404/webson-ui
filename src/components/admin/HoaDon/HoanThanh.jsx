@@ -205,7 +205,10 @@ const HoanThanh = () => {
       title: "Thành Tiền",
       dataIndex: "giaBan",
       key: "thanhTien",
-      render: (giaBan, record) => <span>{giaBan * record.soLuong}</span>,
+      render: (giaBan, record) => {
+        const thanhTien = giaBan * record.soLuong;
+        return <span>{thanhTien.toLocaleString("en-US")}</span>;
+      },
     },
     {
       title: "Chức năng",
@@ -249,6 +252,7 @@ const HoanThanh = () => {
       title: "Tổng Tiền",
       dataIndex: "tongTien",
       key: "tongTien",
+      render: (text) => parseFloat(text).toLocaleString("en-US"),
     },
     {
       title: "Trạng Thái",

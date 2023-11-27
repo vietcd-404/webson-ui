@@ -75,7 +75,7 @@ const TableMau = () => {
     Modal.confirm({
       title: "Xác nhận",
       icon: <ExclamationCircleFilled />,
-      content: "Bạn có chắc muốn thêm loại mới?",
+      content: "Bạn có chắc muốn thêm màu mới?",
       okText: "OK",
       okType: "danger",
       cancelText: "Đóng",
@@ -91,7 +91,7 @@ const TableMau = () => {
             form.resetFields();
           }
         } catch (error) {
-          console.error("Lỗi khi tạo loại: ", error);
+          console.error("Lỗi khi tạo màu: ", error);
           toast.error("Thêm mới thất bại.");
         }
       },
@@ -103,7 +103,7 @@ const TableMau = () => {
     Modal.confirm({
       title: "Xác nhận",
       icon: <ExclamationCircleFilled />,
-      content: "Bạn có chắc muốn cập nhập loại không?",
+      content: "Bạn có chắc muốn cập nhập màu không?",
       okText: "OK",
       okType: "danger",
       cancelText: "Đóng",
@@ -132,7 +132,7 @@ const TableMau = () => {
     Modal.confirm({
       title: "Xác nhận",
       icon: <ExclamationCircleFilled />,
-      content: "Bạn có chắc muốn xóa loại này?",
+      content: "Bạn có chắc muốn xóa màu này?",
       okText: "Xóa",
       okType: "danger",
       cancelText: "Hủy",
@@ -169,7 +169,7 @@ const TableMau = () => {
         loadTable();
       }
     } catch (error) {
-      console.error("Lỗi khi cập nhật trạng thái người dùng: ", error);
+      console.error("Lỗi khi cập nhật trạng thái màu: ", error);
       toast.error("Cập nhật trạng thái thất bại.");
     }
   };

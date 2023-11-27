@@ -165,6 +165,12 @@ function AddSPCT() {
             toast.error("Phần trăm giảm không được nhỏ hơn 0");
             return true;
           }
+          if (record.phanTramGiam >= 100) {
+            toast.error(
+              "Phần trăm giảm không được lớn  hơn hoặc bằng 100 phần trăm"
+            );
+            return true;
+          }
           return false;
         });
         if (invalidRecords.length > 0) {

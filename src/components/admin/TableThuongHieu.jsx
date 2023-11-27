@@ -172,7 +172,7 @@ const TableThuongHieu = () => {
         loadTable();
       }
     } catch (error) {
-      console.error("Lỗi khi cập nhật trạng thái người dùng: ", error);
+      console.error("Lỗi khi cập nhật trạng thái: ", error);
       toast.error("Cập nhật trạng thái thất bại.");
     }
   };

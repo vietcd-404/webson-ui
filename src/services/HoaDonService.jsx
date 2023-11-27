@@ -48,6 +48,10 @@ export const taoHoaDonKhach = async (maSanPhamCT, hoaDon) => {
 export const getAllOrderByAdmin = async (trangThai) => {
   return await api.get(`/admin/order/getAll?trangThai=${trangThai}`);
 };
+
+export const getAllOrder = async () => {
+  return await api.get(`/admin/order/all`);
+};
 const stompClient = SockJS("http://localhost:8000/api/anh/ws");
 export const huytHoaDonByAdmin = async (maHoaDon) => {
   const response = await api.put(`/admin/order/huy-hoa-don?maHD=${maHoaDon}`);

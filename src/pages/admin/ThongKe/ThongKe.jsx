@@ -1,11 +1,11 @@
 import React from "react";
 import UploadImage from "../../../components/admin/UploadImage";
-import QLNguoiDung from "../../../components/admin/test";
+import Dashboard from "../../../components/admin/Dashboard";
 
 const ThongKe = () => {
   return (
     <div>
-      <QLNguoiDung />
+      <Dashboard />
     </div>
   );
 };
