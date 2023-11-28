@@ -165,13 +165,26 @@ const Payment = () => {
     setTamTinh(tongTien);
   }, [data]);
 
+  // useEffect(() => {
+  //   let sl = 0;
+  //   products.map((item) => {
+  //     sl = item.soLuong;
+  //     return sl;
+  //   });
+  //   setSoLuong(sl);
+  // }, [products]);
   useEffect(() => {
-    let sl = 0;
-    products.map((item) => {
-      sl = item.soLuong;
-      return sl;
+    // Calculate the total quantity for each product
+    const updatedProducts = products.map((item) => {
+      const totalQuantity = item.soLuong; // You can perform any other calculations here
+      return {
+        ...item,
+        soLuong: totalQuantity,
+      };
     });
-    setSoLuong(sl);
+
+    // Update the state with the products containing the total quantity information
+    setSoLuong(updatedProducts);
   }, [products]);
 
   useEffect(() => {
@@ -313,15 +326,28 @@ const Payment = () => {
           toast.error("Vui lòng chọn phương thức thanh toán");
           return;
         }
-        const maSanPhamCTArray = products.map((product) => product.maSanPhamCT);
-        // const soLuong = products.map((product) => Number(product.soLuong));
+        const maSanPhamCT = products.map((product) => product.maSanPhamCT);
+        const maSanPhamCTArray = products.map((product) => ({
+          maSanPhamCT: product.maSanPhamCT,
+          soLuong: product.soLuong,
+        }));
+
+        maSanPhamCTArray.forEach((item) => {
+          console.log(`ID: ${item.maSanPhamCT}, Số lượng: ${item.soLuong}`);
+        });
+        let soLuongdd = 0;
+
+        maSanPhamCTArray.forEach((item) => {
+          soLuongdd = item.soLuong;
+        });
+        console.log("kkkkkkkkkkkkmkkkkkkkkkkkkkk", soLuongdd);
         const updatedFormData = {
           ...formData,
           tongTien: totalAmt,
-          soLuong: soLuong,
+          soLuongList: maSanPhamCTArray.map((item) => item.soLuong),
         };
         if (formData.tenPhuongThuc === "MONEY") {
-          await taoHoaDonKhach(maSanPhamCTArray, updatedFormData);
+          await taoHoaDonKhach(maSanPhamCT, updatedFormData);
           setLoading(true);
           Swal.fire({
             title: "Tạo hóa đơn!",
@@ -381,11 +407,11 @@ const Payment = () => {
     e.preventDefault();
 
     const voucherCode = selectedVoucherCode;
-    if (!voucherApplied) {
-      toast.warning("Please press the 'Apply' button to use the voucher");
-      setSelectedVoucherCode("");
-      return;
-    }
+    // if (!voucherApplied) {
+    //   toast.warning("Please press the 'Apply' button to use the voucher");
+    //   setSelectedVoucherCode("");
+    //   return;
+    // }
 
     // Tìm thông tin voucher từ mảng voucher
     const selectedVoucher = voucher.find(

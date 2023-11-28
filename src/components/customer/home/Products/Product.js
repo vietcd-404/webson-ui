@@ -185,7 +185,7 @@ const Product = (item) => {
               style={{ textOverflow: "ellipsis", maxWidth: "200px" }}
               onClick={handleProductDetails}
             >
-              {item.tenSanPham}
+              {item.tenSanPham} - {item.tenMau}
             </p>
           </h2>
           <del className="text-[#767676] text-[14px]">{item.giaBan} đ</del>

@@ -39,7 +39,7 @@ const ProductInfo = ({ item }) => {
         {item.tenThuongHieu}
       </p>
       <h2 className="text-4xl font-semibold text-gray-800">
-        {item.tenSanPham}
+        {item.tenSanPham} - {item.tenMau}
       </h2>
       <p className="text-xl font-semibold text-[#C73030]">
         {/* Giá Bán: $ */}
