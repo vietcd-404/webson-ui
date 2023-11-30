@@ -31,6 +31,8 @@ import ThongTinDonHang from "./pages/customer/ThongTin/TrangThaiHoaDon/ThongTinD
 import XacNhan from "./pages/customer/ThongTin/TrangThaiHoaDon/XacNhan";
 import CaNhan from "./pages/customer/ThongTin/CaNhan";
 import ThongBaoXacNhan from "./pages/customer/payment/ThongBaoXacNhan";
+import NotFound from "./pages/customer/Account/NotFound";
+import DiaChi from "./pages/customer/ThongTin/DiaChi";
 const App = () => {
   const { user } = useAuth();
   return (
@@ -45,7 +47,7 @@ const App = () => {
           }
         />
         <Route path="/forbidden" element={<Forbidden />} />
-
+        <Route path="*" element={<NotFound />} />
         {/* Khách hàng  */}
         <Route
           path="/"
@@ -227,6 +229,18 @@ const App = () => {
             user ? (
               <Main>
                 <ThongTin children={<CaNhan />} />
+              </Main>
+            ) : (
+              <Navigate to="/signin" replace />
+            )
+          }
+        ></Route>
+        <Route
+          path="/address"
+          element={
+            user ? (
+              <Main>
+                <ThongTin children={<DiaChi />} />
               </Main>
             ) : (
               <Navigate to="/signin" replace />

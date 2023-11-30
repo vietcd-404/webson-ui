@@ -19,6 +19,7 @@ import { findVoucher } from "../../../services/VoucherService";
 import { thanhToanVnPay } from "../../../services/VnPayService";
 import { RingLoader } from "react-spinners";
 import WebSocketService from "../../../services/WebSocketService";
+import { findAllDiaChi } from "../../../services/DiaChiService";
 
 /* <p>Payment gateway only applicable for Production build.</p>
         <Link to="/">
@@ -115,6 +116,20 @@ const Payment = () => {
     setErrors(newErrors);
     return valid;
   };
+  const { user } = useAuth();
+
+  useEffect(() => {
+    // Assuming user.email is the property containing the user's email
+    if (user) {
+      setFormData({
+        ...formData,
+        email: user.email,
+        sdt: user.sdt,
+        tenNguoiNhan: user.ho + " " + user.tenDem + " " + user.ten,
+        // You can set other user-related data here if needed
+      });
+    }
+  }, [user]);
 
   const handleChange = (e) => {
     const { name, value } = e.target;
@@ -123,13 +138,17 @@ const Payment = () => {
       [name]: value,
     });
   };
+
   const navigate = useNavigate();
 
-  useEffect(() => {
-    // Fetch provinces data
+  const load = () =>
     axios.get(host).then((response) => {
       setProvinces(response.data);
+      console.log(response);
     });
+
+  useEffect(() => {
+    load();
   }, []);
 
   const callApiDistrict = (api) => {
@@ -335,12 +354,7 @@ const Payment = () => {
         maSanPhamCTArray.forEach((item) => {
           console.log(`ID: ${item.maSanPhamCT}, Số lượng: ${item.soLuong}`);
         });
-        let soLuongdd = 0;
 
-        maSanPhamCTArray.forEach((item) => {
-          soLuongdd = item.soLuong;
-        });
-        console.log("kkkkkkkkkkkkmkkkkkkkkkkkkkk", soLuongdd);
         const updatedFormData = {
           ...formData,
           tongTien: totalAmt,
@@ -391,7 +405,6 @@ const Payment = () => {
       console.error("Lỗi khi gọi API: ", error);
     }
   };
-  const { user } = useAuth();
   const [selectedVoucherCode, setSelectedVoucherCode] = useState("");
 
   const openModal = () => {
@@ -499,20 +512,71 @@ const Payment = () => {
     //   setTongTien1(tamTinh);
     // }
   };
-  const hanldeOrderKhach = () => {
-    const selectedPaymentMethod = formData.tenPhuongThuc;
 
-    if (selectedPaymentMethod === "MONEY") {
-      hanldeOrderKhachHAang();
-    } else if (selectedPaymentMethod === "ELECTRONIC_WALLET") {
-      thanhToanVNPay();
-    } else {
+  const [messageValue, setMessageValue] = useState(null);
+  const [dataDiaChi, setDataDiaChi] = useState([]);
+  const loadDiaChi = async () => {
+    try {
+      const response = await findAllDiaChi();
+      setDataDiaChi(response.data);
+    } catch (error) {
+      console.error("Lỗi khi gọi API: ", error);
     }
   };
-  const hanldeOrder = () => {
-    const selectedPaymentMethod = formData.tenPhuongThuc;
+  const [selectedValue, setValue] = useState("");
+  const handleSelectChange = async (selectedValue) => {
+    // Find the selected address based on the value
+    const selectedAddress = dataDiaChi.find(
+      (item) => item.sdt === selectedValue
+    );
+    console.log(selectedValue);
+
+    if (selectedAddress) {
+      setFormData({
+        ...formData,
+        sdt: selectedAddress ? selectedAddress.sdt : "",
+        diaChi: selectedAddress ? selectedAddress.diaChi : "",
+        tinh: selectedAddress ? selectedAddress.tinh : "",
+        huyen: selectedAddress ? selectedAddress.huyen : "",
+        xa: selectedAddress ? selectedAddress.xa : "",
+      });
+      const selectedProvinceData = provinces.find(
+        (province) => province.name === selectedAddress.tinh
+      );
+      const selectedDistrictData = districts.find(
+        (district) => district.name === selectedAddress.huyen
+      );
+      console.log("sádfsdfsdfsdf", selectedProvinceData);
+
+      console.log("selected District Data:", selectedDistrictData);
+      if (selectedProvinceData) {
+        try {
+          await callApiDistrict(
+            host + "p/" + selectedProvinceData.code + "?depth=2"
+          );
+
+          if (selectedDistrictData) {
+            await callApiWard(
+              host + "d/" + selectedDistrictData.code + "?depth=2"
+            );
+          }
+
+          // Additional logic after callApiWard if needed
+        } catch (error) {
+          console.error("Error:", error);
+        }
+      }
+    }
   };
-  const [messageValue, setMessageValue] = useState(null);
+  useEffect(() => {
+    loadDiaChi();
+  }, []);
+
+  const [districtsLoaded, setDistrictsLoaded] = useState(false);
+
+  useEffect(() => {
+    handleSelectChange(selectedValue);
+  }, [districts, wards, selectedValue, provinces]);
 
   return (
     <div className="container mx-auto px-4 ">
@@ -531,6 +595,21 @@ const Payment = () => {
       <div className="pb-10">
         <div className="grid grid-cols-1 md:grid-cols-12 gap-8 mt-4 mb-5">
           <div className="md:col-span-9 layout-form">
+            {user && (
+              <div className="mb-2">
+                <select
+                  className="form-select w-full p-2 border border-gray-300 rounded-md"
+                  onChange={(e) => handleSelectChange(e.target.value)}
+                >
+                  <option value="">Chọn địa chỉ</option>
+                  {dataDiaChi.map((item) => (
+                    <option key={item.maDiaChi} value={item.sdt}>
+                      {item.xa},{item.huyen}...{item.sdt}
+                    </option>
+                  ))}
+                </select>
+              </div>
+            )}
             <div className="border rounded p-2">
               <div className="border-b-2 p-2">
                 <span className="font-bold text-lg">Thông tin nhận hàng</span>
@@ -543,6 +622,7 @@ const Payment = () => {
                   type="text"
                   class="form-control"
                   name="tenNguoiNhan"
+                  value={formData.tenNguoiNhan}
                   onChange={handleChange}
                 />
               </div>
@@ -561,6 +641,7 @@ const Payment = () => {
                   class="form-control"
                   placeholder=""
                   name="sdt"
+                  value={formData.sdt}
                   onChange={handleChange}
                 />
               </div>
@@ -579,6 +660,7 @@ const Payment = () => {
                   class="form-control"
                   placeholder=""
                   name="email"
+                  value={formData.email}
                   onChange={handleChange}
                 />
               </div>
@@ -597,7 +679,7 @@ const Payment = () => {
                 </label>
                 <select
                   className="form-select w-full p-2 border border-gray-300 rounded-md"
-                  value={selectedProvince}
+                  value={formData.tinh}
                   onChange={handleProvinceChange}
                   name="tinh"
                 >
@@ -625,7 +707,7 @@ const Payment = () => {
                 </label>
                 <select
                   className="form-select w-full p-2 border border-gray-300 rounded-md"
-                  value={selectedDistrict}
+                  value={formData.huyen}
                   onChange={handleDistrictChange}
                   name="huyen"
                 >
@@ -653,7 +735,7 @@ const Payment = () => {
                 </label>
                 <select
                   className="form-select w-full p-2 border border-gray-300 rounded-md"
-                  value={selectedWard}
+                  value={formData.xa}
                   onChange={handleWardChange}
                   name="xa"
                 >
@@ -679,6 +761,7 @@ const Payment = () => {
                   type="text"
                   class="form-control"
                   name="diaChi"
+                  value={formData.diaChi}
                   onChange={handleChange}
                 />
               </div>

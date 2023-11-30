@@ -14,6 +14,7 @@ import a3 from "./sale/a3.webp";
 import saleImgOne from "./sale/saleImgOne.webp";
 import saleImgTwo from "./sale/saleImgTwo.webp";
 import saleImgThree from "./sale/saleImgThree.webp";
+import notfound from "./error-404.webp";
 // ============== Products Start here ====================
 // New Arrivals
 import newArrOne from "./products/newArrival/newArrOne.webp";
@@ -45,6 +46,7 @@ import emptyCart from "./emptyCart.png";
 import forbidden from "./403.jpg";
 
 export {
+  notfound,
   banner1,
   banner2,
   banner3,

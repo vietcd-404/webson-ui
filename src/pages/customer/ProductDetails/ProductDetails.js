@@ -16,6 +16,7 @@ import Heading from "../../../components/customer/home/Products/Heading";
 import Slider from "react-slick";
 import { toast, ToastContainer } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
+import { useSelector } from "react-redux";
 const ProductDetails = (props) => {
   const [prevLocation, setPrevLocation] = useState("");
   const location = useLocation();
@@ -27,6 +28,7 @@ const ProductDetails = (props) => {
   const { item, maSanPhamCT } = state;
 
   const [dataImg, setDataImg] = useState([]);
+  const products = useSelector((state) => state.orebiReducer.products);
 
   useEffect(() => {
     loadAnhSanPhamThuongHieu();
