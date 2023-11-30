@@ -1,24 +1,5 @@
 import api from "./api";
 
-export const getOrders = () => {
-  return fetch("https://dummyjson.com/carts/1").then((res) => res.json());
-};
-
-export const getRevenue = () => {
-  return fetch("https://dummyjson.com/carts").then((res) => res.json());
-};
-
-export const getInventory = () => {
-  return fetch("https://dummyjson.com/products").then((res) => res.json());
-};
-
-export const getCustomers = () => {
-  return fetch("https://dummyjson.com/users").then((res) => res.json());
-};
-export const getComments = () => {
-  return fetch("https://dummyjson.com/comments").then((res) => res.json());
-};
-
 export const getTop4Product = async () => {
   return await api.get(`/admin/top-4-product`);
 };
@@ -31,8 +12,24 @@ export const getTop4Customer = async () => {
   return await api.get(`/admin/top-4-customer`);
 };
 
-export const getDoanhThuTheoNam = async (startYear, endYear) => {
+export const getTop4Favorite = async () => {
+  return await api.get(`/admin/top-4-favorite`);
+};
+
+export const getDoanhThuTheoNam = async () => {
+  return await api.get(`/admin/doanh-thu-theo-nam`);
+};
+
+export const getThongKeStatus = async (status) => {
+  return await api.get(`/admin/status-bill?status=${status}`);
+};
+
+export const getDoanhThuTheoThang = async (month, year) => {
   return await api.get(
-    `/admin/doanh-thu-theo-nam?startYear=${startYear}&endYear=${endYear}`
+    `/admin/doanh-thu-theo-thang?month=${month}&year=${year}`
   );
+};
+
+export const getDoanhThuTheoNgay = async (day) => {
+  return await api.get(`/admin/doanh-thu-theo-ngay?day=${day}`);
 };

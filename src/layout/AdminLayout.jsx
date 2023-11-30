@@ -104,6 +104,12 @@ const LayoutAdmin = ({ children }) => {
         collapsed={collapsed}
         onCollapse={(value) => setCollapsed(value)}
         width="250"
+        style={{
+          overflow: "auto",
+          height: "100vh",
+          position: "fixed",
+          left: 0,
+        }}
       >
         <Image src={logo} width="100%" height="100px" preview="" />
         <div className="demo-logo-vertical" />
@@ -114,11 +120,15 @@ const LayoutAdmin = ({ children }) => {
           items={items}
         />
       </Sider>
-      <Layout>
+      <Layout style={{ marginLeft: collapsed ? 80 : 250 }}>
         <Header
           style={{
             padding: 0,
             background: colorBgContainer,
+            zIndex: 1,
+            width: "100%",
+            position: "fixed",
+            marginBottom: 20,
           }}
         >
           <Button
@@ -136,6 +146,9 @@ const LayoutAdmin = ({ children }) => {
           style={{
             margin: "0 16px",
             marginTop: "20px",
+            padding: "24px",
+            background: colorBgContainer,
+            minHeight: "100vh",
           }}
         >
           <div
