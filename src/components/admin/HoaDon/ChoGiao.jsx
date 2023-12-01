@@ -17,7 +17,7 @@ import {
   productInforHoaDon,
 } from "../../../services/HoaDonService";
 
-const ChoXacNhan = () => {
+const ChoXacNhan = ({ updateCountByStatus }) => {
   const [totalPage, setTotalPage] = useState(1);
   const [totalPageProduct, setTotalPageProduct] = useState(1);
   const [loading, setLoading] = useState(true);

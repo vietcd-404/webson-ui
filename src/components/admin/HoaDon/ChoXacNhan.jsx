@@ -1,6 +1,6 @@
 import React from "react";
-import { useEffect, useState } from "react";
-import { Button, Col, Form, Input, Row, Tabs } from "antd";
+import { useEffect, useState, useRef } from "react";
+import { Button, Card, Col, Form, Input, Row, Select, Tabs } from "antd";
 import {
   ExclamationCircleFilled,
   EyeOutlined,
@@ -14,11 +14,13 @@ import {
   huytHoaDonByAdmin,
   inforUserHoaDon,
   productInforHoaDon,
+  searchHoaDon,
 } from "../../../services/HoaDonService";
 import WebSocketService from "../../../services/WebSocketService";
 import { Stomp } from "@stomp/stompjs";
 import SockJS from "sockjs-client";
-
+import { format } from "date-fns";
+const { Option } = Select;
 const ChoXacNhan = () => {
   const [totalPage, setTotalPage] = useState(1);
   const [totalPageProduct, setTotalPageProduct] = useState(1);
@@ -31,6 +33,11 @@ const ChoXacNhan = () => {
   const [editFormData, setEditFormData] = useState(null);
   const [isEditModalOpen, setIsEditModalOpen] = useState(false);
   const [messageValue, setMessageValue] = useState(null);
+
+  // Search
+  const [searchType, setSearchType] = useState(null);
+  const [searchValue, setSearchValue] = useState(null);
+  const [form] = Form.useForm();
 
   const showEditModal = async (record) => {
     const response = await inforUserHoaDon(record.maHoaDon);
@@ -206,8 +213,44 @@ const ChoXacNhan = () => {
       onCancel: () => {},
     });
   };
+
+  const handleSearchTypeChange = (value) => {
+    setSearchType(value);
+  };
+
+  const handleSearchInputChange = (e) => {
+    setSearchValue(e.target.value);
+  };
+
+  const handleSearch = async () => {
+    try {
+      const response = await searchHoaDon(searchType, searchValue, 0);
+      if (response.data.length === 0) {
+        setTableData(response.data);
+      }
+      if (
+        response.data &&
+        response.data.content &&
+        Array.isArray(response.data.content)
+      ) {
+        const modifiedData = response.data.content.map((item, index) => {
+          return { ...item, index: index + 1 };
+        });
+        setTableData(modifiedData);
+      } else {
+        console.error("Dữ liệu trả về không phải là một mảng.");
+      }
+    } catch (error) {
+      console.error("Lỗi khi gọi API: ", error);
+    }
+  };
   const socket = new SockJS("http://localhost:8000/api/anh/ws");
   const stompClient = Stomp.over(socket);
+
+  const handleClear = async () => {
+    setSearchValue(null);
+    fetchData();
+  };
 
   const columnProduct = [
     {
@@ -515,6 +558,31 @@ const ChoXacNhan = () => {
           </p>
         </div>
       </Modal>
+      <Card title="Lọc hóa đơn" bordered={true} className="mb-2">
+        <form className="mb-2">
+          <Select
+            style={{ width: 200, marginRight: 8, marginBottom: 10 }}
+            placeholder="Chọn giá trị"
+            onChange={(value) => setSearchType(value)}
+          >
+            <Option value="maHoaDon">Mã HĐ</Option>
+            <Option value="tenNguoiDung">Tên Khách Hàng</Option>
+            <Option value="ngayTao">Ngày Đặt Hàng</Option>
+          </Select>
+          <Input
+            style={{ width: 200, marginRight: 8, marginBottom: 10 }}
+            onChange={handleSearchInputChange}
+            value={searchValue}
+          />
+          <Button
+            style={{ color: "white", backgroundColor: "red", marginRight: 10 }}
+            onClick={handleSearch}
+          >
+            Tìm kiếm
+          </Button>
+          <Button onClick={handleClear}>Clear</Button>
+        </form>
+      </Card>
       {loading ? (
         <p>Loading...</p>
       ) : (
@@ -523,7 +591,7 @@ const ChoXacNhan = () => {
           dataSource={tableData}
           pagination={{
             pageSize: 5,
-            total: totalPage * 5, // Assuming totalPage is the total number of pages
+            total: totalPage * 5,
             current: totalPage,
           }}
         />

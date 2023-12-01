@@ -69,6 +69,12 @@ export const getAllOrderByAdmin = async (trangThai) => {
   return await api.get(`/admin/order/getAll?trangThai=${trangThai}`);
 };
 
+export const searchHoaDon = async (thuocTinh, value, trangThai) => {
+  return await api.get(
+    `/admin/order/search?thuocTinh=${thuocTinh}&value=${value}&trangThai=${trangThai}`
+  );
+};
+
 export const getAllOrder = async () => {
   return await api.get(`/admin/order/all`);
 };

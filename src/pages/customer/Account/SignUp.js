@@ -38,13 +38,13 @@ const SignUp = () => {
       valid = false;
     }
 
-    if (!formData.sdt) {
-      newErrors.sdt = "Số điện thoại không được trống";
+    if (formData.sdt < 10) {
+      newErrors.sdt = "Số điện thoại không hợp lệ";
       valid = false;
     }
 
-    if (!formData.password) {
-      newErrors.password = "Mật khẩu không được trống";
+    if (formData.password.length < 6) {
+      newErrors.password = "Mật khẩu không được nhỏ hơn 6 ký tự";
       valid = false;
     }
 
@@ -69,23 +69,6 @@ const SignUp = () => {
 
     if (validateForm()) {
       setLoading(true);
-      // try {
-      //   const response = await dangKy(formData);
-
-      //   if (response.status === 200) {
-      //     toast.success(response.data.message);
-      //     const email = formData.email;
-      //     //setTimeout(navigate(`/active?email=${email}`), 3000);
-      //     console.log(response);
-      //     // Handle successful registration, e.g., redirect or show a success message
-      //   } else {
-      //     toast.error(response.data.message);
-      //   }
-      // } catch (error) {
-      //   console.log(error);
-      //   console.error("Lỗi khi gửi yêu cầu đăng ký:", error);
-      //   toast.error("Đăng ký thất bại"); // Handle other errors
-      // }
       await dangKy(formData)
         .then((response) => {
           setLoading(true);
@@ -94,7 +77,6 @@ const SignUp = () => {
           setTimeout(() => {
             setLoading(true);
             const email = formData.email;
-            // Sử dụng `navigate` hoặc chức năng chuyển hướng khác ở đây
             navigate(`/active?email=${email}`);
           }, 3000);
         })

@@ -55,7 +55,6 @@ const HoanThanh = () => {
       } else {
         setGiamGia(response1.data[0].tienGiam);
       }
-      console.log(response1.data);
       setLoading(false);
     } catch (error) {
       console.error("Lỗi khi gọi API: ", error);
@@ -258,6 +257,7 @@ const HoanThanh = () => {
       title: "Trạng Thái",
       dataIndex: "trangThai",
       key: "trangThai",
+      width: 150,
       render: (status) => {
         let statusStyle = {};
         let statusText = getStatusText(status);
@@ -320,6 +320,7 @@ const HoanThanh = () => {
       title: "Thanh toán",
       dataIndex: "thanhToan",
       key: "thanhToan",
+      width: 190,
       render: (thanhToan) => {
         let style = {};
         let text = "";
