@@ -46,6 +46,9 @@ const LayoutAdmin = ({ children }) => {
       getItem(<Link to="/admin/thuong-hieu">Thương hiệu</Link>, "5"),
       getItem(<Link to="/admin/mau-sac">Màu</Link>, "6"),
     ]),
+    getItem("Quản lý bán hàng", "sub2", <MacCommandOutlined />, [
+      getItem(<Link to="/admin/ban-hang">Bán hàng</Link>, "12"),
+    ]),
     getItem(
       <Link to="/admin/hoa-don/cho-xac-nhan">Quản lý hóa đơn</Link>,
       "7",
