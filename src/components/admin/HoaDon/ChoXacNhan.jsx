@@ -225,20 +225,18 @@ const ChoXacNhan = () => {
   const handleSearch = async () => {
     try {
       const response = await searchHoaDon(searchType, searchValue, 0);
+      console.log(response);
       if (response.data.length === 0) {
         setTableData(response.data);
-      }
-      if (
-        response.data &&
-        response.data.content &&
-        Array.isArray(response.data.content)
-      ) {
-        const modifiedData = response.data.content.map((item, index) => {
-          return { ...item, index: index + 1 };
-        });
-        setTableData(modifiedData);
       } else {
-        console.error("Dữ liệu trả về không phải là một mảng.");
+        if (Array.isArray(response.data)) {
+          const modifiedData = response.data.map((item, index) => {
+            return { ...item, index: index + 1 };
+          });
+          setTableData(modifiedData);
+        } else {
+          console.error("Dữ liệu trả về không phải là một mảng.");
+        }
       }
     } catch (error) {
       console.error("Lỗi khi gọi API: ", error);
@@ -569,11 +567,31 @@ const ChoXacNhan = () => {
             <Option value="tenNguoiDung">Tên Khách Hàng</Option>
             <Option value="ngayTao">Ngày Đặt Hàng</Option>
           </Select>
-          <Input
-            style={{ width: 200, marginRight: 8, marginBottom: 10 }}
-            onChange={handleSearchInputChange}
-            value={searchValue}
-          />
+          {searchType === "maHoaDon" ? (
+            <Input
+              style={{ width: 200, marginRight: 8, marginBottom: 10 }}
+              type="number"
+              onChange={handleSearchInputChange}
+              value={searchValue}
+              placeholder="Nhập Mã HĐ"
+            />
+          ) : searchType === "ngayTao" ? (
+            <Input
+              style={{ width: 200, marginRight: 8, marginBottom: 10 }}
+              type="date"
+              format="DD/MM/YYYY"
+              onChange={handleSearchInputChange}
+              value={searchValue}
+              placeholder="Chọn Ngày Đặt Hàng"
+            />
+          ) : (
+            <Input
+              style={{ width: 200, marginRight: 8, marginBottom: 10 }}
+              onChange={handleSearchInputChange}
+              value={searchValue}
+              placeholder="Nhập thông tin tìm kiếm"
+            />
+          )}
           <Button
             style={{ color: "white", backgroundColor: "red", marginRight: 10 }}
             onClick={handleSearch}
