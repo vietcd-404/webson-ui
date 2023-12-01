@@ -18,10 +18,10 @@ export const orebiSlice = createSlice({
         (item) => item.maSanPhamCT === action.payload.maSanPhamCT
       );
       if (item) {
-        if (item.soLuong < 10) {
+        if (item.soLuong < item.soLuongTon) {
           item.soLuong += action.payload.soLuong;
         } else {
-          toast.error("Vượt giới hạn mua, vui lòng đăng nhập để mua thêm");
+          toast.error("Vượt giới hạn số lượng");
           return;
         }
       } else {
@@ -38,10 +38,10 @@ export const orebiSlice = createSlice({
         (item) => item.maSanPhamCT === action.payload.maSanPhamCT
       );
       if (item) {
-        if (item.soLuong < 10) {
+        if (item.soLuong < item.soLuongTon) {
           item.soLuong++;
         } else {
-          toast.error("Vượt giới hạn mua, vui lòng đăng nhập để mua thêm");
+          toast.error("Vượt giới hạn số lượng");
         }
       }
     },

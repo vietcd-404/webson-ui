@@ -16,10 +16,20 @@ const ProductInfo = ({ item }) => {
       icon: "success",
     });
   };
+  const [quantity, setQuantity] = useState(1);
+  const decreaseQuantity = () => {
+    const newQuantity = Math.max(quantity - 1, 1);
+    setQuantity(newQuantity);
+  };
+
+  const increaseQuantity = () => {
+    const newQuantity = quantity + 1;
+    setQuantity(newQuantity);
+  };
 
   const handleAddToCart = async () => {
     try {
-      await themGioHang(item.maSanPhamCT, 1);
+      await themGioHang(item.maSanPhamCT, quantity);
 
       Swal.fire({
         title: "Thành công!",
@@ -28,7 +38,7 @@ const ProductInfo = ({ item }) => {
       });
     } catch (error) {
       console.log("Lỗi ", error);
-      message.error(error.response?.data?.message || "Error adding to cart");
+      toast.error(error.response?.data?.message || "Error adding to cart");
     }
   };
   const { user } = useAuth();
@@ -43,7 +53,7 @@ const ProductInfo = ({ item }) => {
       </h2>
       <p className="text-xl font-semibold text-[#C73030]">
         {/* Giá Bán: $ */}
-        {item.giaBan}đ
+        {item.giaBan * ((100 - item.phanTramGiam) / 100)}đ
       </p>
       <div className="flex flex-col space-y-2">
         <p className="font-medium text-lg text-gray-700">
@@ -73,10 +83,60 @@ const ProductInfo = ({ item }) => {
         <p className="font-medium text-sm text-gray-600">
           <span className="font-normal">Số lượng:</span> {item.soLuongTon}
         </p>
+        <div className="w-1/3 flex items-center gap-2 text-lg ">
+          <button
+            onClick={decreaseQuantity}
+            className="w-8 h-[45px] bg-gray-100 text-2xl flex items-center justify-center hover:bg-gray-300 cursor-pointer duration-300 border border-gray-300 hover:border-gray-300"
+          >
+            <svg
+              xmlns="http://www.w3.org/2000/svg"
+              fill="none"
+              viewBox="0 0 24 24"
+              stroke="currentColor"
+              className="w-4 h-4"
+            >
+              <path
+                strokeLinecap="round"
+                strokeLinejoin="round"
+                strokeWidth="2"
+                d="M20 12H4"
+              />
+            </svg>
+          </button>
+          <input
+            // type="number"
+            value={quantity}
+            // min="1"
+            disabled
+            onChange={(e) =>
+              setQuantity(Math.max(parseInt(e.target.value) || 1, 1))
+            }
+            className="border border-gray-300 py-2 px-4 w-16 text-center"
+          />{" "}
+          <button
+            onClick={increaseQuantity}
+            className="w-8 h-[45px] bg-gray-100 text-2xl flex items-center justify-center hover:bg-gray-300 cursor-pointer duration-300 border border-gray-300 hover:border-gray-300"
+          >
+            <svg
+              xmlns="http://www.w3.org/2000/svg"
+              fill="none"
+              viewBox="0 0 24 24"
+              stroke="currentColor"
+              className="w-4 h-4"
+            >
+              <path
+                strokeLinecap="round"
+                strokeLinejoin="round"
+                strokeWidth="2"
+                d="M12 6v6m0 0v6m0-6h6m-6 0H6"
+              />
+            </svg>
+          </button>
+        </div>
       </div>
       {user ? (
         <button
-          onClick={() => handleAddToCart(item.maSanPhamCT, 1)}
+          onClick={() => handleAddToCart(item.maSanPhamCT, quantity)}
           // onChange={han}
           className="w-full py-4 bg-black text-[#ffff]  hover:opacity-80 duration-300 text-lg font-titleFont "
         >
@@ -84,18 +144,23 @@ const ProductInfo = ({ item }) => {
         </button>
       ) : (
         <button
-          onClick={() =>
-            dispatch(
-              addToCart({
-                maSanPhamCT: item.maSanPhamCT,
-                tenSanPham: item.tenSanPham,
-                soLuong: 1,
-                anh: item.img,
-                giaBan: item.giaBan * (item.phanTramGiam / 100),
-                tenThuongHieu: item.tenThuongHieu,
-              })
-            )
-          }
+          onClick={() => {
+            if (quantity > 0 && quantity < item.soLuongTon) {
+              dispatch(
+                addToCart({
+                  maSanPhamCT: item.maSanPhamCT,
+                  tenSanPham: item.tenSanPham,
+                  soLuong: quantity,
+                  anh: item.img,
+                  soLuongTon: item.soLuongTon,
+                  giaBan: item.giaBan * ((100 - item.phanTramGiam) / 100),
+                  tenThuongHieu: item.tenThuongHieu,
+                })
+              );
+            } else {
+              toast.error("Số lượng không hợp lệ");
+            }
+          }}
           // onChange={han}
           className="w-full py-4 bg-black text-[#ffff]  hover:opacity-80 duration-300 text-lg font-titleFont "
         >

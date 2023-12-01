@@ -20,6 +20,7 @@ import ChoGiao from "../components/admin/HoaDon/ChoGiao";
 import DangGiao from "../components/admin/HoaDon/DangGiao";
 import HoanThanh from "../components/admin/HoaDon/HoanThanh";
 import Huy from "../components/admin/HoaDon/Huy";
+import NotFound from "../pages/customer/Account/NotFound";
 const AdminRouter = () => {
   return (
     <div>
@@ -32,6 +33,8 @@ const AdminRouter = () => {
             </LayoutAdmin>
           }
         />
+        <Route path="*" element={<NotFound />} />
+
         <Route
           path="/san-pham-chi-tiet"
           element={

@@ -72,7 +72,7 @@ const Cart = () => {
     try {
       const response = await xoaTatCaGioHang();
       if (response.status === 200) {
-        message.success("Xóa tất cả thành công!");
+        toast.success("Xóa tất cả thành công!");
       }
       loadGioHang();
     } catch (error) {
@@ -80,8 +80,13 @@ const Cart = () => {
       message.error("Xóa thất bại.");
     }
   };
+
   const handleQuantityChange = async (event, sanPham, maxQuantity) => {
     const newQuantity = event.target.value;
+    if (newQuantity === "") {
+      toast.error("Số lượng không được để trống");
+      return;
+    }
     if (newQuantity > maxQuantity) {
       console.error("Quantity exceeds the maximum limit");
       toast.error("Số lượng vượt giới hạn");

@@ -1,5 +1,6 @@
 import React from "react";
 import Product from "../../../components/customer/home/Products/Product";
+import { Link } from "react-router-dom";
 
 const SanPhamCungThuongHieu = ({ item }) => {
   return (

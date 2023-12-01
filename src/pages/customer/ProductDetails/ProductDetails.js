@@ -1,5 +1,5 @@
 import React, { useEffect, useState, useLayoutEffect } from "react";
-import { useLocation } from "react-router-dom";
+import { useLocation, useParams } from "react-router-dom";
 import Breadcrumbs from "../../../components/customer/pageProps/Breadcrumbs";
 import ProductInfo from "../../../components/customer/pageProps/productDetails/ProductInfo";
 import ProductsOnSale from "../../../components/customer/pageProps/productDetails/ProductsOnSale";
@@ -25,21 +25,51 @@ const ProductDetails = (props) => {
     window.scrollTo(0, 0);
   }, [location.pathname]);
   // const { state } = location;
-  const { item, maSanPhamCT } = state;
+  // const { item, maSanPhamCT } = state;
+  const [data, setData] = useState([]);
+  const { maSanPhamCT } = useParams();
 
   const [dataImg, setDataImg] = useState([]);
   const products = useSelector((state) => state.orebiReducer.products);
-
-  useEffect(() => {
-    loadAnhSanPhamThuongHieu();
-    setPrevLocation(location.pathname);
-  }, []);
-
-  const loadAnhSanPhamThuongHieu = async () => {
-    const response = await findAllthuongHieu(item.tenThuongHieu);
-    setDataImg(response.data);
+  const loadSanPhamDetail = async () => {
+    try {
+      const response = await getDetailById(maSanPhamCT);
+      setData(response.data);
+    } catch (error) {
+      console.error("Lỗi khi gọi API: ", error);
+    }
   };
 
+  useEffect(() => {
+    loadSanPhamDetail();
+    loadSanPham();
+    setPrevLocation(location.pathname);
+  }, [maSanPhamCT]);
+
+  const loadAnhSanPhamThuongHieu = async () => {
+    const selectedDistrictData = data.map((district) => district.tenThuongHieu);
+    const response = await findAllthuongHieu(selectedDistrictData);
+    setDataImg(response.data);
+    console.log("Thương hiệu", response);
+  };
+
+  const loadSanPham = async () => {
+    try {
+      const response = await getDetailById(maSanPhamCT);
+      setDataImg(response.data[0].thuongHieuList);
+      console.log("APINNNNNNsdfsdfd: ", response.data[0].thuongHieuList);
+    } catch (error) {
+      console.error("Lỗi khi gọi API: ", error);
+    }
+  };
+
+  const slideNho = {
+    dots: true,
+    infinite: true,
+    speed: 500,
+    slidesToShow: 3,
+    slidesToScroll: 1,
+  };
   const settings = {
     infinite: true,
     speed: 500,
@@ -83,14 +113,21 @@ const ProductDetails = (props) => {
         </div>
         <div className="w-full grid grid-cols-1 md:grid-cols-2 xl:grid-cols-6 gap-4 h-full -mt-5 xl:-mt-8 pb-10 bg-gray-100 p-4">
           <div className="h-full xl:col-span-2">
-            <img
-              className="w-full h-[500px] object-cover rounded-lg shadow-md"
-              src={`data:image/png;base64,${item.img}`}
-              alt={item.tenSanPham}
-            />
+            {data.map((sp) => (
+              <img
+                className="w-full h-[500px] object-cover rounded-lg shadow-md"
+                src={`data:image/png;base64,${sp.img}`}
+                alt={sp.tenSanPham}
+              />
+            ))}
+          </div>
+          <div>
+            <Slider {...slideNho}></Slider>
           </div>
           <div className="h-full w-full md:col-span-2 xl:col-span-3 xl:p-8 flex flex-col gap-6 justify-center">
-            <ProductInfo item={item} />
+            {data.map((sp) => (
+              <ProductInfo item={sp} />
+            ))}
           </div>
         </div>
         <div className="mt-5">
@@ -98,7 +135,7 @@ const ProductDetails = (props) => {
             <Heading heading="Sản Phẩm Tương Tự" />
             <Slider {...settings}>
               {dataImg.map((item) => (
-                <div>
+                <div key={item.maSanPhamCT}>
                   <SanPhamCungThuongHieu item={item} />
                 </div>
               ))}

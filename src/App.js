@@ -107,7 +107,7 @@ const App = () => {
           }
         ></Route>
         <Route
-          path="/product/:_id"
+          path="/product/:maSanPhamCT"
           element={
             <Main>
               <ProductDetails />

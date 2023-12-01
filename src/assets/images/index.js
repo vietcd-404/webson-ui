@@ -1,4 +1,4 @@
-import logo from "./logo.jpg";
+import logo from "./logo-black.png";
 import logoLight from "./logoLight.png";
 import bannerImgOne from "./banner/bannerImgOne.webp";
 import bannerImgTwo from "./banner/bannerImgTwo.webp";
@@ -44,8 +44,12 @@ import productOfTheYear from "./products/productOfTheYear.webp";
 import paymentCard from "./payment.png";
 import emptyCart from "./emptyCart.png";
 import forbidden from "./403.jpg";
+import logoShop from "./logoheva.jpg";
+import logoWhite from "./logo-white.png";
 
 export {
+  logoWhite,
+  logoShop,
   notfound,
   banner1,
   banner2,

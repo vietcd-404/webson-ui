@@ -3,7 +3,7 @@ import { BsSuitHeartFill } from "react-icons/bs";
 import { FaShoppingCart } from "react-icons/fa";
 import { MdOutlineLabelImportant } from "react-icons/md";
 import Badge from "./Badge";
-import { useNavigate } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 import { useDispatch } from "react-redux";
 import { addToCart } from "../../../../redux/orebiSlice";
 import Swal from "sweetalert2";
@@ -45,18 +45,22 @@ const Product = (item) => {
     loadGioHang();
   }, []);
 
-  const rootId = idString(maSanPhamCT);
-
-  const navigate = useNavigate();
-  const productItem = item;
-  const handleProductDetails = () => {
-    navigate(`/product/${rootId}`, {
-      state: {
-        item: productItem,
-        maSanPhamCT: maSanPhamCT,
-      },
-    });
-  };
+  // const idString = (maSanPhamCT) => {
+  //   return String(maSanPhamCT).toLowerCase().split(" ").join("");
+  // };
+  // const rootId = idString(maSanPhamCT);
+  // const dispatch = useDispatch();
+  // const maSanPhamCT = item.maSanPhamCT;
+  // const navigate = useNavigate();
+  // const productItem = item;
+  // const handleProductDetails = () => {
+  //   navigate(`/product/${rootId}`, {
+  //     state: {
+  //       item: productItem,
+  //       maSanPhamCT: maSanPhamCT,
+  //     },
+  //   });
+  // };
 
   const handleAddToCart = async () => {
     try {
@@ -71,6 +75,14 @@ const Product = (item) => {
       console.log("Lỗi ", error);
       toast.error(error.response?.data?.message || "Error adding to cart");
     }
+  };
+  const handleLinkClick = (event) => {
+    // Prevent the default behavior of the link
+    event.preventDefault();
+
+    // Your custom logic, e.g., navigate programmatically
+    // or perform other actions without reloading the page
+    // handleProductDetails(item.maSanPhamCT);
   };
 
   const handleAddToFavorite = async () => {
@@ -110,27 +122,31 @@ const Product = (item) => {
 
       <div className="max-w-80 max-h-80 relative overflow-y-hidden ">
         <div>
-          <img
-            className="w-full h-[90%] cursor-pointer"
-            alt={item.tenSanPham}
-            src={`data:image/png;base64,${item.img}`}
-            onClick={handleProductDetails}
-          />
+          <Link to={`/product/${item.maSanPhamCT}`}>
+            <img
+              className="w-full h-[90%] cursor-pointer"
+              alt={item.tenSanPham}
+              src={`data:image/png;base64,${item.img}`}
+            />
+          </Link>
         </div>
         <div className="absolute top-6 left-8">
           {item.badge && <Badge text="New" />}
         </div>
         <div className="w-full h-32 absolute bg-white -bottom-[130px] group-hover:bottom-0 duration-700">
           <ul className="w-full h-full flex flex-col items-end justify-center gap-2 font-titleFont px-2 border-l border-r">
-            <li
-              onClick={handleProductDetails}
+            <Link
+              to={`/product/${item.maSanPhamCT}`}
+              // onClick={handleProductDetails}
               className="text-[#767676] hover:text-primeColor text-sm font-normal border-b-[1px] border-b-gray-200 hover:border-b-primeColor flex items-center justify-end gap-2 hover:cursor-pointer pb-1 duration-300 w-full hover:text-pink-500"
             >
+              {/* <Link to={`/product/${item.maSanPhamCT}`}> */}
               Xem chi tiết
               <span className="text-lg">
                 <MdOutlineLabelImportant />
               </span>
-            </li>
+              {/* </Link> */}
+            </Link>
             {user ? (
               <li
                 onClick={() => handleAddToCart(item.maSanPhamCT, 1)}
@@ -183,9 +199,11 @@ const Product = (item) => {
             <p
               className="hover:text-pink-500 translate-x-0 overflow-hidden whitespace-nowrap"
               style={{ textOverflow: "ellipsis", maxWidth: "200px" }}
-              onClick={handleProductDetails}
+              // onClick={handleProductDetails}
             >
-              {item.tenSanPham} - {item.tenMau}
+              <Link to={`/product/${item.maSanPhamCT}`}>
+                [{item.tenMau}]-{item.tenSanPham}
+              </Link>
             </p>
           </h2>
           <del className="text-[#767676] text-[14px]">{item.giaBan} đ</del>

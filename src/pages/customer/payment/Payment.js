@@ -831,7 +831,11 @@ const Payment = () => {
                         <p className="item-brand mb-0 fw-bold text-uppercase">
                           {item.tenthuongHieu}
                         </p>
-                        <p className="item-title mb-0">{item.tenSanPham}</p>
+                        <p className="item-title mb-0">
+                          <Link to={`/product/${item.maSanPhamCT}`}>
+                            {item.tenSanPham}
+                          </Link>
+                        </p>
                         <p className="item-quantity mb-0">
                           SL: <span className="fw-bold">{item.soLuong}</span>
                         </p>
@@ -857,9 +861,13 @@ const Payment = () => {
                         <p className="item-brand mb-0 fw-bold text-uppercase">
                           {item.tenthuongHieu}
                         </p>
-                        <Link to={`/product/${item.maSanPhamCT}`}>
-                          <p className="item-title mb-0">{item.tenSanPham}</p>
-                        </Link>
+                        <p className="item-title mb-0">
+                          {" "}
+                          <Link to={`/product/${item.maSanPhamCT}`}>
+                            {item.tenSanPham}
+                          </Link>
+                        </p>
+
                         <p className="item-quantity mb-0">
                           SL:{" "}
                           <span className="fw-bold" name="soLuong">

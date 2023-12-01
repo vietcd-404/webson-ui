@@ -14,8 +14,8 @@ import {
 import { MenuFoldOutlined, MenuUnfoldOutlined } from "@ant-design/icons";
 import { Layout, Menu, theme, Button, Image, Modal } from "antd";
 import { Link } from "react-router-dom";
-import logo from "../assets/images/logo.jpg";
 import { useAuth } from "../pages/customer/Account/AuthProvider";
+import { logoWhite } from "../assets/images";
 
 const { Header, Content, Footer, Sider } = Layout;
 
@@ -97,6 +97,7 @@ const LayoutAdmin = ({ children }) => {
     <Layout
       style={{
         minHeight: "100vh",
+        backgroundColor: "white",
       }}
     >
       <Sider
@@ -105,7 +106,7 @@ const LayoutAdmin = ({ children }) => {
         onCollapse={(value) => setCollapsed(value)}
         width="250"
       >
-        <Image src={logo} width="100%" height="100px" preview="" />
+        <Image src={logoWhite} width="100%" height="125px" preview="" />
         <div className="demo-logo-vertical" />
         <Menu
           theme="dark"
