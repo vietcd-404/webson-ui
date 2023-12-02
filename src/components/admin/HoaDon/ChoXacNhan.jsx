@@ -499,34 +499,41 @@ const ChoXacNhan = () => {
               <Form.Item
                 label="Khách hàng"
                 name="tenNguoiDung"
-                labelCol={{ span: 8 }} // Điều chỉnh độ rộng của nhãn
-                wrapperCol={{ span: 16 }} // Điều chỉnh độ rộng của dữ liệu
+                labelCol={{ span: 8 }}
+                wrapperCol={{ span: 16 }}
               >
                 <Input disabled />
               </Form.Item>
               <Form.Item
                 label="Tên người nhận"
                 name="tenNguoiNhan"
-                labelCol={{ span: 8 }} // Điều chỉnh độ rộng của nhãn
-                wrapperCol={{ span: 16 }} // Điều chỉnh độ rộng của dữ liệu
+                labelCol={{ span: 8 }}
+                wrapperCol={{ span: 16 }}
+                rules={[
+                  { required: true, message: "Tên người nhận không để trống!" },
+                ]}
               >
-                <Input disabled />
+                <Input placeholder="Nguyen Van A..." />
               </Form.Item>
               <Form.Item
                 label="Email"
                 name="email"
                 labelCol={{ span: 8 }}
                 wrapperCol={{ span: 16 }}
+                rules={[{ required: true, message: "Email không để trống!" }]}
               >
-                <Input disabled />
+                <Input placeholder="abc@gmail.com" />
               </Form.Item>
               <Form.Item
                 label="Số điện thoại"
                 name="sdt"
                 labelCol={{ span: 8 }}
                 wrapperCol={{ span: 16 }}
+                rules={[
+                  { required: true, message: "Số điện thoại không để trống!" },
+                ]}
               >
-                <Input disabled />
+                <Input />
               </Form.Item>
             </Col>
             <Col span={12}>
@@ -559,11 +566,13 @@ const ChoXacNhan = () => {
                 name="diaChiChiTiet"
                 labelCol={{ span: 8 }}
                 wrapperCol={{ span: 16 }}
+                rules={[{ required: true, message: "Địa chỉ không để trống!" }]}
               >
-                <Input.TextArea rows={4} disabled />
+                <Input.TextArea rows={4} />
               </Form.Item>
             </Col>
           </Row>
+          <Button type="primary">Cập Nhập</Button>
         </Form>
         <p className="text-bold mt-2 mb-2" style={{ fontSize: "20px" }}>
           Thông tin sản phẩm
@@ -620,7 +629,7 @@ const ChoXacNhan = () => {
             <Input
               style={{ width: 200, marginRight: 8, marginBottom: 10 }}
               type="date"
-              format="yyyy/MM/dd"
+              format="yyyy-MM-dd"
               onChange={handleSearchInputChange}
               value={searchValue}
               placeholder="Chọn Ngày Đặt Hàng"
