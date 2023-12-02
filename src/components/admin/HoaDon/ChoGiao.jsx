@@ -1,6 +1,6 @@
 import React from "react";
 import { useEffect, useState } from "react";
-import { Button, Col, Form, Input, Row, Tabs } from "antd";
+import { Button, Card, Col, Form, Input, Row, Select, Tabs } from "antd";
 import { Link } from "react-router-dom";
 import {
   ExclamationCircleFilled,
@@ -15,8 +15,9 @@ import {
   huytHoaDonByAdmin,
   inforUserHoaDon,
   productInforHoaDon,
+  searchHoaDon,
 } from "../../../services/HoaDonService";
-
+const { Option } = Select;
 const ChoXacNhan = ({ updateCountByStatus }) => {
   const [totalPage, setTotalPage] = useState(1);
   const [totalPageProduct, setTotalPageProduct] = useState(1);
@@ -28,6 +29,11 @@ const ChoXacNhan = ({ updateCountByStatus }) => {
   const [formUpdate] = Form.useForm();
   const [editFormData, setEditFormData] = useState(null);
   const [isEditModalOpen, setIsEditModalOpen] = useState(false);
+
+  // Search
+  const [searchType, setSearchType] = useState(null);
+  const [searchValue, setSearchValue] = useState(null);
+  const [form] = Form.useForm();
 
   const showEditModal = async (record) => {
     const response = await inforUserHoaDon(record.maHoaDon);
@@ -200,6 +206,40 @@ const ChoXacNhan = ({ updateCountByStatus }) => {
     });
   };
 
+  const handleSearchTypeChange = (value) => {
+    setSearchType(value);
+  };
+
+  const handleSearchInputChange = (e) => {
+    setSearchValue(e.target.value);
+  };
+
+  const handleSearch = async () => {
+    try {
+      const response = await searchHoaDon(searchType, searchValue, 1);
+      console.log(response);
+      if (response.data.length === 0) {
+        setTableData(response.data);
+      } else {
+        if (Array.isArray(response.data)) {
+          const modifiedData = response.data.map((item, index) => {
+            return { ...item, index: index + 1 };
+          });
+          setTableData(modifiedData);
+        } else {
+          console.error("Dữ liệu trả về không phải là một mảng.");
+        }
+      }
+    } catch (error) {
+      console.error("Lỗi khi gọi API: ", error);
+    }
+  };
+
+  const handleClear = async () => {
+    setSearchValue(null);
+    fetchData();
+  };
+
   const columnProduct = [
     {
       title: "Ảnh",
@@ -279,6 +319,7 @@ const ChoXacNhan = ({ updateCountByStatus }) => {
     {
       title: "Trạng Thái",
       dataIndex: "trangThai",
+      width: 140,
       key: "trangThai",
       render: (status) => {
         let statusStyle = {};
@@ -336,6 +377,46 @@ const ChoXacNhan = ({ updateCountByStatus }) => {
 
         return <span style={statusStyle}>{statusText}</span>;
       },
+    },
+    {
+      title: "Thanh toán",
+      dataIndex: "thanhToan",
+      key: "thanhToan",
+      width: 190,
+      render: (thanhToan) => {
+        let style = {};
+        let text = "";
+
+        if (thanhToan === 1) {
+          style = {
+            color: "green",
+            border: "1px solid green",
+            borderRadius: "5px",
+            padding: "2px 6px",
+          };
+          text = "Đã thanh toán";
+        } else {
+          style = {
+            color: "red",
+            border: "1px solid red",
+            borderRadius: "5px",
+            padding: "2px 6px",
+          };
+          text = "Chưa thanh toán";
+        }
+
+        return (
+          <span className="ml-5 mr-5" style={style}>
+            {text}
+          </span>
+        );
+      },
+    },
+    {
+      title: "Ngày Thanh Toán",
+      dataIndex: "ngayThanhToan",
+      key: "ngayThanhToan",
+      width: 110,
     },
     {
       title: "Thao Tác",
@@ -512,6 +593,51 @@ const ChoXacNhan = ({ updateCountByStatus }) => {
           </p>
         </div>
       </Modal>
+      <Card title="Lọc hóa đơn" bordered={true} className="mb-2">
+        <form className="mb-2">
+          <Select
+            style={{ width: 200, marginRight: 8, marginBottom: 10 }}
+            placeholder="Chọn giá trị"
+            onChange={(value) => setSearchType(value)}
+          >
+            <Option value="maHoaDon">Mã HĐ</Option>
+            <Option value="tenNguoiDung">Tên Khách Hàng</Option>
+            <Option value="ngayTao">Ngày Đặt Hàng</Option>
+          </Select>
+          {searchType === "maHoaDon" ? (
+            <Input
+              style={{ width: 200, marginRight: 8, marginBottom: 10 }}
+              type="number"
+              onChange={handleSearchInputChange}
+              value={searchValue}
+              placeholder="Nhập Mã HĐ"
+            />
+          ) : searchType === "ngayTao" ? (
+            <Input
+              style={{ width: 200, marginRight: 8, marginBottom: 10 }}
+              type="date"
+              format="yyyy/MM/dd"
+              onChange={handleSearchInputChange}
+              value={searchValue}
+              placeholder="Chọn Ngày Đặt Hàng"
+            />
+          ) : (
+            <Input
+              style={{ width: 200, marginRight: 8, marginBottom: 10 }}
+              onChange={handleSearchInputChange}
+              value={searchValue}
+              placeholder="Nhập thông tin tìm kiếm"
+            />
+          )}
+          <Button
+            style={{ color: "white", backgroundColor: "red", marginRight: 10 }}
+            onClick={handleSearch}
+          >
+            Tìm kiếm
+          </Button>
+          <Button onClick={handleClear}>Clear</Button>
+        </form>
+      </Card>
       {loading ? (
         <p>Loading...</p>
       ) : (

@@ -225,7 +225,6 @@ const ChoXacNhan = () => {
   const handleSearch = async () => {
     try {
       const response = await searchHoaDon(searchType, searchValue, 0);
-      console.log(response);
       if (response.data.length === 0) {
         setTableData(response.data);
       } else {
@@ -242,13 +241,14 @@ const ChoXacNhan = () => {
       console.error("Lỗi khi gọi API: ", error);
     }
   };
-  const socket = new SockJS("http://localhost:8000/api/anh/ws");
-  const stompClient = Stomp.over(socket);
 
   const handleClear = async () => {
     setSearchValue(null);
     fetchData();
   };
+
+  const socket = new SockJS("http://localhost:8000/api/anh/ws");
+  const stompClient = Stomp.over(socket);
 
   const columnProduct = [
     {
@@ -329,6 +329,7 @@ const ChoXacNhan = () => {
     {
       title: "Trạng Thái",
       dataIndex: "trangThai",
+      width: 130,
       key: "trangThai",
       render: (status) => {
         let statusStyle = {};
@@ -386,6 +387,46 @@ const ChoXacNhan = () => {
 
         return <span style={statusStyle}>{statusText}</span>;
       },
+    },
+    {
+      title: "Thanh toán",
+      dataIndex: "thanhToan",
+      key: "thanhToan",
+      width: 190,
+      render: (thanhToan) => {
+        let style = {};
+        let text = "";
+
+        if (thanhToan === 1) {
+          style = {
+            color: "green",
+            border: "1px solid green",
+            borderRadius: "5px",
+            padding: "2px 6px",
+          };
+          text = "Đã thanh toán";
+        } else {
+          style = {
+            color: "red",
+            border: "1px solid red",
+            borderRadius: "5px",
+            padding: "2px 6px",
+          };
+          text = "Chưa thanh toán";
+        }
+
+        return (
+          <span className="ml-5 mr-5" style={style}>
+            {text}
+          </span>
+        );
+      },
+    },
+    {
+      title: "Ngày Thanh Toán",
+      dataIndex: "ngayThanhToan",
+      key: "ngayThanhToan",
+      width: 110,
     },
     {
       title: "Thao Tác",
@@ -579,7 +620,7 @@ const ChoXacNhan = () => {
             <Input
               style={{ width: 200, marginRight: 8, marginBottom: 10 }}
               type="date"
-              format="DD/MM/YYYY"
+              format="yyyy/MM/dd"
               onChange={handleSearchInputChange}
               value={searchValue}
               placeholder="Chọn Ngày Đặt Hàng"
