@@ -50,6 +50,10 @@ export const AuthProvider = ({ children }) => {
         navigate("/", {
           replace: true,
         });
+      } else if (data.vaiTro === "ROLE_STAFF") {
+        navigate("/admin/ban-hang", {
+          replace: true,
+        });
       }
     } catch (error) {
       console.error(error);

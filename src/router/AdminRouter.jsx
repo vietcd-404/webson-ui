@@ -21,6 +21,7 @@ import DangGiao from "../components/admin/HoaDon/DangGiao";
 import HoanThanh from "../components/admin/HoaDon/HoanThanh";
 import Huy from "../components/admin/HoaDon/Huy";
 import NotFound from "../pages/customer/Account/NotFound";
+import BanHangTaiQuay from "../pages/admin/BanHangTaiQuay/BanHangTaiQuay";
 const AdminRouter = () => {
   return (
     <div>
@@ -87,6 +88,14 @@ const AdminRouter = () => {
             </LayoutAdmin>
           }
         />
+        {/* <Route
+          path="/ban-hang"
+          element={
+            <LayoutAdmin>
+              <BanHangTaiQuay />
+            </LayoutAdmin>
+          }
+        /> */}
         {/* <Route
           path="/hoa-don"
           element={

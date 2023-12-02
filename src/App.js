@@ -33,6 +33,8 @@ import CaNhan from "./pages/customer/ThongTin/CaNhan";
 import ThongBaoXacNhan from "./pages/customer/payment/ThongBaoXacNhan";
 import NotFound from "./pages/customer/Account/NotFound";
 import DiaChi from "./pages/customer/ThongTin/DiaChi";
+import LayoutAdmin from "./layout/AdminLayout";
+import BanHangTaiQuay from "./pages/admin/BanHangTaiQuay/BanHangTaiQuay";
 const App = () => {
   const { user } = useAuth();
   return (
@@ -43,6 +45,16 @@ const App = () => {
           element={
             <ProtectedRoute userRole="ROLE_ADMIN">
               <AdminRouter />
+            </ProtectedRoute>
+          }
+        />
+        <Route
+          path="/admin/ban-hang"
+          element={
+            <ProtectedRoute userRole={["ROLE_STAFF", "ROLE_ADMIN"]}>
+              <LayoutAdmin>
+                <BanHangTaiQuay />
+              </LayoutAdmin>
             </ProtectedRoute>
           }
         />
