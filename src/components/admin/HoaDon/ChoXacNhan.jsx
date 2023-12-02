@@ -227,30 +227,28 @@ const ChoXacNhan = () => {
       const response = await searchHoaDon(searchType, searchValue, 0);
       if (response.data.length === 0) {
         setTableData(response.data);
-      }
-      if (
-        response.data &&
-        response.data.content &&
-        Array.isArray(response.data.content)
-      ) {
-        const modifiedData = response.data.content.map((item, index) => {
-          return { ...item, index: index + 1 };
-        });
-        setTableData(modifiedData);
       } else {
-        console.error("Dữ liệu trả về không phải là một mảng.");
+        if (Array.isArray(response.data)) {
+          const modifiedData = response.data.map((item, index) => {
+            return { ...item, index: index + 1 };
+          });
+          setTableData(modifiedData);
+        } else {
+          console.error("Dữ liệu trả về không phải là một mảng.");
+        }
       }
     } catch (error) {
       console.error("Lỗi khi gọi API: ", error);
     }
   };
-  const socket = new SockJS("http://localhost:8000/api/anh/ws");
-  const stompClient = Stomp.over(socket);
 
   const handleClear = async () => {
     setSearchValue(null);
     fetchData();
   };
+
+  const socket = new SockJS("http://localhost:8000/api/anh/ws");
+  const stompClient = Stomp.over(socket);
 
   const columnProduct = [
     {
@@ -331,6 +329,7 @@ const ChoXacNhan = () => {
     {
       title: "Trạng Thái",
       dataIndex: "trangThai",
+      width: 130,
       key: "trangThai",
       render: (status) => {
         let statusStyle = {};
@@ -388,6 +387,46 @@ const ChoXacNhan = () => {
 
         return <span style={statusStyle}>{statusText}</span>;
       },
+    },
+    {
+      title: "Thanh toán",
+      dataIndex: "thanhToan",
+      key: "thanhToan",
+      width: 190,
+      render: (thanhToan) => {
+        let style = {};
+        let text = "";
+
+        if (thanhToan === 1) {
+          style = {
+            color: "green",
+            border: "1px solid green",
+            borderRadius: "5px",
+            padding: "2px 6px",
+          };
+          text = "Đã thanh toán";
+        } else {
+          style = {
+            color: "red",
+            border: "1px solid red",
+            borderRadius: "5px",
+            padding: "2px 6px",
+          };
+          text = "Chưa thanh toán";
+        }
+
+        return (
+          <span className="ml-5 mr-5" style={style}>
+            {text}
+          </span>
+        );
+      },
+    },
+    {
+      title: "Ngày Thanh Toán",
+      dataIndex: "ngayThanhToan",
+      key: "ngayThanhToan",
+      width: 110,
     },
     {
       title: "Thao Tác",
@@ -569,11 +608,31 @@ const ChoXacNhan = () => {
             <Option value="tenNguoiDung">Tên Khách Hàng</Option>
             <Option value="ngayTao">Ngày Đặt Hàng</Option>
           </Select>
-          <Input
-            style={{ width: 200, marginRight: 8, marginBottom: 10 }}
-            onChange={handleSearchInputChange}
-            value={searchValue}
-          />
+          {searchType === "maHoaDon" ? (
+            <Input
+              style={{ width: 200, marginRight: 8, marginBottom: 10 }}
+              type="number"
+              onChange={handleSearchInputChange}
+              value={searchValue}
+              placeholder="Nhập Mã HĐ"
+            />
+          ) : searchType === "ngayTao" ? (
+            <Input
+              style={{ width: 200, marginRight: 8, marginBottom: 10 }}
+              type="date"
+              format="yyyy/MM/dd"
+              onChange={handleSearchInputChange}
+              value={searchValue}
+              placeholder="Chọn Ngày Đặt Hàng"
+            />
+          ) : (
+            <Input
+              style={{ width: 200, marginRight: 8, marginBottom: 10 }}
+              onChange={handleSearchInputChange}
+              value={searchValue}
+              placeholder="Nhập thông tin tìm kiếm"
+            />
+          )}
           <Button
             style={{ color: "white", backgroundColor: "red", marginRight: 10 }}
             onClick={handleSearch}
