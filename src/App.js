@@ -154,7 +154,9 @@ const App = () => {
         <Route
           path="/invoices"
           element={
-            <ProtectedRoute userRole={["ROLE_USER", "ROLE_ADMIN"]}>
+            <ProtectedRoute
+              userRole={["ROLE_USER", "ROLE_ADMIN", "ROLE_STAFF"]}
+            >
               <Main>
                 <ThongTin children={<HoaDon props={<TatCa />} />} />
               </Main>
@@ -165,7 +167,9 @@ const App = () => {
         <Route
           path="/invoices"
           element={
-            <ProtectedRoute userRole={["ROLE_USER", "ROLE_ADMIN"]}>
+            <ProtectedRoute
+              userRole={["ROLE_USER", "ROLE_ADMIN", "ROLE_STAFF"]}
+            >
               <Main>
                 <ThongTin children={<HoaDon props={<TatCa />} />} />
               </Main>
@@ -175,7 +179,9 @@ const App = () => {
         <Route
           path="/information/:maHoaDon"
           element={
-            <ProtectedRoute userRole={["ROLE_USER", "ROLE_ADMIN"]}>
+            <ProtectedRoute
+              userRole={["ROLE_USER", "ROLE_ADMIN", "ROLE_STAFF"]}
+            >
               <Main>
                 <ThongTin children={<ThongTinDonHang />} />
               </Main>
@@ -185,7 +191,9 @@ const App = () => {
         <Route
           path="/invoices/confirmation"
           element={
-            <ProtectedRoute userRole={["ROLE_USER", "ROLE_ADMIN"]}>
+            <ProtectedRoute
+              userRole={["ROLE_USER", "ROLE_ADMIN", "ROLE_STAFF"]}
+            >
               <Main>
                 <ThongTin children={<HoaDon props={<XacNhan />} />} />
               </Main>
@@ -195,7 +203,9 @@ const App = () => {
         <Route
           path="/invoices/wait-for-confirmation"
           element={
-            <ProtectedRoute userRole={["ROLE_USER", "ROLE_ADMIN"]}>
+            <ProtectedRoute
+              userRole={["ROLE_USER", "ROLE_ADMIN", "ROLE_STAFF"]}
+            >
               <Main>
                 <ThongTin children={<HoaDon props={<ChoXacNhan />} />} />
               </Main>
@@ -205,7 +215,9 @@ const App = () => {
         <Route
           path="/invoices/in-progress"
           element={
-            <ProtectedRoute userRole={["ROLE_USER", "ROLE_ADMIN"]}>
+            <ProtectedRoute
+              userRole={["ROLE_USER", "ROLE_ADMIN", "ROLE_STAFF"]}
+            >
               <Main>
                 <ThongTin children={<HoaDon props={<DangGiao />} />} />
               </Main>
@@ -215,7 +227,9 @@ const App = () => {
         <Route
           path="/invoices/complete"
           element={
-            <ProtectedRoute userRole={["ROLE_USER", "ROLE_ADMIN"]}>
+            <ProtectedRoute
+              userRole={["ROLE_USER", "ROLE_ADMIN", "ROLE_STAFF"]}
+            >
               <Main>
                 <ThongTin children={<HoaDon props={<HoanThanh />} />} />
               </Main>
@@ -225,7 +239,9 @@ const App = () => {
         <Route
           path="/invoices/abort"
           element={
-            <ProtectedRoute userRole={["ROLE_USER", "ROLE_ADMIN"]}>
+            <ProtectedRoute
+              userRole={["ROLE_USER", "ROLE_ADMIN", "ROLE_STAFF"]}
+            >
               <Main>
                 <ThongTin children={<HoaDon props={<Huy />} />} />
               </Main>
@@ -263,7 +279,9 @@ const App = () => {
           path="/my-favorites"
           element={
             user ? (
-              <ProtectedRoute userRole={["ROLE_USER", "ROLE_ADMIN"]}>
+              <ProtectedRoute
+                userRole={["ROLE_USER", "ROLE_ADMIN", "ROLE_STAFF"]}
+              >
                 <Main>
                   <ThongTin children={<SanPhamYeuThich />} />
                 </Main>
