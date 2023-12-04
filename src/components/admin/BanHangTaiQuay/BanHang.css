@@ -1,4 +1,4 @@
-:where(.css-dev-only-do-not-override-amq5gd).ant-select-single.ant-select-lg
+/* :where(.css-dev-only-do-not-override-amq5gd).ant-select-single.ant-select-lg
   .ant-select-selector
   .ant-select-selection-item,
 :where(.css-dev-only-do-not-override-amq5gd).ant-select-single.ant-select-lg
@@ -9,4 +9,12 @@
   transition: all 0.3s, visibility 0s;
   align-self: center;
   display: none;
-}
+} */
+
+/* .sua {
+  padding: 0;
+  line-height: 38px;
+
+  align-self: center;
+  display: none;
+} */
