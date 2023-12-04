@@ -1,6 +1,8 @@
 import React from "react";
-import { useEffect, useState, useRef } from "react";
-import { Button, Card, Col, Form, Input, Row, Select, Tabs } from "antd";
+import { useEffect, useState } from "react";
+import { useParams, useNavigate } from "react-router-dom";
+
+import { Button, Card, Col, Form, Input, Row, Select } from "antd";
 import {
   ExclamationCircleFilled,
   EyeOutlined,
@@ -15,12 +17,18 @@ import {
   inforUserHoaDon,
   productInforHoaDon,
   searchHoaDon,
+  themSanPhamHDByAdmin,
+  updatetHoaDonByAdmin,
 } from "../../../services/HoaDonService";
+
 import WebSocketService from "../../../services/WebSocketService";
 import { Stomp } from "@stomp/stompjs";
 import SockJS from "sockjs-client";
 import { format } from "date-fns";
+import { getAllLocByAdmin } from "../../../services/SanPhamService";
+import { tab } from "@testing-library/user-event/dist/tab";
 const { Option } = Select;
+
 const ChoXacNhan = () => {
   const [totalPage, setTotalPage] = useState(1);
   const [totalPageProduct, setTotalPageProduct] = useState(1);
@@ -39,9 +47,35 @@ const ChoXacNhan = () => {
   const [searchValue, setSearchValue] = useState(null);
   const [form] = Form.useForm();
 
+  // Update sp
+  const [searchQuery, setSearchQuery] = useState("");
+  const [dataSanPham, setDataSanPham] = useState([]);
+  const [filteredProducts, setFilteredProducts] = useState([]);
+  const [showSearchBar, setShowSearchBar] = useState(false);
+  const navigate = useNavigate();
+  const [maHD, setMaHD] = useState("");
+
+  const loadSanPham = async () => {
+    try {
+      const response = await getAllLocByAdmin();
+      setDataSanPham(response.data);
+    } catch (error) {
+      console.error("Lỗi khi gọi API: ", error);
+    }
+  };
+  useEffect(() => {
+    const filtered = dataSanPham.filter((item) =>
+      item.tenSanPham.toLowerCase().includes(searchQuery.toLowerCase())
+    );
+    setFilteredProducts(filtered);
+  }, [searchQuery]);
+
   const showEditModal = async (record) => {
+    setMaHD(null);
     const response = await inforUserHoaDon(record.maHoaDon);
     setEditFormData(response.data[0]);
+    setMaHD(response.data[0].maHoaDon);
+    console.log(maHD);
     formUpdate.setFieldsValue({
       maHoaDon: response.data[0].maHoaDon,
       tenNguoiDung: response.data[0].tenNguoiDung,
@@ -54,8 +88,13 @@ const ChoXacNhan = () => {
       huyen: response.data[0].huyen,
       xa: response.data[0].xa,
     });
+    loadProductInOrder(response.data[0].maHoaDon);
+    setIsEditModalOpen(true);
+  };
+
+  const loadProductInOrder = async (maHoaDon) => {
     try {
-      const response1 = await productInforHoaDon(record.maHoaDon);
+      const response1 = await productInforHoaDon(maHoaDon);
       setTableDataProduct(response1.data);
       setTotalPageProduct(response1.totalPage);
       setTongTien(response1.data[0].tongTien);
@@ -64,15 +103,10 @@ const ChoXacNhan = () => {
       } else {
         setGiamGia(response1.data[0].tienGiam);
       }
-      console.log(response1.data);
-      setLoading(false);
     } catch (error) {
       console.error("Lỗi khi gọi API: ", error);
-      setLoading(false);
     }
-    setIsEditModalOpen(true);
   };
-
   const handleEditCancel = () => {
     formUpdate.resetFields();
     setIsEditModalOpen(false);
@@ -113,9 +147,7 @@ const ChoXacNhan = () => {
   useEffect(() => {
     loadTable();
     fetchData();
-    // if (messageValue) {
-    //   notify();
-    // }
+    loadSanPham();
   }, [messageValue]);
 
   const getStatusText = (status) => {
@@ -135,24 +167,25 @@ const ChoXacNhan = () => {
     }
   };
 
-  const handleCancel = (maHD) => {
+  const handleThemSanPham = (maSPCT) => {
     Modal.confirm({
       title: "Xác nhận",
       icon: <ExclamationCircleFilled />,
-      content: "Bạn có chắc muốn hủy xác nhận hóa đơn này?",
+      content: "Bạn có chắc muốn thêm sản phẩm này vào dơn hàng?",
       okText: "Đồng ý",
       okType: "danger",
       cancelText: "Đóng",
       onOk: async () => {
         try {
-          const response = await huytHoaDonByAdmin(maHD);
+          const response = await themSanPhamHDByAdmin(maSPCT, 1, maHD);
           if (response.status === 200) {
-            toast.success("Hủy đơn hàng thành công!");
-            fetchData();
+            toast.success(" Thêm sản phẩm thành công!");
+            loadProductInOrder(maHD);
+            setSearchQuery("");
           }
         } catch (error) {
-          console.error("Lỗi khi hủy loại: ", error);
-          toast.error("Xóa thất bại.");
+          console.error("Lỗi khi thêm: ", error);
+          toast.error("Thêm thất bại.");
         }
       },
       onCancel: () => {},
@@ -189,33 +222,33 @@ const ChoXacNhan = () => {
     Modal.confirm({
       title: "Xác nhận",
       icon: <ExclamationCircleFilled />,
-      content: "Bạn có chắc muốn cập nhập loại không?",
+      content:
+        "Bạn có chắc muốn cập nhập thông tin người dùng đơn hàng này không?",
       okText: "OK",
       okType: "danger",
       cancelText: "Đóng",
-      // onOk: async () => {
-      //   try {
-      //     // const values = await formUpdate.validateFields();
-      //     // const response = await updateMau(values, editFormData.maMau);
-      //     // if (response.status === 200) {
-      //     //   console.log(response);
-      //     //   setIsModalOpen(false);
-
-      //       toast.success("Cập nhật thành công!");
-      //       loadTable();
-      //     }
-      //   } catch (error) {
-      //     console.error("Lỗi khi cập nhật loại: ", error);
-      //     toast.error("Cập nhật thất bại.");
-      //   }
-      // },
+      onOk: async () => {
+        try {
+          const values = await formUpdate.validateFields();
+          const response = await updatetHoaDonByAdmin(
+            editFormData.maHoaDon,
+            values
+          );
+          if (response.status === 200) {
+            console.log(response);
+            setIsEditModalOpen(false);
+            toast.success("Cập nhật thành công!");
+            fetchData();
+          }
+        } catch (error) {
+          console.error("Lỗi khi cập nhật loại: ", error);
+          toast.error("Cập nhật thất bại.");
+          setIsEditModalOpen(true);
+        }
+      },
 
       onCancel: () => {},
     });
-  };
-
-  const handleSearchTypeChange = (value) => {
-    setSearchType(value);
   };
 
   const handleSearchInputChange = (e) => {
@@ -247,6 +280,26 @@ const ChoXacNhan = () => {
     fetchData();
   };
 
+  // Update sản phẩm
+  const handleQuantityChange = (e, key) => {
+    const { value } = e.target;
+    const index = tableDataProduct.findIndex((item) => item.key === key);
+
+    if (index !== -1) {
+      const updatedData = [...tableDataProduct]; // Tạo một bản sao mới của mảng để tránh cập nhật trực tiếp trên state
+      updatedData[index] = {
+        ...updatedData[index],
+        soLuong: parseInt(value, 10),
+      };
+
+      setTableDataProduct(updatedData);
+    }
+  };
+
+  const handleSearchProduct = (e) => {
+    setSearchQuery(e.target.value);
+  };
+
   const socket = new SockJS("http://localhost:8000/api/anh/ws");
   const stompClient = Stomp.over(socket);
 
@@ -273,12 +326,24 @@ const ChoXacNhan = () => {
       title: "Số lượng",
       dataIndex: "soLuong",
       key: "soLuong",
+      render: (soLuong, record) => (
+        <input
+          type="number"
+          value={soLuong}
+          name="soLuong"
+          className="border-1"
+          onChange={(e) => handleQuantityChange(e, record.key)}
+        />
+      ),
     },
     {
       title: "Thành Tiền",
       dataIndex: "giaBan",
       key: "thanhTien",
       render: (giaBan, record) => {
+        if (record.phanTramGiam !== 0) {
+          giaBan = giaBan - giaBan * (record.phanTramGiam / 100);
+        }
         const thanhTien = giaBan * record.soLuong;
         return <span>{thanhTien.toLocaleString("en-US")}</span>;
       },
@@ -479,7 +544,7 @@ const ChoXacNhan = () => {
         open={isEditModalOpen}
         onCancel={handleEditCancel}
         onOk={handleUpdate}
-        width={1000}
+        width={900}
       >
         <p className="text-bold mb-2" style={{ fontSize: "20px" }}>
           Thông tin nhận hàng
@@ -520,7 +585,13 @@ const ChoXacNhan = () => {
                 name="email"
                 labelCol={{ span: 8 }}
                 wrapperCol={{ span: 16 }}
-                rules={[{ required: true, message: "Email không để trống!" }]}
+                rules={[
+                  { required: true, message: "Email không để trống!" },
+                  {
+                    type: "email",
+                    message: "Email không hợp lệ!",
+                  },
+                ]}
               >
                 <Input placeholder="abc@gmail.com" />
               </Form.Item>
@@ -531,6 +602,10 @@ const ChoXacNhan = () => {
                 wrapperCol={{ span: 16 }}
                 rules={[
                   { required: true, message: "Số điện thoại không để trống!" },
+                  {
+                    pattern: /^[0-9]{10}$/,
+                    message: "Số điện thoại không hợp lệ!",
+                  },
                 ]}
               >
                 <Input />
@@ -542,28 +617,36 @@ const ChoXacNhan = () => {
                 name="tinh"
                 labelCol={{ span: 8 }}
                 wrapperCol={{ span: 16 }}
+                rules={[
+                  {
+                    required: true,
+                    message: "(Tỉnh)Thành phố không để trống!",
+                  },
+                ]}
               >
-                <Input disabled />
+                <Input />
               </Form.Item>
               <Form.Item
                 label="Huyện"
                 name="huyen"
                 labelCol={{ span: 8 }}
                 wrapperCol={{ span: 16 }}
+                rules={[{ required: true, message: "Huyện không để trống!" }]}
               >
-                <Input disabled />
+                <Input />
               </Form.Item>
               <Form.Item
                 label="Xã"
                 name="xa"
                 labelCol={{ span: 8 }}
                 wrapperCol={{ span: 16 }}
+                rules={[{ required: true, message: "Xã không để trống!" }]}
               >
-                <Input disabled />
+                <Input />
               </Form.Item>
               <Form.Item
                 label="Địa chỉ chi tiết"
-                name="diaChiChiTiet"
+                name="diaChi"
                 labelCol={{ span: 8 }}
                 wrapperCol={{ span: 16 }}
                 rules={[{ required: true, message: "Địa chỉ không để trống!" }]}
@@ -572,7 +655,9 @@ const ChoXacNhan = () => {
               </Form.Item>
             </Col>
           </Row>
-          <Button type="primary">Cập Nhập</Button>
+          <Button type="primary" onClick={handleUpdate}>
+            Cập Nhập
+          </Button>
         </Form>
         <p className="text-bold mt-2 mb-2" style={{ fontSize: "20px" }}>
           Thông tin sản phẩm
@@ -584,6 +669,61 @@ const ChoXacNhan = () => {
             padding: "16px",
           }}
         >
+          <p className="padding-right mt-2 mb-4">
+            <input
+              className="h-full w-full border-2 border-black outline-none px-3 py-2 rounded-md placeholder-[#C4C4C4] text-sm"
+              type="text"
+              onChange={handleSearchProduct}
+              value={searchQuery}
+              placeholder="Tìm kiếm sản phẩm tại đây"
+            />
+            {searchQuery && (
+              <div
+                className={`w-full mt-1 ml-3 lg:mt-0 lg:left-0 lg:right-0 absolute z-50 overflow-y-scroll shadow-2xl scrollbar-hide cursor-pointer`}
+              >
+                {searchQuery &&
+                  filteredProducts.map((item) => (
+                    <div
+                      key={item.maSanPhamCT}
+                      className="max-w-[600px] h-28 bg-gray-100 mb-2 flex items-center gap-3 cursor-pointer hover:bg-gray-200"
+                      onClick={() => handleThemSanPham(item.maSanPhamCT)}
+                    >
+                      <img
+                        className="w-[20%] h-[80%] object-cover"
+                        src={`data:image/png;base64,${item.img}`}
+                        alt=""
+                      />
+                      <div className="flex flex-col gap-1">
+                        <p className="font-semibold text-lg">
+                          {"[" + item.tenMau + "] - " + item.tenSanPham}
+                        </p>
+                        <p className="text-xs">{item.tenThuongHieu}</p>
+                        <p className="text-sm">
+                          {item.phanTramGiam !== 0 ? (
+                            <>
+                              Giá bán:{" "}
+                              <span className="text-primeColor font-semibold">
+                                {item.giaBan * (1 - item.phanTramGiam / 100)} đ
+                              </span>{" "}
+                              <span className="text-sm line-through text-gray-500">
+                                {item.giaBan} đ {/* Giá gốc */}
+                              </span>
+                            </>
+                          ) : (
+                            <>
+                              Giá bán:{" "}
+                              <span className="text-primeColor font-semibold">
+                                {item.giaBan} đ{" "}
+                              </span>
+                            </>
+                          )}
+                        </p>
+                      </div>
+                    </div>
+                  ))}
+              </div>
+            )}
+          </p>
           <Table
             columns={columnProduct}
             dataSource={tableDataProduct}
@@ -593,6 +733,11 @@ const ChoXacNhan = () => {
               current: totalPageProduct,
             }}
           />
+          <p className="padding-right mt-2">
+            <Button style={{ color: "white", backgroundColor: "green" }}>
+              Cập nhập sản phẩm
+            </Button>
+          </p>
           <p className="padding-right mt-2">
             Tổng tiền trước khi giảm:{" "}
             <span className="text-lg text-bold">{tongTien + giamGia}đ</span>{" "}
@@ -606,6 +751,7 @@ const ChoXacNhan = () => {
           </p>
         </div>
       </Modal>
+
       <Card title="Lọc hóa đơn" bordered={true} className="mb-2">
         <form className="mb-2">
           <Select
@@ -662,6 +808,7 @@ const ChoXacNhan = () => {
             total: totalPage * 5,
             current: totalPage,
           }}
+          style={{ maxHeight: "500px", overflowY: "auto" }}
         />
       )}
     </div>

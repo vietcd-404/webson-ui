@@ -112,7 +112,7 @@ const DiaChi = () => {
         });
 
         setIsModalOpen(false);
-        // loadDiaChi();
+        loadDiaChi();
       } catch (error) {
         // Handle errors, such as displaying an error message
         console.log("Lỗi ", error);

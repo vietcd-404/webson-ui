@@ -10,6 +10,7 @@ import {
   LoginOutlined,
   ExclamationCircleFilled,
   GiftOutlined,
+  ShoppingCartOutlined
 } from "@ant-design/icons";
 import { MenuFoldOutlined, MenuUnfoldOutlined } from "@ant-design/icons";
 import { Layout, Menu, theme, Button, Image, Modal } from "antd";
@@ -46,7 +47,7 @@ const LayoutAdmin = ({ children }) => {
       getItem(<Link to="/admin/thuong-hieu">Thương hiệu</Link>, "5"),
       getItem(<Link to="/admin/mau-sac">Màu</Link>, "6"),
     ]),
-    getItem("Quản lý bán hàng", "sub2", <MacCommandOutlined />, [
+    getItem("Quản lý bán hàng", "sub2", < ShoppingCartOutlined />, [
       getItem(<Link to="/admin/ban-hang">Bán hàng</Link>, "12"),
     ]),
     getItem(
