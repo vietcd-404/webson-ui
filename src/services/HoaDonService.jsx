@@ -137,3 +137,7 @@ export const themSanPhamHDByAdmin = async (maSPCT, soLuong, maHoaDon) => {
     `/admin/order/add-productHd?maSPCT=${maSPCT}&soLuong=${soLuong}&maHoaDon=${maHoaDon}`
   );
 };
+
+export const xoaSanPhamHdByAdmin = async (maHoaDon) => {
+  return await api.delete(`/admin/order/delete?maHoaDonCT=${maHoaDon}`);
+};

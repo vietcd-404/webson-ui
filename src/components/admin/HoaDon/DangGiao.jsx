@@ -264,10 +264,10 @@ const DangGiao = () => {
     },
     {
       title: "Thành Tiền",
-      dataIndex: "giaBan",
+      dataIndex: "donGia",
       key: "thanhTien",
-      render: (giaBan, record) => {
-        const thanhTien = giaBan * record.soLuong;
+      render: (donGia, record) => {
+        const thanhTien = donGia * record.soLuong;
         return <span>{thanhTien.toLocaleString("en-US")}</span>;
       },
     },

@@ -448,6 +448,7 @@ const ListSPCT = () => {
           </Button>
         </Space>
       ),
+      width: 130,
     },
   ];
 

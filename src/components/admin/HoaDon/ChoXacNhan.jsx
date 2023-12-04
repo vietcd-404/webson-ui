@@ -19,6 +19,7 @@ import {
   searchHoaDon,
   themSanPhamHDByAdmin,
   updatetHoaDonByAdmin,
+  xoaSanPhamHdByAdmin,
 } from "../../../services/HoaDonService";
 
 import WebSocketService from "../../../services/WebSocketService";
@@ -192,6 +193,34 @@ const ChoXacNhan = () => {
     });
   };
 
+  const handleXoaSanPham = (maHDCT) => {
+    Modal.confirm({
+      title: "Xác nhận",
+      icon: <ExclamationCircleFilled />,
+      content: "Bạn có chắc muốn xóa sản phẩm này khỏi dơn hàng?",
+      okText: "Đồng ý",
+      okType: "danger",
+      cancelText: "Đóng",
+      onOk: async () => {
+        if (tableDataProduct.length === 1) {
+          toast.error("Không thể để trống hóa đơn!");
+        } else {
+          try {
+            const response = await xoaSanPhamHdByAdmin(maHDCT);
+            if (response.status === 200) {
+              toast.success(" Xóa sản phẩm thành công!");
+              loadProductInOrder(maHD);
+            }
+          } catch (error) {
+            console.error("Lỗi khi xóa: ", error);
+            toast.error("Xóa thất bại!");
+          }
+        }
+      },
+      onCancel: () => {},
+    });
+  };
+
   const handleUpdateStatus = (trangThai, maHD) => {
     Modal.confirm({
       title: "Xác nhận",
@@ -338,13 +367,10 @@ const ChoXacNhan = () => {
     },
     {
       title: "Thành Tiền",
-      dataIndex: "giaBan",
+      dataIndex: "donGia",
       key: "thanhTien",
-      render: (giaBan, record) => {
-        if (record.phanTramGiam !== 0) {
-          giaBan = giaBan - giaBan * (record.phanTramGiam / 100);
-        }
-        const thanhTien = giaBan * record.soLuong;
+      render: (donGia, record) => {
+        const thanhTien = donGia * record.soLuong;
         return <span>{thanhTien.toLocaleString("en-US")}</span>;
       },
     },
@@ -353,7 +379,7 @@ const ChoXacNhan = () => {
       key: "action",
       render: (_, record) => (
         <Space size="middle">
-          <Button>
+          <Button onClick={() => handleXoaSanPham(record.maHoaDonCT)}>
             <DeleteOutlined />
           </Button>
         </Space>
