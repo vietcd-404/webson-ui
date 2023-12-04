@@ -186,7 +186,16 @@ const ChoXacNhan = () => {
           }
         } catch (error) {
           console.error("Lỗi khi thêm: ", error);
-          toast.error("Thêm thất bại.");
+          if (
+            error.response &&
+            error.response.data &&
+            error.response.data.message ===
+              "Số lượng cập nhật vượt quá số lượng tồn kho"
+          ) {
+            toast.error("Số lượng cập nhật vượt quá số lượng tồn kho");
+          } else {
+            toast.error("Thêm thất bại. Lỗi: " + error.message);
+          }
         }
       },
       onCancel: () => {},

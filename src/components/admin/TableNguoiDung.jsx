@@ -269,6 +269,7 @@ const TableNguoiDung = () => {
       dataIndex: "ngaySinh",
       key: "ngaySinh",
       render: (ngaySinh) => format(new Date(ngaySinh), "dd-MM-yyyy "),
+      width: 150,
     },
     {
       title: "Giới tính",

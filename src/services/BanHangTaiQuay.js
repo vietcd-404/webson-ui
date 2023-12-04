@@ -30,14 +30,20 @@ export const themSanPhamTaiQuay = async (maSPCT, soLuong, maHoaDon) => {
   );
 };
 
-export const xoaGioHangTaiQuay = async (id) => {
-  return await api.delete(
-    `/staff/gio-hang-chi-tiet/delete-gio-hang?maGioHangCT=${id}`
-  );
+export const xoaSanPhamTaiQuay = async (maHoaDonCT) => {
+  return await api.delete(`/staff/order/delete?maHoaDonCT=${maHoaDonCT}`);
 };
 
 export const updateSoLuongTaiQuay = async (maHoaDonCT, soLuong, maHoaDon) => {
   return await api.post(
-    `/staff/order/update-so-luong?maHoaDonCT=${maHoaDonCT}&soLuong=${soLuong}&maHoaDon=${maHoaDon}`
+    `/staff/order/update-so-luong?maHoaDon=${maHoaDon}&soLuong=${soLuong}&maHoaDonCT=${maHoaDonCT}`
   );
+};
+
+export const getAllKhachHang = async () => {
+  return await api.get("/staff/nguoi-dung/khach-hang");
+};
+
+export const thanhToanHoaDon = async (maHoaDon, hoaDon) => {
+  return await api.put(`/staff/order/update?maHoaDon=${maHoaDon}`, hoaDon);
 };
