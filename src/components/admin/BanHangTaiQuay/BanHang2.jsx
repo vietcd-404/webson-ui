@@ -2,6 +2,7 @@ import React, { useEffect, useRef, useState } from "react";
 import "./BanHang.css";
 import {
   Button,
+  Checkbox,
   Col,
   Form,
   InputNumber,
@@ -39,6 +40,7 @@ const HoaDon2 = () => {
   const [selectedTenKhachHang, setSelectedTenKhachHang] = useState(false);
 
   const [dataDaThemSP, setDaThemSP] = useState([]);
+
   const [selectedSanPham, setSelectedSanPham] = useState(null);
   const [taoHoaDon, setTaoHoaDon] = useState({});
   const [formData, setFormData] = useState({
@@ -46,6 +48,11 @@ const HoaDon2 = () => {
     maNguoiDung: "",
     diaChi: "",
     sdt: "",
+    phuongThucThanhToan: "",
+    tinh: "",
+    huyen: "",
+    xa: "",
+    thanhToan: 1,
   });
   const [formSP, setFormSP] = useState({
     trong: "",
@@ -126,11 +133,16 @@ const HoaDon2 = () => {
     }
   };
   const handleThanhToan = async (maHoaDon) => {
+    if (dataDaThemSP.length === 0) {
+      message.error("Không có sản phẩm nào nên không thể thanh toán");
+      return;
+    }
     try {
       // const maHoaDon = items.find((item) => item.key === maHoaDon)?.maHoaDon;
       await thanhToanHoaDon(maHoaDon, formData);
       console.log(maHoaDon);
       message.success("Thanh toán thành công");
+      remove(activeKey);
       return;
     } catch (error) {
       console.log("Lỗi ", error);
@@ -161,6 +173,15 @@ const HoaDon2 = () => {
   };
   const onChange = (key) => {
     setActiveKey(key);
+  };
+
+  const choThanhToan = (e) => {
+    const isChecked = e.target.checked;
+    setFormData({
+      ...formData,
+      thanhToan: isChecked ? 0 : 1,
+    });
+    console.log(`checked = ${isChecked}`);
   };
   const { user } = useAuth();
 
@@ -465,6 +486,19 @@ const HoaDon2 = () => {
                         className="block text-sm font-bold mb-2"
                         htmlFor="nguoiBan"
                       >
+                        Hóa đơn
+                      </label>
+                      <input
+                        className="border rounded w-3/4 p-2"
+                        type="text"
+                        value={pane.maHoaDon}
+                      />
+                    </div>
+                    <div className="mb-4">
+                      <label
+                        className="block text-sm font-bold mb-2"
+                        htmlFor="nguoiBan"
+                      >
                         Người bán
                       </label>
                       <input
@@ -475,19 +509,7 @@ const HoaDon2 = () => {
                         readOnly
                       />
                     </div>
-                    <div className="mb-4">
-                      <label
-                        className="block text-sm font-bold mb-2"
-                        htmlFor="nguoiBan"
-                      >
-                        Hóa đơn
-                      </label>
-                      <input
-                        className="border rounded w-3/4 p-2"
-                        type="text"
-                        value={pane.maHoaDon}
-                      />
-                    </div>
+
                     <div className="mb-4">
                       <label
                         className="block text-sm font-bold mb-2"
@@ -518,21 +540,7 @@ const HoaDon2 = () => {
                         className="block text-sm font-bold mb-2"
                         htmlFor="nguoiBan"
                       >
-                        Địa chỉ
-                      </label>
-                      <input
-                        name="diaChi"
-                        className="border rounded w-3/4 p-2"
-                        type="text"
-                        onChange={handleChange}
-                      />
-                    </div>
-                    <div className="mb-4">
-                      <label
-                        className="block text-sm font-bold mb-2"
-                        htmlFor="nguoiBan"
-                      >
-                        Sdt
+                        Số điện thoại
                       </label>
                       <input
                         name="sdt"
@@ -546,16 +554,77 @@ const HoaDon2 = () => {
                         className="block text-sm font-bold mb-2"
                         htmlFor="nguoiBan"
                       >
+                        Tỉnh
+                      </label>
+                      <input
+                        name="tinh"
+                        className="border rounded w-3/4 p-2"
+                        type="text"
+                        onChange={handleChange}
+                      />
+                    </div>
+                    <div className="mb-4">
+                      <label
+                        className="block text-sm font-bold mb-2"
+                        htmlFor="nguoiBan"
+                      >
+                        Huyện
+                      </label>
+                      <input
+                        name="huyen"
+                        className="border rounded w-3/4 p-2"
+                        type="text"
+                        onChange={handleChange}
+                      />
+                    </div>
+                    <div className="mb-4">
+                      <label
+                        className="block text-sm font-bold mb-2"
+                        htmlFor="nguoiBan"
+                      >
+                        Xã
+                      </label>
+                      <input
+                        name="xa"
+                        className="border rounded w-3/4 p-2"
+                        type="text"
+                        onChange={handleChange}
+                      />
+                    </div>
+                    <div className="mb-4">
+                      <label
+                        className="block text-sm font-bold mb-2"
+                        htmlFor="nguoiBan"
+                      >
+                        Địa chỉ chi tiết
+                      </label>
+                      <input
+                        name="diaChi"
+                        className="border rounded w-3/4 p-2"
+                        type="text"
+                        onChange={handleChange}
+                      />
+                    </div>
+                    <div className="mb-4">
+                      <Checkbox onChange={choThanhToan}>
+                        Chờ thanh toán
+                      </Checkbox>
+                    </div>
+                    <div className="mb-4">
+                      <label
+                        className="block text-sm font-bold mb-2"
+                        htmlFor="nguoiBan"
+                      >
                         Phương thức thanh toán
                       </label>
                       <select
                         className="border rounded w-full p-2"
                         id="khachHang"
-                        name="maNguoiDung"
+                        name="phuongThucThanhToan"
                         onChange={handleChange}
                       >
-                        <option value="KhachNgoai">Tiền mặt</option>
-                        <option value="KhachNgoai">Chuyển khoản</option>
+                        <option value="MONEY">Tiền mặt</option>
+                        <option value="ELECTRONIC_WALLET">Chuyển khoản</option>
                       </select>
                     </div>
                   </div>
