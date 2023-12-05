@@ -18,6 +18,7 @@ import {
   productInforHoaDon,
   searchHoaDon,
   themSanPhamHDByAdmin,
+  updateSoLuongByAdmin,
   updatetHoaDonByAdmin,
   xoaSanPhamHdByAdmin,
 } from "../../../services/HoaDonService";
@@ -52,31 +53,16 @@ const ChoXacNhan = () => {
   const [searchQuery, setSearchQuery] = useState("");
   const [dataSanPham, setDataSanPham] = useState([]);
   const [filteredProducts, setFilteredProducts] = useState([]);
-  const [showSearchBar, setShowSearchBar] = useState(false);
   const navigate = useNavigate();
   const [maHD, setMaHD] = useState("");
+  const [updateProductSL, setUpdateProductSL] = useState([]);
 
-  const loadSanPham = async () => {
-    try {
-      const response = await getAllLocByAdmin();
-      setDataSanPham(response.data);
-    } catch (error) {
-      console.error("Lỗi khi gọi API: ", error);
-    }
-  };
-  useEffect(() => {
-    const filtered = dataSanPham.filter((item) =>
-      item.tenSanPham.toLowerCase().includes(searchQuery.toLowerCase())
-    );
-    setFilteredProducts(filtered);
-  }, [searchQuery]);
-
+  // Hiển thị thông tin chi tiết order
   const showEditModal = async (record) => {
     setMaHD(null);
     const response = await inforUserHoaDon(record.maHoaDon);
     setEditFormData(response.data[0]);
     setMaHD(response.data[0].maHoaDon);
-    console.log(maHD);
     formUpdate.setFieldsValue({
       maHoaDon: response.data[0].maHoaDon,
       tenNguoiDung: response.data[0].tenNguoiDung,
@@ -93,6 +79,13 @@ const ChoXacNhan = () => {
     setIsEditModalOpen(true);
   };
 
+  const handleEditCancel = () => {
+    formUpdate.resetFields();
+    setIsEditModalOpen(false);
+    fetchData();
+  };
+
+  // Load thông tin sản phẩm ở trên oder
   const loadProductInOrder = async (maHoaDon) => {
     try {
       const response1 = await productInforHoaDon(maHoaDon);
@@ -108,10 +101,24 @@ const ChoXacNhan = () => {
       console.error("Lỗi khi gọi API: ", error);
     }
   };
-  const handleEditCancel = () => {
-    formUpdate.resetFields();
-    setIsEditModalOpen(false);
+
+  // Load sản phẩm tìm kiếm order
+  const loadSanPham = async () => {
+    try {
+      const response = await getAllLocByAdmin();
+      setDataSanPham(response.data);
+    } catch (error) {
+      console.error("Lỗi khi gọi API: ", error);
+    }
   };
+  useEffect(() => {
+    const filtered = dataSanPham.filter((item) =>
+      item.tenSanPham.toLowerCase().includes(searchQuery.toLowerCase())
+    );
+    setFilteredProducts(filtered);
+  }, [searchQuery]);
+
+  // Load hóa đơn
 
   const loadTable = async () => {
     try {
@@ -151,6 +158,7 @@ const ChoXacNhan = () => {
     loadSanPham();
   }, [messageValue]);
 
+  // Chuyển đổi trạng thái
   const getStatusText = (status) => {
     switch (status) {
       case 0:
@@ -166,74 +174,6 @@ const ChoXacNhan = () => {
       default:
         return "Chờ xác nhận";
     }
-  };
-
-  const handleThemSanPham = (maSPCT) => {
-    Modal.confirm({
-      title: "Xác nhận",
-      icon: <ExclamationCircleFilled />,
-      content: "Bạn có chắc muốn thêm sản phẩm này vào dơn hàng?",
-      okText: "Đồng ý",
-      okType: "danger",
-      cancelText: "Đóng",
-      onOk: async () => {
-        try {
-          const response = await themSanPhamHDByAdmin(maSPCT, 1, maHD);
-          if (response.status === 200) {
-            toast.success(" Thêm sản phẩm thành công!");
-            loadProductInOrder(maHD);
-            setSearchQuery("");
-          }
-        } catch (error) {
-          console.error("Lỗi khi thêm: ", error);
-          if (
-            error.response &&
-            error.response.data &&
-            error.response.data.message ===
-              "Số lượng cập nhật vượt quá số lượng tồn kho"
-          ) {
-            toast.error("Số lượng cập nhật vượt quá số lượng tồn kho");
-          } else {
-            toast.error("Thêm thất bại. Lỗi: " + error.message);
-          }
-        }
-      },
-      onCancel: () => {},
-    });
-  };
-
-  const handleXoaSanPham = (maHDCT) => {
-    Modal.confirm({
-      title: "Xác nhận",
-      icon: <ExclamationCircleFilled />,
-      content: "Bạn có chắc muốn xóa sản phẩm này khỏi dơn hàng?",
-      okText: "Đồng ý",
-      okType: "danger",
-      cancelText: "Đóng",
-      onOk: async () => {
-        if (tableDataProduct.length === 1) {
-          toast.error("Không thể để trống hóa đơn!");
-        } else {
-          try {
-            const response = await xoaSanPhamHdByAdmin(maHDCT);
-            if (response.status === 200) {
-              toast.success(" Xóa sản phẩm thành công!");
-              loadProductInOrder(maHD);
-            }
-          } catch (error) {
-            console.error("Lỗi khi xóa: ", error);
-            if (
-              error.response &&
-              error.response.data &&
-              error.response.data.message === "Không đạt điều kiện voucher!"
-            ) {
-              toast.error("Không đạt điều kiện voucher!");
-            }
-          }
-        }
-      },
-      onCancel: () => {},
-    });
   };
 
   const handleUpdateStatus = (trangThai, maHD) => {
@@ -262,6 +202,41 @@ const ChoXacNhan = () => {
     });
   };
 
+  // Searh Hóa Đơn
+  const handleSearchProduct = (e) => {
+    setSearchQuery(e.target.value);
+  };
+
+  const handleSearchInputChange = (e) => {
+    setSearchValue(e.target.value);
+  };
+
+  const handleSearch = async () => {
+    try {
+      const response = await searchHoaDon(searchType, searchValue, 0);
+      if (response.data.length === 0) {
+        setTableData(response.data);
+      } else {
+        if (Array.isArray(response.data)) {
+          const modifiedData = response.data.map((item, index) => {
+            return { ...item, index: index + 1 };
+          });
+          setTableData(modifiedData);
+        } else {
+          console.error("Dữ liệu trả về không phải là một mảng.");
+        }
+      }
+    } catch (error) {
+      console.error("Lỗi khi gọi API: ", error);
+    }
+  };
+
+  const handleClear = async () => {
+    setSearchValue(null);
+    fetchData();
+  };
+
+  // Cập nhập thông tin đơn hàng
   const handleUpdate = () => {
     Modal.confirm({
       title: "Xác nhận",
@@ -295,53 +270,153 @@ const ChoXacNhan = () => {
     });
   };
 
-  const handleSearchInputChange = (e) => {
-    setSearchValue(e.target.value);
-  };
-
-  const handleSearch = async () => {
-    try {
-      const response = await searchHoaDon(searchType, searchValue, 0);
-      if (response.data.length === 0) {
-        setTableData(response.data);
-      } else {
-        if (Array.isArray(response.data)) {
-          const modifiedData = response.data.map((item, index) => {
-            return { ...item, index: index + 1 };
-          });
-          setTableData(modifiedData);
-        } else {
-          console.error("Dữ liệu trả về không phải là một mảng.");
-        }
-      }
-    } catch (error) {
-      console.error("Lỗi khi gọi API: ", error);
-    }
-  };
-
-  const handleClear = async () => {
-    setSearchValue(null);
-    fetchData();
-  };
-
   // Update sản phẩm
+
+  function handleThemSanPham(maSPCT) {
+    Modal.confirm({
+      title: "Xác nhận",
+      icon: <ExclamationCircleFilled />,
+      content: "Bạn có chắc muốn thêm sản phẩm này vào dơn hàng?",
+      okText: "Đồng ý",
+      okType: "danger",
+      cancelText: "Đóng",
+      onOk: async () => {
+        try {
+          const response = await themSanPhamHDByAdmin(maSPCT, 1, maHD);
+          if (response.status === 200) {
+            toast.success(" Thêm sản phẩm thành công!");
+            loadProductInOrder(maHD);
+
+            setSearchQuery("");
+          }
+        } catch (error) {
+          console.error("Lỗi khi thêm: ", error);
+          if (
+            error.response &&
+            error.response.data &&
+            error.response.data.message ===
+              "Số lượng cập nhật vượt quá số lượng tồn kho"
+          ) {
+            toast.error("Số lượng cập nhật vượt quá số lượng tồn kho");
+          } else {
+            toast.error("Thêm thất bại. Lỗi: " + error.message);
+          }
+        }
+      },
+      onCancel: () => {
+        fetchData();
+      },
+    });
+  }
+
+  const handleXoaSanPham = (maHDCT) => {
+    Modal.confirm({
+      title: "Xác nhận",
+      icon: <ExclamationCircleFilled />,
+      content: "Bạn có chắc muốn xóa sản phẩm này khỏi dơn hàng?",
+      okText: "Đồng ý",
+      okType: "danger",
+      cancelText: "Đóng",
+      onOk: async () => {
+        if (tableDataProduct.length === 1) {
+          toast.error("Không thể để trống hóa đơn!");
+        } else {
+          try {
+            const response = await xoaSanPhamHdByAdmin(maHDCT);
+            if (response.status === 200) {
+              toast.success(" Xóa sản phẩm thành công!");
+              loadProductInOrder(maHD);
+              fetchData();
+            }
+          } catch (error) {
+            console.error("Lỗi khi xóa: ", error);
+            if (
+              error.response &&
+              error.response.data &&
+              error.response.data.message === "Không đạt điều kiện voucher!"
+            ) {
+              toast.error("Không đạt điều kiện voucher!");
+            }
+          }
+        }
+      },
+      onCancel: () => {},
+    });
+  };
+
   const handleQuantityChange = (e, key) => {
     const { value } = e.target;
-    const index = tableDataProduct.findIndex((item) => item.key === key);
+    const index = tableDataProduct.findIndex(
+      (item) => item.maSanPhamCT === key
+    );
 
     if (index !== -1) {
-      const updatedData = [...tableDataProduct]; // Tạo một bản sao mới của mảng để tránh cập nhật trực tiếp trên state
+      const updatedData = [...tableDataProduct];
       updatedData[index] = {
         ...updatedData[index],
         soLuong: parseInt(value, 10),
       };
-
       setTableDataProduct(updatedData);
+      setUpdateProductSL(updatedData);
     }
+    console.log(updateProductSL);
   };
 
-  const handleSearchProduct = (e) => {
-    setSearchQuery(e.target.value);
+  const updateProductQuantity = async () => {
+    Modal.confirm({
+      title: "Xác nhận",
+      icon: <ExclamationCircleFilled />,
+      content: "Bạn có chắc muốn cập nhập số lượng sản phẩm này vào đơn hàng?",
+      okText: "Đồng ý",
+      okType: "danger",
+      cancelText: "Đóng",
+      onOk: async () => {
+        let hasError = false;
+        let count = 0;
+        try {
+          for (const product of updateProductSL) {
+            try {
+              const response = await updateSoLuongByAdmin(
+                product.maHoaDonCT,
+                product.soLuong,
+                maHD
+              );
+              if (response.status === 200) {
+                count++;
+              }
+            } catch (error) {
+              console.error("Lỗi khi cập nhật số lượng sản phẩm: ", error);
+              if (
+                error.response &&
+                error.response.status === 400 &&
+                error.response.data &&
+                error.response.data.message !== null
+              ) {
+                toast.error(error.response.data.message);
+              } else {
+                toast.error("Đã xảy ra lỗi khi cập nhật số lượng sản phẩm.");
+              }
+              hasError = true;
+              break;
+            }
+          }
+          if (hasError) {
+            return;
+          }
+          if (count !== 0) {
+            loadProductInOrder(maHD);
+            toast.success("Cập nhập thành công");
+          }
+        } catch (err) {
+          console.error(
+            "Lỗi khi duyệt danh sách cập nhật số lượng sản phẩm: ",
+            err
+          );
+          toast.error("Đã xảy ra lỗi khi cập nhật số lượng sản phẩm.");
+        }
+      },
+      onCancel: () => {},
+    });
   };
 
   const socket = new SockJS("http://localhost:8000/api/anh/ws");
@@ -365,6 +440,7 @@ const ChoXacNhan = () => {
       title: "Tên sản phẩm",
       dataIndex: "tenSanPham",
       key: "tenSanPham",
+      width: "150",
     },
     {
       title: "Số lượng",
@@ -376,7 +452,7 @@ const ChoXacNhan = () => {
           value={soLuong}
           name="soLuong"
           className="border-1"
-          onChange={(e) => handleQuantityChange(e, record.key)}
+          onChange={(e) => handleQuantityChange(e, record.maSanPhamCT)}
         />
       ),
     },
@@ -387,6 +463,7 @@ const ChoXacNhan = () => {
       render: (donGia, record) => {
         return <span>{donGia.toLocaleString("en-US")} VNĐ</span>;
       },
+      width: 140,
     },
     {
       title: "Thành Tiền",
@@ -396,6 +473,7 @@ const ChoXacNhan = () => {
         const thanhTien = donGia * record.soLuong;
         return <span>{thanhTien.toLocaleString("en-US")} VNĐ</span>;
       },
+      width: 140,
     },
     {
       title: "Chức năng",
@@ -788,7 +866,10 @@ const ChoXacNhan = () => {
             }}
           />
           <p className="padding-right mt-2">
-            <Button style={{ color: "white", backgroundColor: "green" }}>
+            <Button
+              style={{ color: "white", backgroundColor: "green" }}
+              onClick={updateProductQuantity}
+            >
               Cập nhập sản phẩm
             </Button>
           </p>

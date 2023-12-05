@@ -141,3 +141,9 @@ export const themSanPhamHDByAdmin = async (maSPCT, soLuong, maHoaDon) => {
 export const xoaSanPhamHdByAdmin = async (maHoaDon) => {
   return await api.delete(`/admin/order/delete?maHoaDonCT=${maHoaDon}`);
 };
+
+export const updateSoLuongByAdmin = async (maHoaDonCT, soLuong, maHoaDon) => {
+  return await api.put(
+    `/admin/order/update-so-luong?soLuong=${soLuong}&maHoaDonCT=${maHoaDonCT}&maHoaDon=${maHoaDon}`
+  );
+};
