@@ -222,7 +222,13 @@ const ChoXacNhan = () => {
             }
           } catch (error) {
             console.error("Lỗi khi xóa: ", error);
-            toast.error("Xóa thất bại!");
+            if (
+              error.response &&
+              error.response.data &&
+              error.response.data.message === "Không đạt điều kiện voucher!"
+            ) {
+              toast.error("Không đạt điều kiện voucher!");
+            }
           }
         }
       },
@@ -375,12 +381,20 @@ const ChoXacNhan = () => {
       ),
     },
     {
+      title: "Đơn giá",
+      dataIndex: "donGia",
+      key: "thanhTien",
+      render: (donGia, record) => {
+        return <span>{donGia.toLocaleString("en-US")} VNĐ</span>;
+      },
+    },
+    {
       title: "Thành Tiền",
       dataIndex: "donGia",
       key: "thanhTien",
       render: (donGia, record) => {
         const thanhTien = donGia * record.soLuong;
-        return <span>{thanhTien.toLocaleString("en-US")}</span>;
+        return <span>{thanhTien.toLocaleString("en-US")} VNĐ</span>;
       },
     },
     {
@@ -738,17 +752,22 @@ const ChoXacNhan = () => {
                             <>
                               Giá bán:{" "}
                               <span className="text-primeColor font-semibold">
-                                {item.giaBan * (1 - item.phanTramGiam / 100)} đ
+                                {(
+                                  item.giaBan *
+                                  (1 - item.phanTramGiam / 100)
+                                ).toLocaleString("en-US")}{" "}
+                                VNĐ
                               </span>{" "}
                               <span className="text-sm line-through text-gray-500">
-                                {item.giaBan} đ {/* Giá gốc */}
+                                {item.giaBan.toLocaleString("en-US")} VNĐ{" "}
+                                {/* Giá gốc */}
                               </span>
                             </>
                           ) : (
                             <>
                               Giá bán:{" "}
                               <span className="text-primeColor font-semibold">
-                                {item.giaBan} đ{" "}
+                                {item.giaBan.toLocaleString("en-US")} VNĐ{" "}
                               </span>
                             </>
                           )}
@@ -775,14 +794,21 @@ const ChoXacNhan = () => {
           </p>
           <p className="padding-right mt-2">
             Tổng tiền trước khi giảm:{" "}
-            <span className="text-lg text-bold">{tongTien + giamGia}đ</span>{" "}
+            <span className="text-lg text-bold">
+              {(tongTien + giamGia).toLocaleString("en-US")} VNĐ
+            </span>{" "}
           </p>
           <p className="padding-right">
-            Voucher: <span className="text-lg text-bold">-{giamGia}đ</span>{" "}
+            Voucher:{" "}
+            <span className="text-lg text-bold">
+              -{giamGia.toLocaleString("en-US")} VNĐ
+            </span>{" "}
           </p>
           <p className="padding-right">
             Tổng tiền sau khi giảm:{" "}
-            <span className="text-lg text-bold">{tongTien}đ</span>{" "}
+            <span className="text-lg text-bold">
+              {tongTien.toLocaleString("en-US")} VNĐ
+            </span>{" "}
           </p>
         </div>
       </Modal>

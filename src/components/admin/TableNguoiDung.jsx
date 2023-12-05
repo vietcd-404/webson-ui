@@ -4,6 +4,7 @@ import {
   createNguoiDung,
   deleteNguoiDung,
   findAllNguoiDung,
+  searchNguoiDung,
   updateNguoiDung,
   updateStatus,
 } from "../../services/NguoiDungService";
@@ -43,6 +44,7 @@ const TableNguoiDung = () => {
   const [form] = Form.useForm();
   const [formUpdate] = Form.useForm();
   const [switchStatus, setSwitchStatus] = useState({});
+  const [searchValue, setSearchValue] = useState("");
 
   useEffect(() => {
     loadTable();
@@ -198,6 +200,27 @@ const TableNguoiDung = () => {
   const loadTable = async () => {
     try {
       const response = await findAllNguoiDung();
+      setData(response.data);
+      setTotalPage(response.totalPage);
+      setLoading(false);
+    } catch (error) {
+      console.error("Lỗi khi gọi API: ", error);
+      setLoading(false);
+    }
+  };
+
+  const handleSearch = (value) => {
+    setSearchValue(value);
+    if (value.length === 0) {
+      loadTable();
+    } else {
+      searchNguoiDung1(value);
+    }
+  };
+
+  const searchNguoiDung1 = async (keyword) => {
+    try {
+      const response = await searchNguoiDung(keyword);
       console.log(response.data);
       setData(response.data);
       setTotalPage(response.totalPage);
@@ -319,8 +342,11 @@ const TableNguoiDung = () => {
     <div>
       <ToastContainer />
       <Row>
-        <Col span={12}>
-          <SearchInput text="Tìm kiếm người dùng" />
+        <Col span={12} className="mt-2 mb-2">
+          <Input
+            placeholder="Tìm kiếm người dùng"
+            onChange={(event) => handleSearch(event.target.value)}
+          />
         </Col>
         <Col span={4} offset={8}>
           <Button className="bg-blue-500 text-white" onClick={showModal}>
