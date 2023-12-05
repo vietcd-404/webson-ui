@@ -11,38 +11,38 @@ export const findAllthuongHieu = async (tenThuongHieu) => {
 };
 
 export const findAllSPCT = async () => {
-  return await api.get("/admin/san-pham-chi-tiet/all");
+  return await api.get("/staff/san-pham-chi-tiet/all");
 };
 
 export const creatSPCT = async (sanPham) => {
-  return await api.post("/admin/san-pham-chi-tiet/add", sanPham);
+  return await api.post("/staff/san-pham-chi-tiet/add", sanPham);
 };
 
 export const creatListSPCT = async (sanPham) => {
-  return await api.post("/admin/san-pham-chi-tiet/add-all", sanPham);
+  return await api.post("/staff/san-pham-chi-tiet/add-all", sanPham);
 };
 
 export const updateSPCT = async (sanPham, ma) => {
-  return await api.put(`/admin/san-pham-chi-tiet/update/${sanPham}`, ma);
+  return await api.put(`/staff/san-pham-chi-tiet/update/${sanPham}`, ma);
 };
 
 export const deleteSPCT = async (id) => {
-  return await api.delete(`/admin/san-pham-chi-tiet/delete/${id}`);
+  return await api.delete(`/staff/san-pham-chi-tiet/delete/${id}`);
 };
 
 export const addImage = async (productId, imageIds) => {
   return await api.post(
-    `/admin/san-pham-chi-tiet/${productId}/images`,
+    `/staff/san-pham-chi-tiet/${productId}/images`,
     imageIds
   );
 };
 
 export const listImageSanPham = async (productId) => {
-  return await api.get(`/admin/san-pham-chi-tiet/${productId}/images`);
+  return await api.get(`/staff/san-pham-chi-tiet/${productId}/images`);
 };
 
 export const updateSPCTStatus = async (sanPham, ma) => {
-  return await api.put(`/admin/san-pham-chi-tiet/sua/${ma}`, sanPham);
+  return await api.put(`/staff/san-pham-chi-tiet/sua/${ma}`, sanPham);
 };
 
 export const top5SPNoiNhat = async () => {

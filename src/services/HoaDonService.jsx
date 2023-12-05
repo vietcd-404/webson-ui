@@ -66,21 +66,21 @@ export const taoHoaDonKhach = async (maSanPhamCT, hoaDon) => {
 };
 
 export const getAllOrderByAdmin = async (trangThai) => {
-  return await api.get(`/admin/order/getAll?trangThai=${trangThai}`);
+  return await api.get(`/staff/order/getAll?trangThai=${trangThai}`);
 };
 
 export const searchHoaDon = async (thuocTinh, value, trangThai) => {
   return await api.get(
-    `/admin/order/search?thuocTinh=${thuocTinh}&value=${value}&trangThai=${trangThai}`
+    `/staff/order/search?thuocTinh=${thuocTinh}&value=${value}&trangThai=${trangThai}`
   );
 };
 
 export const getAllOrder = async () => {
-  return await api.get(`/admin/order/all`);
+  return await api.get(`/staff/order/all`);
 };
 const stompClient = SockJS("http://localhost:8000/api/anh/ws");
 export const huytHoaDonByAdmin = async (maHoaDon) => {
-  const response = await api.put(`/admin/order/huy-hoa-don?maHD=${maHoaDon}`);
+  const response = await api.put(`/staff/order/huy-hoa-don?maHD=${maHoaDon}`);
 
   stompClient.send(
     "/app/updateHuy",
@@ -95,7 +95,7 @@ export const huytHoaDonByAdmin = async (maHoaDon) => {
 
 export const capNhapTrangThaiHoaDonByAdmin = async (trangThai, maHoaDon) => {
   const response = await api.put(
-    `/admin/order/thaydoiTrangThai?maHD=${maHoaDon}&trangThai=${trangThai}`
+    `/staff/order/thaydoiTrangThai?maHD=${maHoaDon}&trangThai=${trangThai}`
   );
   stompClient.send(
     "/app/updateOrderStatus",
@@ -110,16 +110,16 @@ export const capNhapTrangThaiHoaDonByAdmin = async (trangThai, maHoaDon) => {
 
 export const capNhapThanhToanHoaDonByAdmin = async (thanhToan, maHoaDon) => {
   return await api.put(
-    `/admin/order/thanhToan?maHD=${maHoaDon}&thanhToan=${thanhToan}`
+    `/staff/order/thanhToan?maHD=${maHoaDon}&thanhToan=${thanhToan}`
   );
 };
 
 export const productInforHoaDon = async (maHoaDon2) => {
-  return await api.get(`/admin/order/get-hoadon/${maHoaDon2}`);
+  return await api.get(`/staff/order/get-hoadon/${maHoaDon2}`);
 };
 
 export const inforUserHoaDon = async (maHoaDon1) => {
-  return await api.get(`/admin/order/get-hoadon/detail/${maHoaDon1}`);
+  return await api.get(`/staff/order/get-hoadon/detail/${maHoaDon1}`);
 };
 
 export const themSanPhamVaoHoaDon = async (maSPCT, soLuong, maHoaDon) => {
@@ -129,21 +129,21 @@ export const themSanPhamVaoHoaDon = async (maSPCT, soLuong, maHoaDon) => {
 };
 
 export const updatetHoaDonByAdmin = async (maHoaDon, hoadon) => {
-  return await api.put(`/admin/order/update/${maHoaDon}`, hoadon);
+  return await api.put(`/staff/order/update/${maHoaDon}`, hoadon);
 };
 
 export const themSanPhamHDByAdmin = async (maSPCT, soLuong, maHoaDon) => {
   return await api.post(
-    `/admin/order/add-productHd?maSPCT=${maSPCT}&soLuong=${soLuong}&maHoaDon=${maHoaDon}`
+    `/staff/order/add-productHd?maSPCT=${maSPCT}&soLuong=${soLuong}&maHoaDon=${maHoaDon}`
   );
 };
 
 export const xoaSanPhamHdByAdmin = async (maHoaDon) => {
-  return await api.delete(`/admin/order/delete?maHoaDonCT=${maHoaDon}`);
+  return await api.delete(`/staff/order/delete?maHoaDonCT=${maHoaDon}`);
 };
 
 export const updateSoLuongByAdmin = async (maHoaDonCT, soLuong, maHoaDon) => {
   return await api.put(
-    `/admin/order/update-so-luong?soLuong=${soLuong}&maHoaDonCT=${maHoaDonCT}&maHoaDon=${maHoaDon}`
+    `/staff/order/update-so-luong?soLuong=${soLuong}&maHoaDonCT=${maHoaDonCT}&maHoaDon=${maHoaDon}`
   );
 };
