@@ -438,7 +438,7 @@ const ChoXacNhan = ({ updateCountByStatus }) => {
             </Button>
           )}
           {record.trangThai === 1 && (
-            <Button onClick={() => handleUpdate(4, record.maHoaDon)}>
+            <Button onClick={() => handleUpdate(0, record.maHoaDon)}>
               Hủy
             </Button>
           )}
