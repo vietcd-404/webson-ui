@@ -18,3 +18,7 @@ export const deleteNguoiDung = async (ma) => {
 export const updateStatus = async (trangThai, ma) => {
   return await api.put(`/admin/nguoi-dung/sua/${ma}`, trangThai);
 };
+
+export const searchNguoiDung = async (keyword) => {
+  return await api.get(`/admin/nguoi-dung/search-all?keyword=${keyword}`);
+};

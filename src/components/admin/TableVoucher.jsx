@@ -82,25 +82,27 @@ const TableVoucher = () => {
     loadTable();
   }, []);
 
+  const handleStartDateChange = (date, dateString) => {
+    console.log(dateString);
+    setStartDate(dateString);
+  };
+  const handleEndDateChange = (date, dateString) => {
+    console.log(dateString);
+    setEndDate(dateString);
+  };
   const filterVouchersByTimeRange = () => {
     if (startDate && endDate) {
-      // Chuyển đổi định dạng của startDate và endDate sang "MM-DD-YYYY"
       const convertedStartDate = startDate.split("-").reverse().join("-");
       const convertedEndDate = endDate.split("-").reverse().join("-");
 
-      // console.log(convertedStartDate + "1");
-      // console.log(convertedEndDate + "2");
       if (data.length === 0) {
         loadTable();
       }
-
       const filteredData = data.filter((voucher) => {
         const voucherStartDate = new Date(voucher.thoiGianBatDau);
-        const filterEndDate = new Date(convertedEndDate);
         const voucherEndDate = new Date(voucher.thoiGianKetThuc);
+        const filterEndDate = new Date(convertedEndDate);
         const filterStartDate = new Date(convertedStartDate);
-        console.log(filterEndDate);
-
         return (
           voucherStartDate.getTime() >= filterStartDate.getTime() &&
           voucherEndDate.getTime() <= filterEndDate.getTime()
@@ -487,12 +489,12 @@ const TableVoucher = () => {
             className="mt-2 mb-2 border-1 p-2"
           >
             <Col>
-              Ngày bắt đầu Ngày bắt đầu{" "}
+              Ngày bắt đầu{" "}
               <DatePicker
                 format="DD-MM-YYYY"
                 style={{ width: "200px" }}
                 className="mr-5"
-                onChange={(date, dateString) => setStartDate(dateString)}
+                onChange={handleStartDateChange}
                 value={startDate ? moment(startDate, "DD-MM-YYYY") : null}
               />
               Ngày kết thúc{" "}
@@ -500,7 +502,7 @@ const TableVoucher = () => {
                 format="DD-MM-YYYY"
                 style={{ width: "200px" }}
                 className="mr-5"
-                onChange={(date, dateString) => setEndDate(dateString)}
+                onChange={handleEndDateChange}
                 value={endDate ? moment(endDate, "DD-MM-YYYY") : null}
               />
               <Button

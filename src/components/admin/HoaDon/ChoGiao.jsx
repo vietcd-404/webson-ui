@@ -266,10 +266,10 @@ const ChoXacNhan = ({ updateCountByStatus }) => {
     },
     {
       title: "Thành Tiền",
-      dataIndex: "giaBan",
+      dataIndex: "donGia",
       key: "thanhTien",
-      render: (giaBan, record) => {
-        const thanhTien = giaBan * record.soLuong;
+      render: (donGia, record) => {
+        const thanhTien = donGia * record.soLuong;
         return <span>{thanhTien.toLocaleString("en-US")}</span>;
       },
     },
@@ -438,7 +438,7 @@ const ChoXacNhan = ({ updateCountByStatus }) => {
             </Button>
           )}
           {record.trangThai === 1 && (
-            <Button onClick={() => handleUpdate(4, record.maHoaDon)}>
+            <Button onClick={() => handleUpdate(0, record.maHoaDon)}>
               Hủy
             </Button>
           )}

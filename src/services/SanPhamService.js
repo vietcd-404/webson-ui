@@ -27,3 +27,7 @@ export const updateStatusSp = async (sanPham, maSanPham) => {
 export const loadAllSanPham = async () => {
   return await api.get("/admin/san-pham/load-sp");
 };
+
+export const getAllLocByAdmin = async () => {
+  return await api.get(`/admin/san-pham/get-all/loc`);
+};

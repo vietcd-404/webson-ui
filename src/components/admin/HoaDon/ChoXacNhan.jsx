@@ -1,6 +1,8 @@
 import React from "react";
-import { useEffect, useState, useRef } from "react";
-import { Button, Card, Col, Form, Input, Row, Select, Tabs } from "antd";
+import { useEffect, useState } from "react";
+import { useParams, useNavigate } from "react-router-dom";
+
+import { Button, Card, Col, Form, Input, Row, Select } from "antd";
 import {
   ExclamationCircleFilled,
   EyeOutlined,
@@ -15,12 +17,20 @@ import {
   inforUserHoaDon,
   productInforHoaDon,
   searchHoaDon,
+  themSanPhamHDByAdmin,
+  updateSoLuongByAdmin,
+  updatetHoaDonByAdmin,
+  xoaSanPhamHdByAdmin,
 } from "../../../services/HoaDonService";
+
 import WebSocketService from "../../../services/WebSocketService";
 import { Stomp } from "@stomp/stompjs";
 import SockJS from "sockjs-client";
 import { format } from "date-fns";
+import { getAllLocByAdmin } from "../../../services/SanPhamService";
+import { tab } from "@testing-library/user-event/dist/tab";
 const { Option } = Select;
+
 const ChoXacNhan = () => {
   const [totalPage, setTotalPage] = useState(1);
   const [totalPageProduct, setTotalPageProduct] = useState(1);
@@ -39,9 +49,20 @@ const ChoXacNhan = () => {
   const [searchValue, setSearchValue] = useState(null);
   const [form] = Form.useForm();
 
+  // Update sp
+  const [searchQuery, setSearchQuery] = useState("");
+  const [dataSanPham, setDataSanPham] = useState([]);
+  const [filteredProducts, setFilteredProducts] = useState([]);
+  const navigate = useNavigate();
+  const [maHD, setMaHD] = useState("");
+  const [updateProductSL, setUpdateProductSL] = useState([]);
+
+  // Hiển thị thông tin chi tiết order
   const showEditModal = async (record) => {
+    setMaHD(null);
     const response = await inforUserHoaDon(record.maHoaDon);
     setEditFormData(response.data[0]);
+    setMaHD(response.data[0].maHoaDon);
     formUpdate.setFieldsValue({
       maHoaDon: response.data[0].maHoaDon,
       tenNguoiDung: response.data[0].tenNguoiDung,
@@ -54,8 +75,20 @@ const ChoXacNhan = () => {
       huyen: response.data[0].huyen,
       xa: response.data[0].xa,
     });
+    loadProductInOrder(response.data[0].maHoaDon);
+    setIsEditModalOpen(true);
+  };
+
+  const handleEditCancel = () => {
+    formUpdate.resetFields();
+    setIsEditModalOpen(false);
+    fetchData();
+  };
+
+  // Load thông tin sản phẩm ở trên oder
+  const loadProductInOrder = async (maHoaDon) => {
     try {
-      const response1 = await productInforHoaDon(record.maHoaDon);
+      const response1 = await productInforHoaDon(maHoaDon);
       setTableDataProduct(response1.data);
       setTotalPageProduct(response1.totalPage);
       setTongTien(response1.data[0].tongTien);
@@ -64,19 +97,28 @@ const ChoXacNhan = () => {
       } else {
         setGiamGia(response1.data[0].tienGiam);
       }
-      console.log(response1.data);
-      setLoading(false);
     } catch (error) {
       console.error("Lỗi khi gọi API: ", error);
-      setLoading(false);
     }
-    setIsEditModalOpen(true);
   };
 
-  const handleEditCancel = () => {
-    formUpdate.resetFields();
-    setIsEditModalOpen(false);
+  // Load sản phẩm tìm kiếm order
+  const loadSanPham = async () => {
+    try {
+      const response = await getAllLocByAdmin();
+      setDataSanPham(response.data);
+    } catch (error) {
+      console.error("Lỗi khi gọi API: ", error);
+    }
   };
+  useEffect(() => {
+    const filtered = dataSanPham.filter((item) =>
+      item.tenSanPham.toLowerCase().includes(searchQuery.toLowerCase())
+    );
+    setFilteredProducts(filtered);
+  }, [searchQuery]);
+
+  // Load hóa đơn
 
   const loadTable = async () => {
     try {
@@ -113,11 +155,10 @@ const ChoXacNhan = () => {
   useEffect(() => {
     loadTable();
     fetchData();
-    // if (messageValue) {
-    //   notify();
-    // }
+    loadSanPham();
   }, [messageValue]);
 
+  // Chuyển đổi trạng thái
   const getStatusText = (status) => {
     switch (status) {
       case 0:
@@ -133,30 +174,6 @@ const ChoXacNhan = () => {
       default:
         return "Chờ xác nhận";
     }
-  };
-
-  const handleCancel = (maHD) => {
-    Modal.confirm({
-      title: "Xác nhận",
-      icon: <ExclamationCircleFilled />,
-      content: "Bạn có chắc muốn hủy xác nhận hóa đơn này?",
-      okText: "Đồng ý",
-      okType: "danger",
-      cancelText: "Đóng",
-      onOk: async () => {
-        try {
-          const response = await huytHoaDonByAdmin(maHD);
-          if (response.status === 200) {
-            toast.success("Hủy đơn hàng thành công!");
-            fetchData();
-          }
-        } catch (error) {
-          console.error("Lỗi khi hủy loại: ", error);
-          toast.error("Xóa thất bại.");
-        }
-      },
-      onCancel: () => {},
-    });
   };
 
   const handleUpdateStatus = (trangThai, maHD) => {
@@ -185,37 +202,9 @@ const ChoXacNhan = () => {
     });
   };
 
-  const handleUpdate = () => {
-    Modal.confirm({
-      title: "Xác nhận",
-      icon: <ExclamationCircleFilled />,
-      content: "Bạn có chắc muốn cập nhập loại không?",
-      okText: "OK",
-      okType: "danger",
-      cancelText: "Đóng",
-      // onOk: async () => {
-      //   try {
-      //     // const values = await formUpdate.validateFields();
-      //     // const response = await updateMau(values, editFormData.maMau);
-      //     // if (response.status === 200) {
-      //     //   console.log(response);
-      //     //   setIsModalOpen(false);
-
-      //       toast.success("Cập nhật thành công!");
-      //       loadTable();
-      //     }
-      //   } catch (error) {
-      //     console.error("Lỗi khi cập nhật loại: ", error);
-      //     toast.error("Cập nhật thất bại.");
-      //   }
-      // },
-
-      onCancel: () => {},
-    });
-  };
-
-  const handleSearchTypeChange = (value) => {
-    setSearchType(value);
+  // Searh Hóa Đơn
+  const handleSearchProduct = (e) => {
+    setSearchQuery(e.target.value);
   };
 
   const handleSearchInputChange = (e) => {
@@ -247,6 +236,189 @@ const ChoXacNhan = () => {
     fetchData();
   };
 
+  // Cập nhập thông tin đơn hàng
+  const handleUpdate = () => {
+    Modal.confirm({
+      title: "Xác nhận",
+      icon: <ExclamationCircleFilled />,
+      content:
+        "Bạn có chắc muốn cập nhập thông tin người dùng đơn hàng này không?",
+      okText: "OK",
+      okType: "danger",
+      cancelText: "Đóng",
+      onOk: async () => {
+        try {
+          const values = await formUpdate.validateFields();
+          const response = await updatetHoaDonByAdmin(
+            editFormData.maHoaDon,
+            values
+          );
+          if (response.status === 200) {
+            console.log(response);
+            setIsEditModalOpen(false);
+            toast.success("Cập nhật thành công!");
+            fetchData();
+          }
+        } catch (error) {
+          console.error("Lỗi khi cập nhật loại: ", error);
+          toast.error("Cập nhật thất bại.");
+          setIsEditModalOpen(true);
+        }
+      },
+
+      onCancel: () => {},
+    });
+  };
+
+  // Update sản phẩm
+
+  function handleThemSanPham(maSPCT) {
+    Modal.confirm({
+      title: "Xác nhận",
+      icon: <ExclamationCircleFilled />,
+      content: "Bạn có chắc muốn thêm sản phẩm này vào dơn hàng?",
+      okText: "Đồng ý",
+      okType: "danger",
+      cancelText: "Đóng",
+      onOk: async () => {
+        try {
+          const response = await themSanPhamHDByAdmin(maSPCT, 1, maHD);
+          if (response.status === 200) {
+            toast.success(" Thêm sản phẩm thành công!");
+            loadProductInOrder(maHD);
+
+            setSearchQuery("");
+          }
+        } catch (error) {
+          console.error("Lỗi khi thêm: ", error);
+          if (
+            error.response &&
+            error.response.data &&
+            error.response.data.message ===
+              "Số lượng cập nhật vượt quá số lượng tồn kho"
+          ) {
+            toast.error("Số lượng cập nhật vượt quá số lượng tồn kho");
+          } else {
+            toast.error("Thêm thất bại. Lỗi: " + error.message);
+          }
+        }
+      },
+      onCancel: () => {
+        fetchData();
+      },
+    });
+  }
+
+  const handleXoaSanPham = (maHDCT) => {
+    Modal.confirm({
+      title: "Xác nhận",
+      icon: <ExclamationCircleFilled />,
+      content: "Bạn có chắc muốn xóa sản phẩm này khỏi dơn hàng?",
+      okText: "Đồng ý",
+      okType: "danger",
+      cancelText: "Đóng",
+      onOk: async () => {
+        if (tableDataProduct.length === 1) {
+          toast.error("Không thể để trống hóa đơn!");
+        } else {
+          try {
+            const response = await xoaSanPhamHdByAdmin(maHDCT);
+            if (response.status === 200) {
+              toast.success(" Xóa sản phẩm thành công!");
+              loadProductInOrder(maHD);
+              fetchData();
+            }
+          } catch (error) {
+            console.error("Lỗi khi xóa: ", error);
+            if (
+              error.response &&
+              error.response.data &&
+              error.response.data.message === "Không đạt điều kiện voucher!"
+            ) {
+              toast.error("Không đạt điều kiện voucher!");
+            }
+          }
+        }
+      },
+      onCancel: () => {},
+    });
+  };
+
+  const handleQuantityChange = (e, key) => {
+    const { value } = e.target;
+    const index = tableDataProduct.findIndex(
+      (item) => item.maSanPhamCT === key
+    );
+
+    if (index !== -1) {
+      const updatedData = [...tableDataProduct];
+      updatedData[index] = {
+        ...updatedData[index],
+        soLuong: parseInt(value, 10),
+      };
+      setTableDataProduct(updatedData);
+      setUpdateProductSL(updatedData);
+    }
+    console.log(updateProductSL);
+  };
+
+  const updateProductQuantity = async () => {
+    Modal.confirm({
+      title: "Xác nhận",
+      icon: <ExclamationCircleFilled />,
+      content: "Bạn có chắc muốn cập nhập số lượng sản phẩm này vào đơn hàng?",
+      okText: "Đồng ý",
+      okType: "danger",
+      cancelText: "Đóng",
+      onOk: async () => {
+        let hasError = false;
+        let count = 0;
+        try {
+          for (const product of updateProductSL) {
+            try {
+              const response = await updateSoLuongByAdmin(
+                product.maHoaDonCT,
+                product.soLuong,
+                maHD
+              );
+              if (response.status === 200) {
+                count++;
+              }
+            } catch (error) {
+              console.error("Lỗi khi cập nhật số lượng sản phẩm: ", error);
+              if (
+                error.response &&
+                error.response.status === 400 &&
+                error.response.data &&
+                error.response.data.message !== null
+              ) {
+                toast.error(error.response.data.message);
+              } else {
+                toast.error("Đã xảy ra lỗi khi cập nhật số lượng sản phẩm.");
+              }
+              hasError = true;
+              break;
+            }
+          }
+          if (hasError) {
+            return;
+          }
+          if (count !== 0) {
+            loadProductInOrder(maHD);
+            toast.success("Cập nhập thành công");
+          }
+        } catch (err) {
+          console.error(
+            "Lỗi khi duyệt danh sách cập nhật số lượng sản phẩm: ",
+            err
+          );
+          toast.error("Đã xảy ra lỗi khi cập nhật số lượng sản phẩm.");
+        }
+      },
+      onCancel: () => {},
+    });
+  };
+
   const socket = new SockJS("http://localhost:8000/api/anh/ws");
   const stompClient = Stomp.over(socket);
 
@@ -268,27 +440,47 @@ const ChoXacNhan = () => {
       title: "Tên sản phẩm",
       dataIndex: "tenSanPham",
       key: "tenSanPham",
+      width: "150",
     },
     {
       title: "Số lượng",
       dataIndex: "soLuong",
       key: "soLuong",
+      render: (soLuong, record) => (
+        <input
+          type="number"
+          value={soLuong}
+          name="soLuong"
+          className="border-1"
+          onChange={(e) => handleQuantityChange(e, record.maSanPhamCT)}
+        />
+      ),
+    },
+    {
+      title: "Đơn giá",
+      dataIndex: "donGia",
+      key: "thanhTien",
+      render: (donGia, record) => {
+        return <span>{donGia.toLocaleString("en-US")} VNĐ</span>;
+      },
+      width: 140,
     },
     {
       title: "Thành Tiền",
-      dataIndex: "giaBan",
+      dataIndex: "donGia",
       key: "thanhTien",
-      render: (giaBan, record) => {
-        const thanhTien = giaBan * record.soLuong;
-        return <span>{thanhTien.toLocaleString("en-US")}</span>;
+      render: (donGia, record) => {
+        const thanhTien = donGia * record.soLuong;
+        return <span>{thanhTien.toLocaleString("en-US")} VNĐ</span>;
       },
+      width: 140,
     },
     {
       title: "Chức năng",
       key: "action",
       render: (_, record) => (
         <Space size="middle">
-          <Button>
+          <Button onClick={() => handleXoaSanPham(record.maHoaDonCT)}>
             <DeleteOutlined />
           </Button>
         </Space>
@@ -479,7 +671,7 @@ const ChoXacNhan = () => {
         open={isEditModalOpen}
         onCancel={handleEditCancel}
         onOk={handleUpdate}
-        width={1000}
+        width={900}
       >
         <p className="text-bold mb-2" style={{ fontSize: "20px" }}>
           Thông tin nhận hàng
@@ -499,34 +691,51 @@ const ChoXacNhan = () => {
               <Form.Item
                 label="Khách hàng"
                 name="tenNguoiDung"
-                labelCol={{ span: 8 }} // Điều chỉnh độ rộng của nhãn
-                wrapperCol={{ span: 16 }} // Điều chỉnh độ rộng của dữ liệu
+                labelCol={{ span: 8 }}
+                wrapperCol={{ span: 16 }}
               >
                 <Input disabled />
               </Form.Item>
               <Form.Item
                 label="Tên người nhận"
                 name="tenNguoiNhan"
-                labelCol={{ span: 8 }} // Điều chỉnh độ rộng của nhãn
-                wrapperCol={{ span: 16 }} // Điều chỉnh độ rộng của dữ liệu
+                labelCol={{ span: 8 }}
+                wrapperCol={{ span: 16 }}
+                rules={[
+                  { required: true, message: "Tên người nhận không để trống!" },
+                ]}
               >
-                <Input disabled />
+                <Input placeholder="Nguyen Van A..." />
               </Form.Item>
               <Form.Item
                 label="Email"
                 name="email"
                 labelCol={{ span: 8 }}
                 wrapperCol={{ span: 16 }}
+                rules={[
+                  { required: true, message: "Email không để trống!" },
+                  {
+                    type: "email",
+                    message: "Email không hợp lệ!",
+                  },
+                ]}
               >
-                <Input disabled />
+                <Input placeholder="abc@gmail.com" />
               </Form.Item>
               <Form.Item
                 label="Số điện thoại"
                 name="sdt"
                 labelCol={{ span: 8 }}
                 wrapperCol={{ span: 16 }}
+                rules={[
+                  { required: true, message: "Số điện thoại không để trống!" },
+                  {
+                    pattern: /^[0-9]{10}$/,
+                    message: "Số điện thoại không hợp lệ!",
+                  },
+                ]}
               >
-                <Input disabled />
+                <Input />
               </Form.Item>
             </Col>
             <Col span={12}>
@@ -535,35 +744,47 @@ const ChoXacNhan = () => {
                 name="tinh"
                 labelCol={{ span: 8 }}
                 wrapperCol={{ span: 16 }}
+                rules={[
+                  {
+                    required: true,
+                    message: "(Tỉnh)Thành phố không để trống!",
+                  },
+                ]}
               >
-                <Input disabled />
+                <Input />
               </Form.Item>
               <Form.Item
                 label="Huyện"
                 name="huyen"
                 labelCol={{ span: 8 }}
                 wrapperCol={{ span: 16 }}
+                rules={[{ required: true, message: "Huyện không để trống!" }]}
               >
-                <Input disabled />
+                <Input />
               </Form.Item>
               <Form.Item
                 label="Xã"
                 name="xa"
                 labelCol={{ span: 8 }}
                 wrapperCol={{ span: 16 }}
+                rules={[{ required: true, message: "Xã không để trống!" }]}
               >
-                <Input disabled />
+                <Input />
               </Form.Item>
               <Form.Item
                 label="Địa chỉ chi tiết"
-                name="diaChiChiTiet"
+                name="diaChi"
                 labelCol={{ span: 8 }}
                 wrapperCol={{ span: 16 }}
+                rules={[{ required: true, message: "Địa chỉ không để trống!" }]}
               >
-                <Input.TextArea rows={4} disabled />
+                <Input.TextArea rows={4} />
               </Form.Item>
             </Col>
           </Row>
+          <Button type="primary" onClick={handleUpdate}>
+            Cập Nhập
+          </Button>
         </Form>
         <p className="text-bold mt-2 mb-2" style={{ fontSize: "20px" }}>
           Thông tin sản phẩm
@@ -575,6 +796,66 @@ const ChoXacNhan = () => {
             padding: "16px",
           }}
         >
+          <p className="padding-right mt-2 mb-4">
+            <input
+              className="h-full w-full border-2 border-black outline-none px-3 py-2 rounded-md placeholder-[#C4C4C4] text-sm"
+              type="text"
+              onChange={handleSearchProduct}
+              value={searchQuery}
+              placeholder="Tìm kiếm sản phẩm tại đây"
+            />
+            {searchQuery && (
+              <div
+                className={`w-full mt-1 ml-3 lg:mt-0 lg:left-0 lg:right-0 absolute z-50 overflow-y-scroll shadow-2xl scrollbar-hide cursor-pointer`}
+              >
+                {searchQuery &&
+                  filteredProducts.map((item) => (
+                    <div
+                      key={item.maSanPhamCT}
+                      className="max-w-[600px] h-28 bg-gray-100 mb-2 flex items-center gap-3 cursor-pointer hover:bg-gray-200"
+                      onClick={() => handleThemSanPham(item.maSanPhamCT)}
+                    >
+                      <img
+                        className="w-[20%] h-[80%] object-cover"
+                        src={`data:image/png;base64,${item.img}`}
+                        alt=""
+                      />
+                      <div className="flex flex-col gap-1">
+                        <p className="font-semibold text-lg">
+                          {"[" + item.tenMau + "] - " + item.tenSanPham}
+                        </p>
+                        <p className="text-xs">{item.tenThuongHieu}</p>
+                        <p className="text-sm">
+                          {item.phanTramGiam !== 0 ? (
+                            <>
+                              Giá bán:{" "}
+                              <span className="text-primeColor font-semibold">
+                                {(
+                                  item.giaBan *
+                                  (1 - item.phanTramGiam / 100)
+                                ).toLocaleString("en-US")}{" "}
+                                VNĐ
+                              </span>{" "}
+                              <span className="text-sm line-through text-gray-500">
+                                {item.giaBan.toLocaleString("en-US")} VNĐ{" "}
+                                {/* Giá gốc */}
+                              </span>
+                            </>
+                          ) : (
+                            <>
+                              Giá bán:{" "}
+                              <span className="text-primeColor font-semibold">
+                                {item.giaBan.toLocaleString("en-US")} VNĐ{" "}
+                              </span>
+                            </>
+                          )}
+                        </p>
+                      </div>
+                    </div>
+                  ))}
+              </div>
+            )}
+          </p>
           <Table
             columns={columnProduct}
             dataSource={tableDataProduct}
@@ -585,18 +866,34 @@ const ChoXacNhan = () => {
             }}
           />
           <p className="padding-right mt-2">
+            <Button
+              style={{ color: "white", backgroundColor: "green" }}
+              onClick={updateProductQuantity}
+            >
+              Cập nhập sản phẩm
+            </Button>
+          </p>
+          <p className="padding-right mt-2">
             Tổng tiền trước khi giảm:{" "}
-            <span className="text-lg text-bold">{tongTien + giamGia}đ</span>{" "}
+            <span className="text-lg text-bold">
+              {(tongTien + giamGia).toLocaleString("en-US")} VNĐ
+            </span>{" "}
           </p>
           <p className="padding-right">
-            Voucher: <span className="text-lg text-bold">-{giamGia}đ</span>{" "}
+            Voucher:{" "}
+            <span className="text-lg text-bold">
+              -{giamGia.toLocaleString("en-US")} VNĐ
+            </span>{" "}
           </p>
           <p className="padding-right">
             Tổng tiền sau khi giảm:{" "}
-            <span className="text-lg text-bold">{tongTien}đ</span>{" "}
+            <span className="text-lg text-bold">
+              {tongTien.toLocaleString("en-US")} VNĐ
+            </span>{" "}
           </p>
         </div>
       </Modal>
+
       <Card title="Lọc hóa đơn" bordered={true} className="mb-2">
         <form className="mb-2">
           <Select
@@ -620,7 +917,7 @@ const ChoXacNhan = () => {
             <Input
               style={{ width: 200, marginRight: 8, marginBottom: 10 }}
               type="date"
-              format="yyyy/MM/dd"
+              format="yyyy-MM-dd"
               onChange={handleSearchInputChange}
               value={searchValue}
               placeholder="Chọn Ngày Đặt Hàng"
@@ -653,6 +950,7 @@ const ChoXacNhan = () => {
             total: totalPage * 5,
             current: totalPage,
           }}
+          style={{ maxHeight: "500px", overflowY: "auto" }}
         />
       )}
     </div>

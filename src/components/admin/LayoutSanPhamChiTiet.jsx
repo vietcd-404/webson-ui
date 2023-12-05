@@ -12,7 +12,7 @@ const SanPhamChiTietLayout = ({ children }) => {
       label: (
         <Button>
           <Link className="p-2" to="/admin/san-pham-chi-tiet">
-            Quản lý sản phẩm
+            Thêm sản phẩm
           </Link>
         </Button>
       ),
