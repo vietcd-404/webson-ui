@@ -231,12 +231,22 @@ const NewArrivals = () => {
                       {product.tenSanPham}
                     </p>
                   </h2>
-                  <p className="text-[#767676] text-[14px]">
+                  {/* <p className="text-[#767676] text-[14px]">
                     {product.giaBan} đ
-                  </p>
+                  </p> */}
+                  <del className="text-[#767676] text-[14px]">
+                    {product.giaBan} đ
+                  </del>
                 </div>
                 <div>
-                  <p className="text-[#767676] text-[14px]">{product.tenMau}</p>
+                  <div className="flex justify-between">
+                    <p className="text-[#767676] text-[14px]">
+                      {product.tenMau}
+                    </p>
+                    <p className="text-[#767676] text-[16px]">
+                      {product.giaBan * ((100 - product.phanTramGiam) / 100)} đ
+                    </p>
+                  </div>
                   <p className="text-[#767676] text-[14px]">
                     {product.tenLoai}
                   </p>

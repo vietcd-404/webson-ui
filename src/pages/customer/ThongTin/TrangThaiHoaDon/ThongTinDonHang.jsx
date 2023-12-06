@@ -3,6 +3,7 @@ import { Link, useNavigate, useParams } from "react-router-dom";
 import {
   chiTietHoaDon,
   hoaDonChiTiet,
+  updateSoLuongKhachHang,
   updateSoLuongSanPham,
   updatetHoaDon,
   xoaSanPham,
@@ -131,17 +132,25 @@ function ThongTinDonHang() {
 
         if (data && data.length > 1) {
           try {
+            const response = await xoaSanPham(ma);
+            console.log(response);
             Swal.fire({
               title: "Xóa!",
               text: "Bạn đã xóa thành công.",
               icon: "success",
             });
-            const response = await xoaSanPham(ma);
-            console.log(response);
+
             loadSanPham();
             loadHoaDonChitiet();
           } catch (error) {
-            toast.error(error.response.data.message);
+            if (
+              error.response &&
+              error.response.data &&
+              error.response.data.message === "Không đạt điều kiện voucher!"
+            ) {
+              toast.error("Không đạt điều kiện voucher!");
+              return;
+            }
           }
         } else {
           Swal.fire({
@@ -169,45 +178,67 @@ function ThongTinDonHang() {
     });
     setTongTien(tongTien);
   }, [data]);
-  const handleQuantityChange = async (
-    event,
-    maHoaDonCT,
-    maHoaDon,
-    maxQuantity,
-    dieuKienVoucher,
-    giaBan
-  ) => {
-    const newQuantity = event.target.value;
-    if (newQuantity > maxQuantity || newQuantity < 1) {
-      // You can choose to show an error message or handle it in a way suitable for your application
-      console.error("Quantity exceeds the maximum limit");
-      toast.error("Số lượng vượt giới hạn");
-      return;
-    }
 
-    try {
-      await updateSoLuongSanPham(
-        maHoaDonCT,
-        newQuantity,
-        maHoaDon,
-        dieuKienVoucher,
-        giaBan
-      );
+  const [tongDonGia, setTongDonGia] = useState("");
+  useEffect(() => {
+    let tongDonGia = 0;
 
-      loadSanPham();
-      loadHoaDonChitiet();
-    } catch (error) {
-      console.error("Failed to update quantity:", error);
-      toast.error(error.response.data.message);
-    }
-    setData((prevData) =>
-      prevData.map((item) =>
-        item.maHoaDonCT === maHoaDonCT
-          ? { ...item, soLuong: newQuantity }
-          : item
-      )
-    );
-  };
+    data.map((item) => {
+      tongDonGia += item.donGia * item.soLuong;
+      return tongDonGia;
+    });
+    setTongDonGia(tongDonGia);
+  }, [data]);
+
+  const [donGia, setDonGia] = useState("");
+  useEffect(() => {
+    let donGia = 0;
+
+    data.map((item) => {
+      donGia += item.donGia;
+      return donGia;
+    });
+    setDonGia(donGia);
+  }, [data]);
+  // const handleQuantityChange = async (
+  //   event,
+  //   maHoaDonCT,
+  //   maHoaDon,
+  //   maxQuantity,
+  //   dieuKienVoucher,
+  //   giaBan
+  // ) => {
+  //   const newQuantity = event.target.value;
+  //   if (newQuantity > maxQuantity || newQuantity < 1) {
+  //     // You can choose to show an error message or handle it in a way suitable for your application
+  //     console.error("Quantity exceeds the maximum limit");
+  //     toast.error("Số lượng vượt giới hạn");
+  //     return;
+  //   }
+
+  //   try {
+  //     await updateSoLuongSanPham(
+  //       maHoaDonCT,
+  //       newQuantity,
+  //       maHoaDon,
+  //       dieuKienVoucher,
+  //       giaBan
+  //     );
+
+  //     loadSanPham();
+  //     loadHoaDonChitiet();
+  //   } catch (error) {
+  //     console.error("Failed to update quantity:", error);
+  //     toast.error(error.response.data.message);
+  //   }
+  //   setData((prevData) =>
+  //     prevData.map((item) =>
+  //       item.maHoaDonCT === maHoaDonCT
+  //         ? { ...item, soLuong: newQuantity }
+  //         : item
+  //     )
+  //   );
+  // };
 
   //   const handleXoa = async (ma) => {
   //     try {
@@ -221,6 +252,66 @@ function ThongTinDonHang() {
   //       toast.error("Xóa thất bại.");
   //     }
   //   };
+
+  const handleQuantityChange = async (action, record) => {
+    try {
+      let newQuantity;
+
+      if (action === "increment") {
+        console.log(record.soLuongTon);
+        if (record.soLuongTon > 0) {
+          newQuantity = record.soLuong + 1;
+        } else {
+          message.error("Đạt giới hạn số lượng tồn");
+          return;
+        }
+      } else if (action === "decrement") {
+        if (record.soLuong === 1) {
+          message.error("Có tối thiều có 1 sản phẩm");
+          return;
+        }
+        // newQuantity = record.soLuong - 1;
+        // console.log(tongDonGia);
+
+        if (tongDonGia > record.dieuKien + record.donGia) {
+          newQuantity = record.soLuong - 1;
+          console.log(donGia);
+          loadSanPham();
+          console.log(tongDonGia);
+        } else {
+          message.error("không đủ điều kiện voucher");
+          return;
+        }
+      }
+
+      // if (newQuantity > 0 && newQuantity <= record.soLuongTon) {
+      // Make an API call to update the quantity on the server
+      await updateSoLuongKhachHang(
+        record.maHoaDonCT,
+        newQuantity,
+        record.maHoaDon
+      );
+      loadSanPham();
+      loadHoaDonChitiet();
+      // Update the state to trigger a re-render
+      setData((prevData) =>
+        prevData.map((item) =>
+          item.maHoaDonCT === record.maHoaDonCT
+            ? { ...item, soLuong: newQuantity }
+            : item
+        )
+      );
+
+      // Log the changed value for demonstration purposes
+      console.log("changed", newQuantity);
+      // } else {
+      //   message.error("Số lượng vượt giới hạn");
+      // }
+    } catch (error) {
+      console.error("Failed to update quantity:", error);
+      message.error(error.response?.data?.message || "Error updating quantity");
+    }
+  };
   const [formData, setFormData] = useState({
     tenNguoiNhan: "",
     email: "",
@@ -373,7 +464,7 @@ function ThongTinDonHang() {
         <div>
           <WebSocketService setValue={setMessageValue} connetTo="orderStatus" />
           <ToastContainer />
-          {data.map((item, index) => (
+          {/* {data.map((item, index) => (
             <React.Fragment key={index} className="p-2 bg-slate-400">
               {index === 0 && item.dieuKien && (
                 <div className="text-3xl">
@@ -381,7 +472,7 @@ function ThongTinDonHang() {
                 </div>
               )}
             </React.Fragment>
-          ))}
+          ))} */}
           {donHang.map((hoaDon) => (
             <div className="container mx-auto mt-8">
               <div className="border rounded p-4" key={hoaDon.maHoaDon}>
@@ -561,17 +652,19 @@ function ThongTinDonHang() {
                 <FormSanPham
                   item={item}
                   xoa={() => xoaSanPhamCT(item.maHoaDonCT)}
-                  updateSoLuong={(e) =>
-                    handleQuantityChange(
-                      e,
-                      item.maHoaDonCT,
-                      item.maHoaDon,
-                      item.soLuongTon,
-                      item.dieuKien,
-                      item.giaBan
-                    )
-                  }
-                  trangThai={item.trangThai !== 0 || item.dieuKien}
+                  cong={() => handleQuantityChange("decrement", item)}
+                  tru={() => handleQuantityChange("increment", item)}
+                  // updateSoLuong={(e) =>
+                  //   handleQuantityChange(
+                  //     e,
+                  //     item.maHoaDonCT,
+                  //     item.maHoaDon,
+                  //     item.soLuongTon,
+                  //     item.dieuKien,
+                  //     item.giaBan
+                  //   )
+                  // }
+                  trangThai={item.trangThai !== 0}
                 />
               ))}
             </tbody>
@@ -581,7 +674,7 @@ function ThongTinDonHang() {
           <div className="p-4">
             {data.map((item, index) => (
               <React.Fragment key={index}>
-                {index === 0 && !item.dieuKien && item.trangThai === 0 && (
+                {index === 0 && item.trangThai === 0 && (
                   <button
                     className="bg-blue-500 text-white px-4 py-2 rounded hover:bg-blue-700"
                     onClick={openModal}

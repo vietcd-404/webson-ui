@@ -147,3 +147,9 @@ export const updateSoLuongByAdmin = async (maHoaDonCT, soLuong, maHoaDon) => {
     `/staff/order/update-so-luong?soLuong=${soLuong}&maHoaDonCT=${maHoaDonCT}&maHoaDon=${maHoaDon}`
   );
 };
+
+export const updateSoLuongKhachHang = async (maHoaDonCT, soLuong, maHoaDon) => {
+  return await api.put(
+    `/user/order/update-so-luong-user?soLuong=${soLuong}&maHoaDonCT=${maHoaDonCT}&maHoaDon=${maHoaDon}`
+  );
+};
