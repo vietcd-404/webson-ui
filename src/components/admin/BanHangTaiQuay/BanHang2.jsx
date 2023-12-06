@@ -736,10 +736,13 @@ const HoaDon2 = () => {
                       </select>
                     </div>
                   </div>
-                  <div className="border p-2 rounded-md">
-                    <button onClick={() => handleThanhToan(pane.maHoaDon)}>
+                  <div className=" p-2 rounded-md mt-2">
+                    <Button
+                      style={{ color: "white", backgroundColor: "red" }}
+                      onClick={() => handleThanhToan(pane.maHoaDon)}
+                    >
                       Thanh toán
-                    </button>
+                    </Button>
                   </div>
                 </div>
               </Col>

@@ -11,6 +11,7 @@ import {
 import { Modal, Space, Table } from "antd";
 import { ToastContainer, toast } from "react-toastify";
 import {
+  capNhapThanhToanHoaDonByAdmin,
   capNhapTrangThaiHoaDonByAdmin,
   getAllOrderByAdmin,
   huytHoaDonByAdmin,
@@ -236,6 +237,33 @@ const ChoXacNhan = () => {
   const handleClear = async () => {
     setSearchValue(null);
     fetchData();
+  };
+
+  // Cập nhập thanh toán
+  const handleUpdatePaid = (thanhToan, maHD) => {
+    Modal.confirm({
+      title: "Xác nhận",
+      icon: <ExclamationCircleFilled />,
+      content:
+        "Bạn có chắc muốn cập nhập trạng thái thanh toán cho đơn hàng không?",
+      okText: "Đồng ý",
+      okType: "danger",
+      cancelText: "Đóng",
+      onOk: async () => {
+        try {
+          const response = await capNhapThanhToanHoaDonByAdmin(thanhToan, maHD);
+          if (response.status === 200) {
+            toast.success("Cập nhật trạng thái đơn hàng thành công!");
+            fetchData();
+          }
+        } catch (error) {
+          console.error("Lỗi khi cập nhật: ", error);
+          toast.error("Cập nhật thất bại.");
+        }
+      },
+
+      onCancel: () => {},
+    });
   };
 
   // Cập nhập thông tin đơn hàng
@@ -621,7 +649,7 @@ const ChoXacNhan = () => {
             borderRadius: "5px",
             padding: "2px 6px",
           };
-          text = "Chưa thanh toán";
+          text = "Chờ thanh toán";
         }
 
         return (
@@ -642,15 +670,9 @@ const ChoXacNhan = () => {
       key: "action",
       render: (_, record) => (
         <Space size="middle">
-          {record.trangThai === 0 && (
-            <Button onClick={() => handleUpdateStatus(1, record.maHoaDon)}>
-              Xác nhận
-            </Button>
-          )}
-
-          {record.trangThai === 0 && (
-            <Button onClick={() => handleUpdateStatus(4, record.maHoaDon)}>
-              Hủy
+          {record.trangThai === 5 && record.thanhToan === 0 && (
+            <Button onClick={() => handleUpdatePaid(1, record.maHoaDon)}>
+              Đã Thanh Toán
             </Button>
           )}
         </Space>

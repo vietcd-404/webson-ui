@@ -69,16 +69,46 @@ const HoanThanh = () => {
               <div className="flex items-center justify-between w-full">
                 <div className="flex items-center">
                   <span className="mr-2"></span>
-                  <span className="ml-2">Đơn hàng đã được tạo ngày </span>
+                  <span className="ml-2">Đơn hàng đã được tạo ngày: </span>
                   <strong> {item.ngayTao}</strong>
                 </div>
-                <div
-                  className={`border rounded  p-1 ${getStatusClassName(
-                    item.trangThai
-                  )}`}
-                >
-                  <div className="text-white">
-                    {getStatusText(item.trangThai)}
+                <div className="">
+                  <div
+                    className={`border rounded  p-1 ${getStatusClassName(
+                      item.trangThai
+                    )}`}
+                    style={{ borderRadius: "5px" }}
+                  >
+                    <div className="text-white">
+                      {getStatusText(item.trangThai)}
+                    </div>
+                  </div>
+                  <div className="mt-2">
+                    {item.thanhToan === 1 ? (
+                      <span
+                        style={{
+                          color: "white",
+                          border: "1px solid green",
+                          borderRadius: "5px",
+                          padding: "2px 6px",
+                          backgroundColor: "green",
+                        }}
+                      >
+                        Đã thanh toán
+                      </span>
+                    ) : (
+                      <span
+                        style={{
+                          color: "white",
+                          border: "1px solid red",
+                          borderRadius: "5px",
+                          padding: "2px 6px",
+                          backgroundColor: "red",
+                        }}
+                      >
+                        Chưa thanh toán
+                      </span>
+                    )}
                   </div>
                 </div>
               </div>

@@ -440,28 +440,14 @@ const DangGiao = () => {
       key: "action",
       render: (_, record) => (
         <Space size="middle">
-          {record.trangThai === 0 && (
-            <Button onClick={() => handleUpdate(1, record.maHoaDon)}>
-              Xác nhận
-            </Button>
-          )}
-
-          {record.trangThai === 0 && (
-            <Button onClick={() => handleCancel(record.maHoaDon)}>Hủy</Button>
-          )}
-          {record.trangThai === 1 && (
-            <Button onClick={() => handleUpdate(2, record.maHoaDon)}>
-              Giao Hàng
-            </Button>
-          )}
           {record.trangThai === 2 && (
             <Button onClick={() => handleUpdate(3, record.maHoaDon)}>
               Hoàn Thành
             </Button>
           )}
-          {record.trangThai === 4 && (
-            <Button onClick={() => handleCancel(record.maHoaDon)}>
-              Xóa đơn hàng
+          {record.trangThai === 2 && (
+            <Button onClick={() => handleUpdate(6, record.maHoaDon)}>
+              Thất Bại
             </Button>
           )}
         </Space>
@@ -507,16 +493,16 @@ const DangGiao = () => {
               <Form.Item
                 label="Khách hàng"
                 name="tenNguoiDung"
-                labelCol={{ span: 8 }} // Điều chỉnh độ rộng của nhãn
-                wrapperCol={{ span: 16 }} // Điều chỉnh độ rộng của dữ liệu
+                labelCol={{ span: 8 }}
+                wrapperCol={{ span: 16 }}
               >
                 <Input disabled />
               </Form.Item>
               <Form.Item
                 label="Tên người nhận"
                 name="tenNguoiNhan"
-                labelCol={{ span: 8 }} // Điều chỉnh độ rộng của nhãn
-                wrapperCol={{ span: 16 }} // Điều chỉnh độ rộng của dữ liệu
+                labelCol={{ span: 8 }}
+                wrapperCol={{ span: 16 }}
               >
                 <Input disabled />
               </Form.Item>

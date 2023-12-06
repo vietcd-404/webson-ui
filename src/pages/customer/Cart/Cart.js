@@ -43,7 +43,6 @@ const Cart = () => {
 
   const fetchCart = async () => {
     try {
-      // Retrieve the cart from localStorage
       const storedCart = localStorage.getItem("cart");
       if (storedCart) {
         setDataSession(JSON.parse(storedCart));
