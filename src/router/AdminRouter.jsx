@@ -23,6 +23,8 @@ import Huy from "../components/admin/HoaDon/Huy";
 import NotFound from "../pages/customer/Account/NotFound";
 import BanHangTaiQuay from "../pages/admin/BanHangTaiQuay/BanHangTaiQuay";
 import { ProtectedRoute } from "../pages/customer/Account/ProtectedRoute";
+import QuanLyHDTaiQuay from "../pages/admin/BanHangTaiQuay/QuanLyHDTaiQuay";
+
 const AdminRouter = () => {
   return (
     <div>
@@ -103,22 +105,6 @@ const AdminRouter = () => {
             </ProtectedRoute>
           }
         />
-        {/* <Route
-          path="/ban-hang"
-          element={
-            <LayoutAdmin>
-              <BanHangTaiQuay />
-            </LayoutAdmin>
-          }
-        /> */}
-        {/* <Route
-          path="/hoa-don"
-          element={
-            <LayoutAdmin>
-              <LayoutHoaDonChiTiet />
-            </LayoutAdmin>
-          }
-        /> */}
         <Route
           path="/hoa-don/cho-xac-nhan"
           element={
@@ -179,6 +165,28 @@ const AdminRouter = () => {
             </ProtectedRoute>
           }
         />
+        <Route
+          path="/ban-hang"
+          element={
+            <ProtectedRoute userRole={["ROLE_STAFF", "ROLE_ADMIN"]}>
+              <LayoutAdmin>
+                <BanHangTaiQuay />
+              </LayoutAdmin>
+            </ProtectedRoute>
+          }
+        />
+
+        <Route
+          path="/hoa-don-tai-quay"
+          element={
+            <ProtectedRoute userRole={["ROLE_STAFF", "ROLE_ADMIN"]}>
+              <LayoutAdmin>
+                <QuanLyHDTaiQuay />
+              </LayoutAdmin>
+            </ProtectedRoute>
+          }
+        />
+
         <Route
           path="/nguoi-dung"
           element={
