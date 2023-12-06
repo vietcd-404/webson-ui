@@ -1,6 +1,7 @@
 import React, { useEffect, useRef, useState } from "react";
 import {
   Button,
+  Checkbox,
   Col,
   Form,
   InputNumber,
@@ -23,9 +24,14 @@ import {
   updateSoLuongTaiQuay,
   xoaSanPhamTaiQuay,
 } from "../../../services/BanHangTaiQuay";
-import { DeleteOutlined } from "@ant-design/icons";
+import {
+  DeleteOutlined,
+  PlusCircleOutlined,
+  MinusCircleOutlined,
+} from "@ant-design/icons";
 import { useAuth } from "../../../pages/customer/Account/AuthProvider";
 import Swal from "sweetalert2";
+import { FaSearch } from "react-icons/fa";
 const HoaDon2 = () => {
   const [activeKey, setActiveKey] = useState("1");
   const [items, setItems] = useState(() => {
@@ -38,6 +44,28 @@ const HoaDon2 = () => {
   const [selectedTenKhachHang, setSelectedTenKhachHang] = useState(false);
 
   const [dataDaThemSP, setDaThemSP] = useState([]);
+  const [searchText, setSearchText] = useState("");
+  const [selectedValue, setSelectedValue] = useState(null);
+  const [filteredData, setFilteredData] = useState(dataSanPham);
+
+  // const handleSearch = (value) => {
+  //   setSearchText(value);
+  //   // Your search logic here to filter the data based on the input value
+  //   const filteredResults = dataSanPham.filter((item) =>
+  //     item.tenSanPham.toLowerCase().includes(value.toLowerCase())
+  //   );
+  //   setFilteredData(filteredResults);
+  // };
+  const handleSearch = (e) => {
+    setSearchText(e.target.value);
+  };
+
+  useEffect(() => {
+    const filtered = dataSanPham.filter((item) =>
+      item.tenSanPham.toLowerCase().includes(searchText.toLowerCase())
+    );
+    setFilteredData(filtered);
+  }, [searchText]);
   const [selectedSanPham, setSelectedSanPham] = useState(null);
   const [taoHoaDon, setTaoHoaDon] = useState({});
   const [formData, setFormData] = useState({
@@ -45,6 +73,12 @@ const HoaDon2 = () => {
     maNguoiDung: "",
     diaChi: "",
     sdt: "",
+    phuongThucThanhToan: "",
+    tinh: "",
+    huyen: "",
+    xa: "",
+    thanhToan: 0,
+    trong: "",
   });
   const [formSP, setFormSP] = useState({
     trong: "",
@@ -52,6 +86,17 @@ const HoaDon2 = () => {
 
   const handleChange = (e) => {
     const { name, value } = e.target;
+    const selectedAddress = khachHang.find(
+      (item) => item.maNguoiDung === value
+    );
+    console.log(selectedAddress);
+    if (selectedAddress) {
+      setFormData({
+        ...formData,
+        sdt: selectedAddress.sdt,
+      });
+    }
+
     if (name === "maNguoiDung" && value === "KhachNgoai") {
       // Nếu chọn option "Khách ngoài", đặt giá trị của maNguoiDung bằng null
       setFormData({
@@ -105,7 +150,12 @@ const HoaDon2 = () => {
   const handleTabChange = (maHoaDon) => {
     loadDaThemSanPham(maHoaDon);
   };
+  const [showProductList, setShowProductList] = useState(false);
 
+  const handleInputClick = () => {
+    // Show the product list when the input field is clicked
+    setShowProductList(true);
+  };
   const handleAddToCart = async (maSanPhamCT, maHoaDon) => {
     try {
       await themSanPhamTaiQuay(maSanPhamCT, 1, maHoaDon);
@@ -115,8 +165,11 @@ const HoaDon2 = () => {
       //   text: "Thêm vào giỏ hàng thành công",
       //   icon: "success",
       // });
+      setShowProductList(false);
+      setSelectedValue(maSanPhamCT);
       loadDaThemSanPham(maHoaDon);
       loadSanPham();
+      setSearchText("");
       message.success("Thêm thành công");
       return;
     } catch (error) {
@@ -125,11 +178,16 @@ const HoaDon2 = () => {
     }
   };
   const handleThanhToan = async (maHoaDon) => {
+    if (dataDaThemSP.length === 0) {
+      message.error("Không có sản phẩm nào nên không thể thanh toán");
+      return;
+    }
     try {
       // const maHoaDon = items.find((item) => item.key === maHoaDon)?.maHoaDon;
       await thanhToanHoaDon(maHoaDon, formData);
       console.log(maHoaDon);
       message.success("Thanh toán thành công");
+      remove(activeKey);
       return;
     } catch (error) {
       console.log("Lỗi ", error);
@@ -160,6 +218,15 @@ const HoaDon2 = () => {
   };
   const onChange = (key) => {
     setActiveKey(key);
+  };
+
+  const choThanhToan = (e) => {
+    const isChecked = e.target.checked;
+    setFormData({
+      ...formData,
+      thanhToan: isChecked ? 0 : 1,
+    });
+    console.log(`checked = ${isChecked}`);
   };
   const { user } = useAuth();
 
@@ -224,39 +291,33 @@ const HoaDon2 = () => {
     }
     // newTabIndex.current++;
   };
-  const handleQuantityChange = async (
-    event,
-    maHoaDonCT,
-    maHoaDon,
-    maxQuantity
-  ) => {
-    const newQuantity = event.target.value; // Ensure it's parsed as an integer
+  // const handleQuantityChange = async (
+  //   event,
+  //   maHoaDonCT,
+  //   maHoaDon,
+  //   maxQuantity
+  // ) => {
+  //   const newQuantity = event.target.value; // Ensure it's parsed as an integer
 
-    if (maxQuantity === 0) {
-      // You can choose to show an error message or handle it in a way suitable for your application
-      console.error("Quantity exceeds the maximum limit");
-      message.error("Số lượng vượt giới hạn");
-      return;
-    }
-    if (newQuantity > 0) {
-      try {
-        await updateSoLuongTaiQuay(maHoaDonCT, newQuantity, maHoaDon);
+  //   if (newQuantity > 0) {
+  //     try {
+  //       await updateSoLuongTaiQuay(maHoaDonCT, newQuantity, maHoaDon);
 
-        loadSanPham();
-        loadDaThemSanPham(maHoaDon);
-      } catch (error) {
-        console.error("Failed to update quantity:", error);
-        message.error(error.response.data.message);
-      }
-      setDaThemSP((prevData) =>
-        prevData.map((item) =>
-          item.maHoaDonCT === maHoaDonCT
-            ? { ...item, soLuong: newQuantity }
-            : item
-        )
-      );
-    }
-  };
+  //       loadSanPham();
+  //       loadDaThemSanPham(maHoaDon);
+  //     } catch (error) {
+  //       console.error("Failed to update quantity:", error);
+  //       message.error(error.response.data.message);
+  //     }
+  //     setDaThemSP((prevData) =>
+  //       prevData.map((item) =>
+  //         item.maHoaDonCT === maHoaDonCT
+  //           ? { ...item, soLuong: newQuantity }
+  //           : item
+  //       )
+  //     );
+  //   }
+  // };
 
   // const handleQuantityChange = async (
   //   event,
@@ -303,6 +364,59 @@ const HoaDon2 = () => {
   //   }
   // };
 
+  const handleQuantityChange = async (action, record) => {
+    loadDaThemSanPham(record.maHoaDon);
+    try {
+      let newQuantity;
+
+      if (action === "increment") {
+        console.log(record.soLuongTon);
+        if (record.soLuongTon > 0) {
+          newQuantity = record.soLuong + 1;
+          loadDaThemSanPham(record.maHoaDon);
+        } else {
+          message.error("Đạt giới hạn số lượng tồn");
+          return;
+        }
+      } else if (action === "decrement") {
+        if (record.soLuong === 1) {
+          message.error("Có tối thiều có 1 sản phẩm");
+          return;
+        }
+        newQuantity = record.soLuong - 1;
+        loadDaThemSanPham(record.maHoaDon);
+      }
+
+      // if (newQuantity > 0 && newQuantity <= record.soLuongTon) {
+      // Make an API call to update the quantity on the server
+      await updateSoLuongTaiQuay(
+        record.maHoaDonCT,
+        newQuantity,
+        record.maHoaDon
+      );
+      loadSanPham();
+      loadDaThemSanPham(record.maHoaDon);
+
+      // Update the state to trigger a re-render
+      setDaThemSP((prevData) =>
+        prevData.map((item) =>
+          item.maHoaDonCT === record.maHoaDonCT
+            ? { ...item, soLuong: newQuantity }
+            : item
+        )
+      );
+
+      // Log the changed value for demonstration purposes
+      console.log("changed", newQuantity);
+      // } else {
+      //   message.error("Số lượng vượt giới hạn");
+      // }
+    } catch (error) {
+      console.error("Failed to update quantity:", error);
+      message.error(error.response?.data?.message || "Error updating quantity");
+    }
+  };
+
   const xoaSanPhamCT = (ma, maHoaDon) => {
     Swal.fire({
       title: "Bạn có chắc không?",
@@ -343,22 +457,15 @@ const HoaDon2 = () => {
       dataIndex: "soLuong",
       key: "soLuong",
       render: (text, record) => (
-        <>
-          <Input
-            min={1}
-            type="number"
-            max={record.soLuongTon === 0 ? record.soLuong : "disabled"}
-            value={record.soLuong}
-            onChange={(e) =>
-              handleQuantityChange(
-                e,
-                record.maHoaDonCT,
-                record.maHoaDon,
-                record.soLuongTon
-              )
-            }
+        <div className="flex justify-between">
+          <MinusCircleOutlined
+            onClick={() => handleQuantityChange("decrement", record)}
           />
-        </>
+          <p>{record.soLuong}</p>
+          <PlusCircleOutlined
+            onClick={() => handleQuantityChange("increment", record)}
+          />
+        </div>
       ),
     },
     {
@@ -464,6 +571,37 @@ const HoaDon2 = () => {
                         className="block text-sm font-bold mb-2"
                         htmlFor="nguoiBan"
                       >
+                        Hóa đơn
+                      </label>
+                      <input
+                        className="border rounded w-3/4 p-2"
+                        type="text"
+                        value={pane.maHoaDon}
+                      />
+                    </div>
+                    <div className="mb-4">
+                      <label
+                        className="block text-sm font-bold mb-2"
+                        htmlFor="nguoiBan"
+                      >
+                        Tổng tiền
+                      </label>
+                      <input
+                        // name="tinh"
+                        className="border rounded-l-md w-3/4 p-[6.5px]"
+                        type="text"
+                        value={tongTien}
+                        // onChange={handleChange}
+                      />
+                      <span className="border rounded-r-md p-2 bg-gray-300">
+                        VND
+                      </span>
+                    </div>
+                    <div className="mb-4">
+                      <label
+                        className="block text-sm font-bold mb-2"
+                        htmlFor="nguoiBan"
+                      >
                         Người bán
                       </label>
                       <input
@@ -474,19 +612,7 @@ const HoaDon2 = () => {
                         readOnly
                       />
                     </div>
-                    <div className="mb-4">
-                      <label
-                        className="block text-sm font-bold mb-2"
-                        htmlFor="nguoiBan"
-                      >
-                        Hóa đơn
-                      </label>
-                      <input
-                        className="border rounded w-3/4 p-2"
-                        type="text"
-                        value={pane.maHoaDon}
-                      />
-                    </div>
+
                     <div className="mb-4">
                       <label
                         className="block text-sm font-bold mb-2"
@@ -517,10 +643,24 @@ const HoaDon2 = () => {
                         className="block text-sm font-bold mb-2"
                         htmlFor="nguoiBan"
                       >
-                        Địa chỉ
+                        Số điện thoại
                       </label>
                       <input
-                        name="diaChi"
+                        name="sdt"
+                        className="border rounded w-3/4 p-2"
+                        type="text"
+                        onChange={handleChange}
+                      />
+                    </div>
+                    {/* <div className="mb-4">
+                      <label
+                        className="block text-sm font-bold mb-2"
+                        htmlFor="nguoiBan"
+                      >
+                        Tỉnh
+                      </label>
+                      <input
+                        name="tinh"
                         className="border rounded w-3/4 p-2"
                         type="text"
                         onChange={handleChange}
@@ -531,14 +671,47 @@ const HoaDon2 = () => {
                         className="block text-sm font-bold mb-2"
                         htmlFor="nguoiBan"
                       >
-                        Sdt
+                        Huyện
                       </label>
                       <input
-                        name="sdt"
+                        name="huyen"
                         className="border rounded w-3/4 p-2"
                         type="text"
                         onChange={handleChange}
                       />
+                    </div>
+                    <div className="mb-4">
+                      <label
+                        className="block text-sm font-bold mb-2"
+                        htmlFor="nguoiBan"
+                      >
+                        Xã
+                      </label>
+                      <input
+                        name="xa"
+                        className="border rounded w-3/4 p-2"
+                        type="text"
+                        onChange={handleChange}
+                      />
+                    </div>
+                    <div className="mb-4">
+                      <label
+                        className="block text-sm font-bold mb-2"
+                        htmlFor="nguoiBan"
+                      >
+                        Địa chỉ chi tiết
+                      </label>
+                      <input
+                        name="diaChi"
+                        className="border rounded w-3/4 p-2"
+                        type="text"
+                        onChange={handleChange}
+                      />
+                    </div> */}
+                    <div className="mb-4">
+                      <Checkbox onChange={choThanhToan}>
+                        Chờ thanh toán
+                      </Checkbox>
                     </div>
                     <div className="mb-4">
                       <label
@@ -550,11 +723,11 @@ const HoaDon2 = () => {
                       <select
                         className="border rounded w-full p-2"
                         id="khachHang"
-                        name="maNguoiDung"
+                        name="phuongThucThanhToan"
                         onChange={handleChange}
                       >
-                        <option value="KhachNgoai">Tiền mặt</option>
-                        <option value="KhachNgoai">Chuyển khoản</option>
+                        <option value="MONEY">Tiền mặt</option>
+                        <option value="ELECTRONIC_WALLET">Chuyển khoản</option>
                       </select>
                     </div>
                   </div>
@@ -575,18 +748,20 @@ const HoaDon2 = () => {
                 }}
               >
                 <div className="text-center mb-2 text-lg ">Giỏ hàng</div>
-                <Form.Item name="tenLoai" label="Tìm kiếm sản phẩm">
-                  <Select
+                {/* <Form.Item name="tenLoai" label="Tìm kiếm sản phẩm"> */}
+                {/* <Select
                     showSearch
                     size="large"
                     placeholder="Tìm kiếm sản phẩm"
-                    value={formSP.trong}
                     onSelect={(value, option) =>
                       handleAddToCart(value, pane.maHoaDon)
                     }
+                    value={selectedValue}
+                    onSearch={handleSearch}
                     style={{ width: "90%" }}
+                    filterOption={false}
                   >
-                    {dataSanPham.map((item) => (
+                    {filteredData.map((item) => (
                       <Select.Option
                         key={item.maSanPhamCT}
                         value={item.maSanPhamCT}
@@ -613,10 +788,68 @@ const HoaDon2 = () => {
                         </div>
                       </Select.Option>
                     ))}
-                  </Select>
-                </Form.Item>
+                  </Select> */}
+                <div className="relative  w-full lg:w-[600px] h-[50px] text-base text-primeColor bg-white center gap-2 justify-center px-6 rounded-xl">
+                  <input
+                    className="border rounded w-full p-2"
+                    // className=" h-full outline-none placeholder:text-[#C4C4C4] placeholder:text-[14px]"
+                    type="text"
+                    onChange={handleSearch}
+                    onClick={handleInputClick}
+                    // value={searchText}
+                    placeholder="Tìm kiếm sản phẩm tại đây"
+                  />
+                  {/* <FaSearch className="w-5 h-5 absolute right-2 top-1/2 transform -translate-y-1/2" /> */}
+                  {searchText && (
+                    <div
+                      className={`w-[90%]  rounded-md  mt-1 lg:mt-0 lg:left-[30px] lg:right-0 absolute z-50 overflow-y-scroll shadow-2xl scrollbar-hide cursor-pointer `}
+                    >
+                      {searchText &&
+                        filteredData.map((item) => (
+                          <div
+                            onClick={() =>
+                              handleAddToCart(item.maSanPhamCT, pane.maHoaDon)
+                            }
+                            key={item.maSanPhamCT}
+                            className="max-w-[600px] h-24 bg-gray-100 mb-2 gap-3 cursor-pointer hover:bg-gray-200 p-3"
+                          >
+                            {/* <img
+                              className="w-[20%] h-[80%] object-cover"
+                              src={`data:image/png;base64,${item.img}`}
+                              alt=""
+                            /> */}
+                            <div className="flex justify-between ">
+                              <div className="font-bold text-sm">
+                                {item.tenSanPham}-[{item.tenMau}]
+                              </div>
+                              <div className="flex space-x-2">
+                                <del>{item.giaBan} đ</del>
+                              </div>
+                              <div className="flex space-x-2">
+                                <div>
+                                  {item.giaBan *
+                                    ((100 - item.phanTramGiam) / 100)}{" "}
+                                  đ
+                                </div>
+                              </div>
+                            </div>
+                            <div>{item.tenThuongHieu}</div>
+                            <div>
+                              <i className="text-gray-500">Số lượng: </i>
+                              {item.soLuongTon}
+                            </div>
+                          </div>
+                        ))}
+                    </div>
+                  )}
+                </div>
+                {/* </Form.Item> */}
                 <div className="border rounded-md">
-                  <Table columns={columns} dataSource={dataDaThemSP} />
+                  <Table
+                    columns={columns}
+                    dataSource={dataDaThemSP}
+                    pagination={false}
+                  />
                 </div>
               </Col>
             </Row>

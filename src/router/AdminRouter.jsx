@@ -22,6 +22,7 @@ import HoanThanh from "../components/admin/HoaDon/HoanThanh";
 import Huy from "../components/admin/HoaDon/Huy";
 import NotFound from "../pages/customer/Account/NotFound";
 import BanHangTaiQuay from "../pages/admin/BanHangTaiQuay/BanHangTaiQuay";
+import { ProtectedRoute } from "../pages/customer/Account/ProtectedRoute";
 const AdminRouter = () => {
   return (
     <div>
@@ -29,9 +30,11 @@ const AdminRouter = () => {
         <Route
           path="/tong-quan"
           element={
-            <LayoutAdmin>
-              <ThongKe />
-            </LayoutAdmin>
+            <ProtectedRoute userRole={["ROLE_ADMIN"]}>
+              <LayoutAdmin>
+                <ThongKe />
+              </LayoutAdmin>
+            </ProtectedRoute>
           }
         />
         <Route path="*" element={<NotFound />} />
@@ -39,53 +42,65 @@ const AdminRouter = () => {
         <Route
           path="/san-pham-chi-tiet"
           element={
-            <LayoutAdmin>
-              <SanPhamChiTietLayout>
-                <AddSPCT></AddSPCT>
-              </SanPhamChiTietLayout>
-            </LayoutAdmin>
+            <ProtectedRoute userRole={["ROLE_STAFF", "ROLE_ADMIN"]}>
+              <LayoutAdmin>
+                <SanPhamChiTietLayout>
+                  <AddSPCT></AddSPCT>
+                </SanPhamChiTietLayout>
+              </LayoutAdmin>
+            </ProtectedRoute>
           }
         />
         <Route
           path="/san-pham-chi-tiet/danh-sach"
           element={
-            <LayoutAdmin>
-              <SanPhamChiTietLayout>
-                <ListSPCT></ListSPCT>
-              </SanPhamChiTietLayout>
-            </LayoutAdmin>
+            <ProtectedRoute userRole={["ROLE_STAFF", "ROLE_ADMIN"]}>
+              <LayoutAdmin>
+                <SanPhamChiTietLayout>
+                  <ListSPCT></ListSPCT>
+                </SanPhamChiTietLayout>
+              </LayoutAdmin>
+            </ProtectedRoute>
           }
         />
         <Route
           path="/san-pham"
           element={
-            <LayoutAdmin>
-              <SanPham />
-            </LayoutAdmin>
+            <ProtectedRoute userRole={["ROLE_STAFF", "ROLE_ADMIN"]}>
+              <LayoutAdmin>
+                <SanPham />
+              </LayoutAdmin>
+            </ProtectedRoute>
           }
         />
         <Route
           path="/loai"
           element={
-            <LayoutAdmin>
-              <Loai />
-            </LayoutAdmin>
+            <ProtectedRoute userRole={["ROLE_STAFF", "ROLE_ADMIN"]}>
+              <LayoutAdmin>
+                <Loai />
+              </LayoutAdmin>
+            </ProtectedRoute>
           }
         />
         <Route
           path="/mau-sac"
           element={
-            <LayoutAdmin>
-              <Mau />
-            </LayoutAdmin>
+            <ProtectedRoute userRole={["ROLE_STAFF", "ROLE_ADMIN"]}>
+              <LayoutAdmin>
+                <Mau />
+              </LayoutAdmin>
+            </ProtectedRoute>
           }
         />
         <Route
           path="/thuong-hieu"
           element={
-            <LayoutAdmin>
-              <ThuongHieu />
-            </LayoutAdmin>
+            <ProtectedRoute userRole={["ROLE_STAFF", "ROLE_ADMIN"]}>
+              <LayoutAdmin>
+                <ThuongHieu />
+              </LayoutAdmin>
+            </ProtectedRoute>
           }
         />
         {/* <Route
@@ -107,83 +122,99 @@ const AdminRouter = () => {
         <Route
           path="/hoa-don/cho-xac-nhan"
           element={
-            <LayoutAdmin>
-              <LayOutHoaDon>
-                <ChoXacNhan></ChoXacNhan>
-              </LayOutHoaDon>
-            </LayoutAdmin>
+            <ProtectedRoute userRole={["ROLE_STAFF", "ROLE_ADMIN"]}>
+              <LayoutAdmin>
+                <LayOutHoaDon>
+                  <ChoXacNhan></ChoXacNhan>
+                </LayOutHoaDon>
+              </LayoutAdmin>
+            </ProtectedRoute>
           }
         />
         <Route
           path="/hoa-don/cho-giao"
           element={
-            <LayoutAdmin>
-              <LayOutHoaDon>
-                <ChoGiao></ChoGiao>
-              </LayOutHoaDon>
-            </LayoutAdmin>
+            <ProtectedRoute userRole={["ROLE_STAFF", "ROLE_ADMIN"]}>
+              <LayoutAdmin>
+                <LayOutHoaDon>
+                  <ChoGiao></ChoGiao>
+                </LayOutHoaDon>
+              </LayoutAdmin>
+            </ProtectedRoute>
           }
         />
         <Route
           path="/hoa-don/dang-giao"
           element={
-            <LayoutAdmin>
-              <LayOutHoaDon>
-                <DangGiao></DangGiao>
-              </LayOutHoaDon>
-            </LayoutAdmin>
+            <ProtectedRoute userRole={["ROLE_STAFF", "ROLE_ADMIN"]}>
+              <LayoutAdmin>
+                <LayOutHoaDon>
+                  <DangGiao></DangGiao>
+                </LayOutHoaDon>
+              </LayoutAdmin>
+            </ProtectedRoute>
           }
         />
         <Route
           path="/hoa-don/hoan-thanh"
           element={
-            <LayoutAdmin>
-              <LayOutHoaDon>
-                <HoanThanh></HoanThanh>
-              </LayOutHoaDon>
-            </LayoutAdmin>
+            <ProtectedRoute userRole={["ROLE_STAFF", "ROLE_ADMIN"]}>
+              <LayoutAdmin>
+                <LayOutHoaDon>
+                  <HoanThanh></HoanThanh>
+                </LayOutHoaDon>
+              </LayoutAdmin>
+            </ProtectedRoute>
           }
         />
         <Route
           path="/hoa-don/huy"
           element={
-            <LayoutAdmin>
-              <LayOutHoaDon>
-                <Huy></Huy>
-              </LayOutHoaDon>
-            </LayoutAdmin>
+            <ProtectedRoute userRole={["ROLE_STAFF", "ROLE_ADMIN"]}>
+              <LayoutAdmin>
+                <LayOutHoaDon>
+                  <Huy></Huy>
+                </LayOutHoaDon>
+              </LayoutAdmin>
+            </ProtectedRoute>
           }
         />
         <Route
           path="/nguoi-dung"
           element={
-            <LayoutAdmin>
-              <NguoiDung />
-            </LayoutAdmin>
+            <ProtectedRoute userRole={["ROLE_ADMIN"]}>
+              <LayoutAdmin>
+                <NguoiDung />
+              </LayoutAdmin>
+            </ProtectedRoute>
           }
         />
-        <Route
+        {/* <Route
           path="/phuong-thuc-thanh-toan"
           element={
             <LayoutAdmin>
               <ThanhToan />
             </LayoutAdmin>
           }
-        />
+        /> */}
         <Route
           path="/quan-li-kho-anh"
           element={
-            <LayoutAdmin>
-              <KhoAnh />
-            </LayoutAdmin>
+            <ProtectedRoute userRole={["ROLE_STAFF", "ROLE_ADMIN"]}>
+              <LayoutAdmin>
+                <KhoAnh />
+              </LayoutAdmin>
+            </ProtectedRoute>
           }
         />
         <Route
           path="/voucher"
           element={
-            <LayoutAdmin>
-              <Voucher />
-            </LayoutAdmin>
+            <ProtectedRoute userRole={["ROLE_ADMIN"]}>
+              <LayoutAdmin>
+                <Voucher />
+              </LayoutAdmin>
+            </ProtectedRoute>
           }
         />
       </Routes>
