@@ -97,6 +97,7 @@ export const AuthProvider = ({ children }) => {
   const signout = () => {
     setUser(null);
     localStorage.removeItem("user");
+    localStorage.removeItem("items");
     navigate("/signin", {
       replace: true,
     });

@@ -22,7 +22,9 @@ const ItemsFavorite = ({ item, xoa }) => {
           <Link to={`/product/${item.maSanPhamCT}`}>{item.tenSanPham}</Link>
         </td>
         <td className="min-w-[100px]">
-          <div className="public-price">{item.donGia}đ</div>
+          <div className="public-price">
+            {item.donGia * ((100 - item.phanTramGiam) / 100)}đ
+          </div>
         </td>
         <td className="min-w-[100px]">
           <Button onClick={xoa}>

@@ -68,16 +68,18 @@ const HoaDon2 = () => {
   }, [searchText]);
   const [selectedSanPham, setSelectedSanPham] = useState(null);
   const [taoHoaDon, setTaoHoaDon] = useState({});
+  const [isChecked, setIsChecked] = useState(false);
+
   const [formData, setFormData] = useState({
     tenNguoiNhan: "",
     maNguoiDung: "",
     diaChi: "",
     sdt: "",
-    phuongThucThanhToan: "",
+    phuongThucThanhToan: "MONEY",
     tinh: "",
     huyen: "",
     xa: "",
-    thanhToan: 0,
+    thanhToan: 1,
     trong: "",
   });
   const [formSP, setFormSP] = useState({
@@ -219,12 +221,13 @@ const HoaDon2 = () => {
   const onChange = (key) => {
     setActiveKey(key);
   };
-
   const choThanhToan = (e) => {
-    const isChecked = e.target.checked;
+    const checked = e.target.checked;
+    // setIsChecked(checked);
+
     setFormData({
       ...formData,
-      thanhToan: isChecked ? 0 : 1,
+      thanhToan: checked ? 0 : 1,
     });
     console.log(`checked = ${isChecked}`);
   };
@@ -726,7 +729,9 @@ const HoaDon2 = () => {
                         name="phuongThucThanhToan"
                         onChange={handleChange}
                       >
-                        <option value="MONEY">Tiền mặt</option>
+                        <option value="MONEY" selected>
+                          Tiền mặt
+                        </option>
                         <option value="ELECTRONIC_WALLET">Chuyển khoản</option>
                       </select>
                     </div>
