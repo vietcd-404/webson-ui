@@ -129,7 +129,7 @@ function Dashboard() {
               }}
             />
           }
-          title={"Sản Phẩm"}
+          title={"Quản Lý sản phẩm"}
           value={inventory}
         />
         <DashboardCard

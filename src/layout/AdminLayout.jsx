@@ -10,7 +10,7 @@ import {
   LoginOutlined,
   ExclamationCircleFilled,
   GiftOutlined,
-  ShoppingCartOutlined
+  ShoppingCartOutlined,
 } from "@ant-design/icons";
 import { MenuFoldOutlined, MenuUnfoldOutlined } from "@ant-design/icons";
 import { Layout, Menu, theme, Button, Image, Modal } from "antd";
@@ -37,7 +37,7 @@ const LayoutAdmin = ({ children }) => {
       <DashboardOutlined />
     ),
     getItem(
-      <Link to="/admin/san-pham-chi-tiet">Sản phẩm</Link>,
+      <Link to="/admin/san-pham-chi-tiet">Quản lý sản phẩm chi tiết</Link>,
       "2",
       <DesktopOutlined />
     ),
@@ -47,7 +47,7 @@ const LayoutAdmin = ({ children }) => {
       getItem(<Link to="/admin/thuong-hieu">Thương hiệu</Link>, "5"),
       getItem(<Link to="/admin/mau-sac">Màu</Link>, "6"),
     ]),
-    getItem("Quản lý bán hàng", "sub2", < ShoppingCartOutlined />, [
+    getItem("Quản lý bán hàng", "sub2", <ShoppingCartOutlined />, [
       getItem(<Link to="/admin/ban-hang">Bán hàng</Link>, "12"),
     ]),
     getItem(
@@ -60,11 +60,6 @@ const LayoutAdmin = ({ children }) => {
       "8",
       <UserOutlined />
     ),
-    // getItem(
-    //   <Link to="/admin/phuong-thuc-thanh-toan">Phương thức thanh toán</Link>,
-    //   "9",
-    //   <PayCircleOutlined />
-    // ),
     getItem(
       <Link to="/admin/quan-li-kho-anh">Kho ảnh</Link>,
       "9",
