@@ -18,6 +18,7 @@ import { MdOutlineLabelImportant } from "react-icons/md";
 import { FaShoppingCart } from "react-icons/fa";
 import { addToCart } from "../../../../redux/orebiSlice";
 import { BsSuitHeartFill } from "react-icons/bs";
+import { Link } from "react-router-dom";
 
 const SpecialOffers = () => {
   const [products, setProducts] = useState([]);
@@ -118,29 +119,27 @@ const SpecialOffers = () => {
               <ToastContainer />
               <div className="max-w-80 max-h-80 relative overflow-y-hidden ">
                 <div>
-                  <img
-                    className="w-full h-[90%] cursor-pointer"
-                    alt={product.tenSanPham}
-                    src={`data:image/png;base64,${product.img}`}
-                    onClick={() => handleProductDetails(product.maSanPhamCT)}
-                  />
+                  <Link to={`/product/${product.maSanPhamCT}`}>
+                    <img
+                      className="w-full h-[90%] cursor-pointer"
+                      alt={product.tenSanPham}
+                      src={`data:image/png;base64,${product.img[0]}`}
+                      onClick={() => handleProductDetails(product.maSanPhamCT)}
+                    />
+                  </Link>
                 </div>
                 <div className="w-full h-32 absolute bg-white -bottom-[130px] group-hover:bottom-0 duration-700">
                   <ul className="w-full h-full flex flex-col items-end justify-center gap-2 font-titleFont px-2 border-l border-r">
-                    <li
-                      onClick={() => handleProductDetails(product.maSanPhamCT)}
-                      className="text-[#767676] hover:text-primeColor text-sm font-normal border-b-[1px] border-b-gray-200 hover:border-b-primeColor flex items-center justify-end gap-2 hover:cursor-pointer pb-1 duration-300 w-full hover:text-pink-500"
-                    >
-                      Xem chi tiết
-                      <span className="text-lg">
-                        <MdOutlineLabelImportant />
-                      </span>
-                    </li>
+                    <Link to={`/product/${product.maSanPhamCT}`}>
+                      <li className="text-[#767676] hover:text-primeColor text-sm font-normal border-b-[1px] border-b-gray-200 hover:border-b-primeColor flex items-center justify-end gap-2 hover:cursor-pointer pb-1 duration-300 w-full hover:text-pink-500">
+                        Xem chi tiết
+                        <span className="text-lg">
+                          <MdOutlineLabelImportant />
+                        </span>
+                      </li>
+                    </Link>
                     {user ? (
-                      <li
-                        onClick={() => handleAddToCart(product.maSanPhamCT)}
-                        className="text-[#767676] hover:text-primeColor text-sm font-normal border-b-[1px] border-b-gray-200 hover:border-b-primeColor flex items-center justify-end gap-2 hover:cursor-pointer pb-1 duration-300 w-full hover:text-pink-500"
-                      >
+                      <li className="text-[#767676] hover:text-primeColor text-sm font-normal border-b-[1px] border-b-gray-200 hover:border-b-primeColor flex items-center justify-end gap-2 hover:cursor-pointer pb-1 duration-300 w-full hover:text-pink-500">
                         Thêm vào giỏ hàng
                         <span>
                           <FaShoppingCart />
