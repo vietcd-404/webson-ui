@@ -169,9 +169,6 @@ const TableSanPham = () => {
   };
 
   const handleSwitchChange = async (record, checked) => {
-    const trangThaiValue = checked ? 1 : 0;
-    console.log(trangThaiValue);
-    console.log(record.maSanPham);
     try {
       const response = await updateStatusSp(
         { ...record, trangThai: checked ? 1 : 0 },

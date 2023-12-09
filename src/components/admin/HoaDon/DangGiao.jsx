@@ -399,7 +399,7 @@ const DangGiao = () => {
       title: "Thanh toán",
       dataIndex: "thanhToan",
       key: "thanhToan",
-      width: 190,
+      width: 220,
       render: (thanhToan) => {
         let style = {};
         let text = "";

@@ -255,7 +255,6 @@ const HoaDon2 = () => {
     if (items.length < 5) {
       try {
         const response = await taoHoaDonTaiQuay(taoHoaDon);
-        // const newActiveKey = `newTab${newTabIndex.current}`;
         invoiceCode = response.data.maHoaDon;
 
         let newActiveKey, newLabel;
@@ -655,62 +654,6 @@ const HoaDon2 = () => {
                         onChange={handleChange}
                       />
                     </div>
-                    {/* <div className="mb-4">
-                      <label
-                        className="block text-sm font-bold mb-2"
-                        htmlFor="nguoiBan"
-                      >
-                        Tỉnh
-                      </label>
-                      <input
-                        name="tinh"
-                        className="border rounded w-3/4 p-2"
-                        type="text"
-                        onChange={handleChange}
-                      />
-                    </div>
-                    <div className="mb-4">
-                      <label
-                        className="block text-sm font-bold mb-2"
-                        htmlFor="nguoiBan"
-                      >
-                        Huyện
-                      </label>
-                      <input
-                        name="huyen"
-                        className="border rounded w-3/4 p-2"
-                        type="text"
-                        onChange={handleChange}
-                      />
-                    </div>
-                    <div className="mb-4">
-                      <label
-                        className="block text-sm font-bold mb-2"
-                        htmlFor="nguoiBan"
-                      >
-                        Xã
-                      </label>
-                      <input
-                        name="xa"
-                        className="border rounded w-3/4 p-2"
-                        type="text"
-                        onChange={handleChange}
-                      />
-                    </div>
-                    <div className="mb-4">
-                      <label
-                        className="block text-sm font-bold mb-2"
-                        htmlFor="nguoiBan"
-                      >
-                        Địa chỉ chi tiết
-                      </label>
-                      <input
-                        name="diaChi"
-                        className="border rounded w-3/4 p-2"
-                        type="text"
-                        onChange={handleChange}
-                      />
-                    </div> */}
                     <div className="mb-4">
                       <Checkbox onChange={choThanhToan}>
                         Chờ thanh toán

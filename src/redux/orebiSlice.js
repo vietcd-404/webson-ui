@@ -38,6 +38,7 @@ export const orebiSlice = createSlice({
         (item) => item.maSanPhamCT === action.payload.maSanPhamCT
       );
       if (item) {
+        console.log(item.soLuongTon);
         if (item.soLuong < item.soLuongTon) {
           item.soLuong++;
         } else {
