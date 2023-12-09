@@ -11,7 +11,7 @@ import {
 import { useState } from "react";
 import { useEffect } from "react";
 
-import axios from "axios";
+import axios, { formToJSON } from "axios";
 import { message } from "antd";
 
 import Swal from "sweetalert2";
@@ -25,6 +25,11 @@ import { Stomp } from "@stomp/stompjs";
 import WebSocketService from "../../../../services/WebSocketService";
 import ThemSanPhamVaoHoaDon from "./ThemSanPhamVaoHoaDon";
 import { findVoucher } from "../../../../services/VoucherService";
+import {
+  hienHuyen,
+  hienTinh,
+  hienXa,
+} from "../../../../services/GiaoHangNhanhService";
 const host = "https://provinces.open-api.vn/api/";
 
 function ThongTinDonHang() {
@@ -78,7 +83,20 @@ function ThongTinDonHang() {
         tinh: addressDetails.tinh,
         huyen: addressDetails.huyen,
         xa: addressDetails.xa,
+        phiShip: addressDetails.phiShip,
       }));
+      // let foundProvinces =
+      //   provinces.length > 0 &&
+      //   provinces?.find((item) => item.ProvinceName === addressDetails.tinh);
+      // setSelectedProvince(foundProvinces ? foundProvinces.ProvinceID : "");
+      // let huyen =
+      //   districts.length > 0 &&
+      //   districts?.find((item) => item.DistrictName === addressDetails.huyen);
+      // setSelectedDistrict(huyen ? huyen.DistrictID : "");
+      // let xa =
+      //   wards.length > 0 &&
+      //   wards?.find((item) => item.WardName === addressDetails.xa);
+      // setSelectedWard(xa ? xa.WardCode : "");
       console.log(response.data);
     } catch (error) {
       console.error("Lỗi khi gọi API: ", error);
@@ -100,7 +118,6 @@ function ThongTinDonHang() {
       console.error("Lỗi khi gọi API: ", error);
     }
   };
-  const [selectedVoucherCode, setSelectedVoucherCode] = useState("");
 
   const xoaSanPhamCT = (ma) => {
     Swal.fire({
@@ -113,22 +130,8 @@ function ThongTinDonHang() {
       confirmButtonText: "Vâng, tôi muốn!",
     }).then(async (result) => {
       if (result.isConfirmed) {
-        // const voucherCode = selectedVoucherCode;
-
-        // // Tìm thông tin voucher từ mảng voucher
-        // const selectedVoucher = voucher.find(
-        //   (item) => item.tenVoucher === voucherCode
-        // );
-        // if (!selectedVoucher) {
-        //   // Handle case when selected voucher is not found
-        //   toast.error("Voucher not found");
-        //   return;
-        // }
-        // const dieuKien = selectedVoucher.dieuKien;
-
-        // Assuming donHang and data are defined somewhere in your component
         const dieuKien = voucher.find((item) => item.dieuKien);
-        const tt = donHang.find((item) => item.tongTien); // Adjust this based on your data structure
+        const tt = donHang.find((item) => item.tongTien);
 
         if (data && data.length > 1) {
           try {
@@ -162,10 +165,11 @@ function ThongTinDonHang() {
       }
     });
   };
+
   useEffect(() => {
     loadSanPham();
     loadHoaDonChitiet();
-  }, [maHoaDon, messageValue]);
+  }, [maHoaDon, messageValue, provinces]);
 
   const [tongTien, setTongTien] = useState("");
   useEffect(() => {
@@ -270,8 +274,6 @@ function ThongTinDonHang() {
           message.error("Có tối thiều có 1 sản phẩm");
           return;
         }
-        // newQuantity = record.soLuong - 1;
-        // console.log(tongDonGia);
 
         if (tongDonGia > record.dieuKien + record.donGia) {
           newQuantity = record.soLuong - 1;
@@ -284,8 +286,6 @@ function ThongTinDonHang() {
         }
       }
 
-      // if (newQuantity > 0 && newQuantity <= record.soLuongTon) {
-      // Make an API call to update the quantity on the server
       await updateSoLuongKhachHang(
         record.maHoaDonCT,
         newQuantity,
@@ -293,7 +293,6 @@ function ThongTinDonHang() {
       );
       loadSanPham();
       loadHoaDonChitiet();
-      // Update the state to trigger a re-render
       setData((prevData) =>
         prevData.map((item) =>
           item.maHoaDonCT === record.maHoaDonCT
@@ -302,11 +301,7 @@ function ThongTinDonHang() {
         )
       );
 
-      // Log the changed value for demonstration purposes
       console.log("changed", newQuantity);
-      // } else {
-      //   message.error("Số lượng vượt giới hạn");
-      // }
     } catch (error) {
       console.error("Failed to update quantity:", error);
       message.error(error.response?.data?.message || "Error updating quantity");
@@ -320,6 +315,7 @@ function ThongTinDonHang() {
     tinh: "",
     huyen: "",
     xa: "",
+    phiShip: "",
     diaChiChiTiet: "",
   });
 
@@ -330,97 +326,248 @@ function ThongTinDonHang() {
       [name]: value,
     });
   };
+  ////-------------Load địa chỉ
   useEffect(() => {
-    // Fetch provinces data
-    axios.get(host).then((response) => {
-      setProvinces(response.data);
-    });
+    loadProvinces();
   }, []);
 
-  const callApiDistrict = (api) => {
-    axios.get(api).then((response) => {
-      setDistricts(response.data.districts);
-    });
+  //---------Detail địa chỉ hiện lên
+  useEffect(() => {
+    console.log();
+    let foundProvinces =
+      provinces.length > 0 &&
+      provinces?.find((item) => item.ProvinceName === formData?.tinh);
+    setSelectedProvince(foundProvinces ? foundProvinces.ProvinceID : "");
+  }, [provinces]);
+
+  useEffect(() => {
+    console.log();
+    let foundProvinces =
+      districts.length > 0 &&
+      districts?.find((item) => item.DistrictName === formData?.huyen);
+    setSelectedDistrict(foundProvinces ? foundProvinces.DistrictID : "");
+  }, [districts, wards]);
+
+  useEffect(() => {
+    console.log();
+    let foundProvinces =
+      wards.length > 0 && wards?.find((item) => item.WardName === formData?.xa);
+    setSelectedWard(foundProvinces ? foundProvinces.WardCode : "");
+  }, [wards]);
+  //-------------------------------------
+  const loadProvinces = async () => {
+    try {
+      const response = await hienTinh();
+      setProvinces(response.data.data);
+    } catch (error) {
+      console.error("Lỗi khi gọi API: ", error);
+    }
   };
 
-  const callApiWard = (api) => {
-    axios.get(api).then((response) => {
-      setWards(response.data.wards);
-    });
+  const handleProvinceChange = async (provinceId) => {
+    setSelectedProvince(provinceId);
+    setSelectedProvince("");
+    setSelectedWard("");
+
+    try {
+      const response = await hienHuyen(provinceId);
+      setDistricts(response.data.data);
+    } catch (error) {
+      console.error("Lỗi khi gọi API: ", error);
+    }
   };
-  const handleProvinceChange = (event) => {
+
+  const handleDistrictChange = async (districtId) => {
+    setSelectedDistrict(districtId);
+    setSelectedWard("");
+    try {
+      const response = await hienXa(districtId);
+      setWards(response.data.data);
+    } catch (error) {
+      console.error("Lỗi khi gọi API: ", error);
+    }
+  };
+  const handleWardChange = (wardId) => {
+    setSelectedWard(wardId);
+  };
+
+  const handleProvinceChangeaa = (event) => {
+    setFormData((prevFormData) => ({
+      ...prevFormData,
+      huyen: "",
+      xa: "",
+    }));
     const selectedProvinceName = event.target.value;
     const selectedProvince = provinces.find(
-      (province) => province.name === selectedProvinceName
+      (province) => province.ProvinceName === selectedProvinceName
     );
-    setSelectedProvince(selectedProvinceName);
-    setFormData({
-      ...formData,
-      tinh: selectedProvince.name,
-    });
-    callApiDistrict(host + "p/" + selectedProvince.code + "?depth=2");
-  };
 
-  const handleDistrictChange = (event) => {
+    setSelectedProvince(selectedProvinceName);
+    setFormData((prevFormData) => ({
+      ...prevFormData,
+      tinh: selectedProvince.ProvinceName,
+    }));
+    handleProvinceChange(selectedProvince.ProvinceID);
+    console.log(selectedProvince.ProvinceName);
+  };
+  const handleDistrictChangeaaa = (event) => {
     const selectedDistrictName = event.target.value;
     const selectedDistrict = districts.find(
-      (district) => district.name === selectedDistrictName
+      (district) => district.DistrictName === selectedDistrictName
     );
     setSelectedDistrict(selectedDistrictName);
     setFormData({
       ...formData,
-      huyen: selectedDistrict.name,
+      huyen: selectedDistrict.DistrictName,
     });
-    callApiWard(host + "d/" + selectedDistrict.code + "?depth=2");
-  };
-  const handleThayDoiClick = () => {
-    const selectedDistr = districts.find(
-      (district) => district.name === formData.huyen
-    );
-    const selectedProvince = provinces.find(
-      (province) => province.name === formData.tinh
-    );
-    // Toggle the state to show/hide the additional interface
-    setShow(!show);
-    if (!show) {
-      if (selectedDistr) {
-        callApiWard(host + "d/" + selectedDistr.code + "?depth=2");
-      } else if (selectedProvince) {
-        callApiDistrict(host + "p/" + selectedProvince.code + "?depth=2");
-      }
-    }
+    console.log(selectedDistrict.DistrictName);
 
-    if (!show) {
-      setSelectedProvince(formData.tinh);
-      setSelectedDistrict(formData.huyen);
-      setSelectedWard(formData.xa);
-    }
+    handleDistrictChange(selectedDistrict.DistrictID);
   };
-  const handleWardChange = (event) => {
-    const wardCode = event.target.value;
-    setSelectedWard(wardCode);
+
+  const handleWardChangeaaa = (event) => {
+    const selectedWardName = event.target.value;
+    const selectedWard = wards.find(
+      (wards) => wards.WardName === selectedWardName
+    );
+    setSelectedWard(selectedWardName);
     setFormData({
       ...formData,
-      xa: wardCode,
+      xa: selectedWard.WardName,
     });
+    console.log(selectedWard.WardName);
+
+    handleWardChange(selectedWard.WardCode);
   };
+  const [feeShip, setFeeShip] = useState();
+
+  const caculateFee = async () => {
+    try {
+      const response = await axios.post(
+        "https://online-gateway.ghn.vn/shiip/public-api/v2/shipping-order/fee",
+        {
+          service_id: null,
+          service_type_id: 2,
+          to_district_id: Number(selectedDistrict),
+          to_ward_code: selectedWard,
+          height: 50,
+          length: 20,
+          weight: 200,
+          width: 20,
+          insurance_value: 10000,
+          cod_failed_amount: 2000,
+          coupon: null,
+        },
+        {
+          headers: {
+            token: "508b262b-8072-11ee-96dc-de6f804954c9",
+            "Content-Type": "application/json",
+            ShopId: 4691092,
+          },
+        }
+      );
+      setFeeShip(response.data.data.total);
+    } catch (error) {
+      console.log("Error:", error);
+    }
+  };
+  useEffect(() => {
+    if (selectedProvince) {
+      handleProvinceChange(selectedProvince);
+    }
+  }, [selectedProvince]);
+
+  useEffect(() => {
+    if (selectedDistrict) {
+      handleDistrictChange(selectedDistrict);
+    }
+  }, [selectedDistrict]);
+
+  useEffect(() => {
+    if (selectedWard) {
+      caculateFee();
+    } else {
+      return;
+    }
+  }, [selectedWard]);
+
+  ///-----------------------------------
   const navigate = useNavigate();
 
-  const handleUpdateOrder = async () => {
-    try {
-      await updatetHoaDon(maHoaDon, formData);
-      Swal.fire({
-        title: "Sửa hóa đơn!",
-        text: "Sửa thành công thành công",
-        icon: "success",
-      });
+  const [errors, setErrors] = useState([]);
 
-      // Redirect to the desired page
-      navigate("/invoices");
-    } catch (error) {
-      // Handle errors, such as displaying an error message
-      console.log("Lỗi ", error);
-      message.error(error.response?.data?.message || "Error creating invoice");
+  const validatePhone = (sdt) => {
+    return String(sdt).match(/^0?\d{10}$/);
+  };
+  const EmailValidation = (email) => {
+    return String(email)
+      .toLowerCase()
+      .match(/^[A-Z0-9._%+-]+@[A-Z0-9.-]+\.[A-Z]{2,4}$/i);
+  };
+  const validateForm = () => {
+    let valid = true;
+    const newErrors = {};
+
+    if (!formData.tenNguoiNhan) {
+      newErrors.tenNguoiNhan = "Tên người nhận không được trống";
+      valid = false;
+    }
+
+    // if (!formData.email) {
+    //   newErrors.email = "Email không được bỏ trống";
+    //   valid = false;
+    // }
+
+    // if (!EmailValidation(formData.email)) {
+    //   newErrors.email = "Email không hợp lệ";
+    //   valid = false;
+    // }
+
+    if (!formData.sdt || !validatePhone(formData.sdt)) {
+      newErrors.sdt = "Số điện thoại không hợp lệ";
+      valid = false;
+    }
+
+    if (!formData.tinh) {
+      newErrors.tinh = "Vui lòng nhập địa chỉ";
+      valid = false;
+    }
+    if (!formData.huyen) {
+      newErrors.huyen = "Vui lòng nhập địa chỉ";
+      valid = false;
+    }
+    if (!formData.xa) {
+      newErrors.xa = "Vui lòng nhập địa chỉ";
+      valid = false;
+    }
+
+    setErrors(newErrors);
+    return valid;
+  };
+
+  const handleUpdateOrder = async () => {
+    const updatedFormData = {
+      ...formData,
+      phiShip: feeShip,
+    };
+    if (validateForm()) {
+      try {
+        await updatetHoaDon(maHoaDon, updatedFormData);
+        Swal.fire({
+          title: "Sửa hóa đơn!",
+          text: "Sửa thành công thành công",
+          icon: "success",
+        });
+
+        // Redirect to the desired page
+        navigate("/invoices");
+      } catch (error) {
+        // Handle errors, such as displaying an error message
+        console.log("Lỗi ", error);
+        message.error(
+          error.response?.data?.message || "Error creating invoice"
+        );
+      }
     }
   };
   const socket = new SockJS("http://localhost:8000/api/anh/ws");
@@ -494,6 +641,12 @@ function ThongTinDonHang() {
                     disabled={hoaDon.trangThai !== 0}
                   />
                 </div>
+                {errors.tenNguoiNhan && (
+                  <p className="text-sm text-red-500 font-titleFont font-semibold px-4">
+                    <span className="font-bold italic mr-1">!</span>
+                    {errors.tenNguoiNhan}
+                  </p>
+                )}
 
                 <div className="mb-4">
                   <label className="block text-gray-700 text-sm font-bold mb-2">
@@ -509,6 +662,12 @@ function ThongTinDonHang() {
                     onChange={handleChange}
                   />
                 </div>
+                {errors.sdt && (
+                  <p className="text-sm text-red-500 font-titleFont font-semibold px-4">
+                    <span className="font-bold italic mr-1">!</span>
+                    {errors.sdt}
+                  </p>
+                )}
 
                 <div className="mb-4">
                   <label className="block text-gray-700 text-sm font-bold mb-2">
@@ -518,108 +677,157 @@ function ThongTinDonHang() {
                     type="text"
                     className="w-full"
                     placeholder=""
+                    disabled
                     value={formData.diaChiChiTiet}
-                    disabled={hoaDon.trangThai !== 0}
+                    // disabled={hoaDon.trangThai !== 0}
                     class="form-control"
                   />
                 </div>
-
+                <div className="mb-4">
+                  <span className=" text-gray-700 text-sm font-bold">
+                    Phí ship:{" "}
+                  </span>
+                  {hoaDon.phiShip} đ
+                </div>
+                {/* 
                 {hoaDon.trangThai === 0 && (
                   <div className="mb-4" onClick={handleThayDoiClick}>
                     <p className="text-blue-700 hover:underline cursor-pointer">
                       Thay đổi địa chỉ
                     </p>
                   </div>
-                )}
-                {show && (
-                  <>
-                    <div className="mb-4 flex items-center">
-                      <div className="w-[33%] pr-2">
-                        <label
-                          htmlFor="province"
-                          className="block text-gray-700 text-sm font-bold mb-2"
-                        >
-                          Tỉnh thành <span className="text-red-500">*</span>
-                        </label>
-                        <select
-                          className="form-select w-full p-2 border border-gray-300 rounded-md"
-                          value={selectedProvince}
-                          onChange={handleProvinceChange}
-                          name="tinh"
-                        >
-                          <option disabled value="">
-                            Chọn
-                          </option>
-                          {provinces.map((province) => (
-                            <option>{province.name}</option>
-                          ))}
-                        </select>
-                      </div>
-                      <div className="w-[33%] pr-2">
-                        <label
-                          htmlFor="district"
-                          className="block text-gray-700 text-sm font-bold mb-2"
-                        >
-                          Quận huyện <span className="text-red-500">*</span>
-                        </label>
-                        <select
-                          className="form-select w-full p-2 border border-gray-300 rounded-md"
-                          value={selectedDistrict}
-                          onChange={handleDistrictChange}
-                          name="huyen"
-                        >
-                          <option disabled value="">
-                            Chọn
-                          </option>
-                          {districts.map((district) => (
-                            <option>{district.name}</option>
-                          ))}
-                        </select>
-                      </div>
-                      <div className="w-[33%] pr-2">
-                        <label
-                          htmlFor="ward"
-                          className="block text-gray-700 text-sm font-bold mb-2"
-                        >
-                          Phường xã <span className="text-red-500">*</span>
-                        </label>
-                        <select
-                          className="form-select w-full p-2 border border-gray-300 rounded-md"
-                          value={selectedWard}
-                          onChange={handleWardChange}
-                          name="xa"
-                        >
-                          <option disabled value="">
-                            Chọn
-                          </option>
-                          {wards.map((ward) => (
-                            <option>{ward.name}</option>
-                          ))}
-                        </select>
-                      </div>
-                    </div>
-                    <div className="mb-4">
-                      <label className="block text-gray-700 text-sm font-bold mb-2">
-                        Địa chỉ chi tiết <span className="text-red-500">*</span>
+                )} */}
+                <>
+                  <div className="mb-4 flex items-center">
+                    <div className="w-[33%] pr-2">
+                      <label
+                        htmlFor="province"
+                        className="block text-gray-700 text-sm font-bold mb-2"
+                      >
+                        Tỉnh thành <span className="text-red-500">*</span>
                       </label>
-                      <input
-                        type="text"
-                        className="form-input w-full"
-                        name="diaChi"
-                        class="form-control"
-                        onChange={handleChange}
-                      />
+                      <select
+                        className="form-select w-full p-2 border border-gray-300 rounded-md"
+                        value={formData.tinh}
+                        onChange={handleProvinceChangeaa}
+                        name="tinh"
+                      >
+                        <option disabled value="">
+                          Chọn
+                        </option>
+                        {provinces.map((province) => (
+                          <option
+                            key={province.ProvinceID}
+                            // value={province.ProvinceName}
+                          >
+                            {province.ProvinceName}
+                          </option>
+                        ))}
+                      </select>
                     </div>
-                  </>
-                )}
+
+                    <div className="w-[33%] pr-2">
+                      <label
+                        htmlFor="district"
+                        className="block text-gray-700 text-sm font-bold mb-2"
+                      >
+                        Quận huyện <span className="text-red-500">*</span>
+                      </label>
+                      <select
+                        className="form-select w-full p-2 border border-gray-300 rounded-md"
+                        value={formData.huyen}
+                        onChange={handleDistrictChangeaaa}
+                        name="huyen"
+                      >
+                        <option disabled value="">
+                          Chọn
+                        </option>
+                        {districts.map((district) => (
+                          <option
+                            key={district.DistrictID}
+                            // value={district.DistrictName}
+                          >
+                            {district.DistrictName}
+                          </option>
+                        ))}
+                      </select>
+                    </div>
+
+                    <div className="w-[33%] pr-2">
+                      <label
+                        htmlFor="ward"
+                        className="block text-gray-700 text-sm font-bold mb-2"
+                      >
+                        Phường xã <span className="text-red-500">*</span>
+                      </label>
+                      <select
+                        className="form-select w-full p-2 border border-gray-300 rounded-md"
+                        value={formData.xa}
+                        onChange={handleWardChangeaaa}
+                        name="xa"
+                      >
+                        <option disabled>Chọn</option>
+                        {wards.map((ward) => (
+                          <option
+                            key={ward.WardCode}
+                            // value={ward.WardName}
+                          >
+                            {ward.WardName}
+                          </option>
+                        ))}
+                      </select>
+                    </div>
+                  </div>
+                  <div className="mb-4 flex items-center">
+                    <div className="w-[33%] pr-2">
+                      {errors.tinh && (
+                        <p className="text-sm text-red-500 font-titleFont font-semibold px-4">
+                          <span className="font-bold italic mr-1">!</span>
+                          {errors.tinh}
+                        </p>
+                      )}
+                    </div>
+                    <div className="w-[33%] pr-2">
+                      {errors.huyen && (
+                        <p className="text-sm text-red-500 font-titleFont font-semibold px-4">
+                          <span className="font-bold italic mr-1">!</span>
+                          {errors.huyen}
+                        </p>
+                      )}
+                    </div>
+                    <div className="w-[33%] pr-2">
+                      {errors.xa && (
+                        <p className="text-sm text-red-500 font-titleFont font-semibold px-4">
+                          <span className="font-bold italic mr-1">!</span>
+                          {errors.xa}
+                        </p>
+                      )}
+                    </div>
+                  </div>
+                  <div className="mb-4">
+                    <label className="block text-gray-700 text-sm font-bold mb-2">
+                      Địa chỉ chi tiết <span className="text-red-500">*</span>
+                    </label>
+                    <input
+                      type="text"
+                      className="form-input w-full"
+                      name="diaChi"
+                      value={formData.diaChi}
+                      class="form-control"
+                      onChange={handleChange}
+                    />
+                  </div>
+                  <div className="mb-4">Phí ship: {feeShip} đ</div>
+                </>
+
                 <div className="flex justify-between">
                   {hoaDon.trangThai === 0 && (
-                    <div className="p-1 bg-blue-600 border w-[90px] grid place-items-center rounded">
+                    <div className="p-2 bg-blue-600 border w-[150px] grid place-items-center rounded">
                       <button
                         className="text-white"
                         onClick={handleUpdateOrder}
                       >
-                        Lưu
+                        Thay đổi thông tin
                       </button>
                     </div>
                   )}

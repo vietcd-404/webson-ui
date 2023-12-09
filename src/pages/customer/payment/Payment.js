@@ -20,6 +20,11 @@ import { thanhToanVnPay } from "../../../services/VnPayService";
 import { RingLoader } from "react-spinners";
 import WebSocketService from "../../../services/WebSocketService";
 import { findAllDiaChi } from "../../../services/DiaChiService";
+import {
+  hienHuyen,
+  hienTinh,
+  hienXa,
+} from "../../../services/GiaoHangNhanhService";
 
 /* <p>Payment gateway only applicable for Production build.</p>
         <Link to="/">
@@ -67,7 +72,142 @@ const Payment = () => {
     huyen: "",
     xa: "",
     tenPhuongThuc: "",
+    phiShip: "",
   });
+  useEffect(() => {
+    loadProvinces();
+  }, []);
+
+  const loadProvinces = async () => {
+    try {
+      const response = await hienTinh();
+      setProvinces(response.data.data);
+    } catch (error) {
+      console.error("Lỗi khi gọi API: ", error);
+    }
+  };
+
+  const handleProvinceChange = async (provinceId) => {
+    setSelectedProvince(provinceId);
+    setSelectedDistrict("");
+    try {
+      const response = await hienHuyen(provinceId);
+      setDistricts(response.data.data);
+    } catch (error) {
+      console.error("Lỗi khi gọi API: ", error);
+    }
+  };
+
+  const handleDistrictChange = async (districtId) => {
+    setSelectedDistrict(districtId);
+    setSelectedWard("");
+
+    try {
+      const response = await hienXa(districtId);
+      setWards(response.data.data);
+    } catch (error) {
+      console.error("Lỗi khi gọi API: ", error);
+    }
+  };
+  const handleWardChange = (wardId) => {
+    setSelectedWard(wardId);
+  };
+
+  const handleProvinceChangeaa = (event) => {
+    const selectedProvinceName = event.target.value;
+    const selectedProvince = provinces.find(
+      (province) => province.ProvinceName === selectedProvinceName
+    );
+
+    setSelectedProvince(selectedProvinceName);
+    setFormData((prevFormData) => ({
+      ...prevFormData,
+      tinh: selectedProvince.ProvinceName,
+    }));
+    handleProvinceChange(selectedProvince.ProvinceID);
+    console.log(selectedProvince.ProvinceName);
+  };
+  const handleDistrictChangeaaa = (event) => {
+    const selectedDistrictName = event.target.value;
+    const selectedDistrict = districts.find(
+      (district) => district.DistrictName === selectedDistrictName
+    );
+    setSelectedDistrict(selectedDistrictName);
+    setFormData({
+      ...formData,
+      huyen: selectedDistrict.DistrictName,
+    });
+    console.log(selectedDistrict.DistrictName);
+
+    handleDistrictChange(selectedDistrict.DistrictID);
+  };
+
+  const handleWardChangeaaa = (event) => {
+    const selectedWardName = event.target.value;
+    const selectedWard = wards.find(
+      (wards) => wards.WardName === selectedWardName
+    );
+    setSelectedWard(selectedWardName);
+    setFormData({
+      ...formData,
+      xa: selectedWard.WardName,
+    });
+    console.log(selectedWard.WardName);
+
+    handleWardChange(selectedWard.WardCode);
+  };
+  const [feeShip, setFeeShip] = useState();
+
+  const caculateFee = async () => {
+    try {
+      const response = await axios.post(
+        "https://online-gateway.ghn.vn/shiip/public-api/v2/shipping-order/fee",
+        {
+          service_id: null,
+          service_type_id: 2,
+          to_district_id: Number(selectedDistrict),
+          to_ward_code: selectedWard,
+          height: 50,
+          length: 20,
+          weight: 200,
+          width: 20,
+          insurance_value: 10000,
+          cod_failed_amount: 2000,
+          coupon: null,
+        },
+        {
+          headers: {
+            token: "508b262b-8072-11ee-96dc-de6f804954c9",
+            "Content-Type": "application/json",
+            ShopId: 4691092,
+          },
+        }
+      );
+      setFeeShip(response.data.data.total);
+    } catch (error) {
+      console.log("Error:", error);
+    }
+  };
+  useEffect(() => {
+    if (selectedProvince) {
+      handleProvinceChange(selectedProvince);
+    }
+  }, [selectedProvince]);
+
+  useEffect(() => {
+    if (selectedDistrict) {
+      handleDistrictChange(selectedDistrict);
+    }
+  }, [selectedDistrict]);
+
+  useEffect(() => {
+    if (selectedWard) {
+      caculateFee();
+    } else {
+      return;
+    }
+  }, [selectedWard]);
+
   const EmailValidation = (email) => {
     return String(email)
       .toLowerCase()
@@ -100,15 +240,15 @@ const Payment = () => {
       valid = false;
     }
 
-    if (!formData.tinh) {
+    if (!selectedProvince) {
       newErrors.tinh = "Vui lòng nhập địa chỉ";
       valid = false;
     }
-    if (!formData.huyen) {
+    if (!selectedDistrict) {
       newErrors.huyen = "Vui lòng nhập địa chỉ";
       valid = false;
     }
-    if (!formData.xa) {
+    if (!selectedWard) {
       newErrors.xa = "Vui lòng nhập địa chỉ";
       valid = false;
     }
@@ -141,27 +281,27 @@ const Payment = () => {
 
   const navigate = useNavigate();
 
-  const load = () =>
-    axios.get(host).then((response) => {
-      setProvinces(response.data);
-      console.log(response);
-    });
+  // const load = () =>
+  //   axios.get(host).then((response) => {
+  //     setProvinces(response.data);
+  //     console.log(response);
+  //   });
 
-  useEffect(() => {
-    load();
-  }, []);
+  // useEffect(() => {
+  //   load();
+  // }, []);
 
-  const callApiDistrict = (api) => {
-    axios.get(api).then((response) => {
-      setDistricts(response.data.districts);
-    });
-  };
+  // const callApiDistrict = (api) => {
+  //   axios.get(api).then((response) => {
+  //     setDistricts(response.data.districts);
+  //   });
+  // };
 
-  const callApiWard = (api) => {
-    axios.get(api).then((response) => {
-      setWards(response.data.wards);
-    });
-  };
+  // const callApiWard = (api) => {
+  //   axios.get(api).then((response) => {
+  //     setWards(response.data.wards);
+  //   });
+  // };
 
   const [tamTinh, setTamTinh] = useState("");
 
@@ -216,40 +356,40 @@ const Payment = () => {
     setTotalAmt(tt);
   }, [products]);
 
-  const handleProvinceChange = (event) => {
-    const selectedProvinceName = event.target.value;
-    const selectedProvince = provinces.find(
-      (province) => province.name === selectedProvinceName
-    );
-    setSelectedProvince(selectedProvinceName);
-    setFormData({
-      ...formData,
-      tinh: selectedProvince.name,
-    });
-    callApiDistrict(host + "p/" + selectedProvince.code + "?depth=2");
-  };
+  // const handleProvinceChange = (event) => {
+  //   const selectedProvinceName = event.target.value;
+  //   const selectedProvince = provinces.find(
+  //     (province) => province.name === selectedProvinceName
+  //   );
+  //   setSelectedProvince(selectedProvinceName);
+  //   setFormData({
+  //     ...formData,
+  //     tinh: selectedProvince.name,
+  //   });
+  //   callApiDistrict(host + "p/" + selectedProvince.code + "?depth=2");
+  // };
 
-  const handleDistrictChange = (event) => {
-    const selectedDistrictName = event.target.value;
-    const selectedDistrict = districts.find(
-      (district) => district.name === selectedDistrictName
-    );
-    setSelectedDistrict(selectedDistrictName);
-    setFormData({
-      ...formData,
-      huyen: selectedDistrict.name,
-    });
-    callApiWard(host + "d/" + selectedDistrict.code + "?depth=2");
-  };
+  // const handleDistrictChange = (event) => {
+  //   const selectedDistrictName = event.target.value;
+  //   const selectedDistrict = districts.find(
+  //     (district) => district.name === selectedDistrictName
+  //   );
+  //   setSelectedDistrict(selectedDistrictName);
+  //   setFormData({
+  //     ...formData,
+  //     huyen: selectedDistrict.name,
+  //   });
+  //   callApiWard(host + "d/" + selectedDistrict.code + "?depth=2");
+  // };
 
-  const handleWardChange = (event) => {
-    const wardCode = event.target.value;
-    setSelectedWard(wardCode);
-    setFormData({
-      ...formData,
-      xa: wardCode,
-    });
-  };
+  // const handleWardChange = (event) => {
+  //   const wardCode = event.target.value;
+  //   setSelectedWard(wardCode);
+  //   setFormData({
+  //     ...formData,
+  //     xa: wardCode,
+  //   });
+  // };
 
   const loadGioHang = async () => {
     try {
@@ -277,6 +417,7 @@ const Payment = () => {
         }
         const updatedFormData = {
           ...formData,
+          phiShip: feeShip ? feeShip : 0,
           tenVoucher: selectedVoucherCode,
         };
 
@@ -343,6 +484,7 @@ const Payment = () => {
       try {
         if (!formData.tenPhuongThuc) {
           toast.error("Vui lòng chọn phương thức thanh toán");
+          setLoading(false);
           return;
         }
         const maSanPhamCT = products.map((product) => product.maSanPhamCT);
@@ -357,7 +499,8 @@ const Payment = () => {
 
         const updatedFormData = {
           ...formData,
-          tongTien: totalAmt,
+          tongTien: feeShip ? totalAmt + feeShip : totalAmt,
+          phiShip: feeShip ? feeShip : 0,
           soLuongList: maSanPhamCTArray.map((item) => item.soLuong),
         };
         if (formData.tenPhuongThuc === "MONEY") {
@@ -523,9 +666,8 @@ const Payment = () => {
       console.error("Lỗi khi gọi API: ", error);
     }
   };
-  const [selectedValue, setValue] = useState("");
-  const handleSelectChange = async (selectedValue) => {
-    // Find the selected address based on the value
+  const handleSelectChange = async (event) => {
+    const selectedValue = event.target.value;
     const selectedAddress = dataDiaChi.find(
       (item) => item.sdt === selectedValue
     );
@@ -540,43 +682,42 @@ const Payment = () => {
         huyen: selectedAddress ? selectedAddress.huyen : "",
         xa: selectedAddress ? selectedAddress.xa : "",
       });
-      const selectedProvinceData = provinces.find(
-        (province) => province.name === selectedAddress.tinh
-      );
-      const selectedDistrictData = districts.find(
-        (district) => district.name === selectedAddress.huyen
-      );
-      console.log("sádfsdfsdfsdf", selectedProvinceData);
-
-      console.log("selected District Data:", selectedDistrictData);
-      if (selectedProvinceData) {
-        try {
-          await callApiDistrict(
-            host + "p/" + selectedProvinceData.code + "?depth=2"
-          );
-
-          if (selectedDistrictData) {
-            await callApiWard(
-              host + "d/" + selectedDistrictData.code + "?depth=2"
-            );
-          }
-
-          // Additional logic after callApiWard if needed
-        } catch (error) {
-          console.error("Error:", error);
-        }
-      }
+      let foundProvinces =
+        provinces.length > 0 &&
+        provinces?.find((item) => item.ProvinceName === selectedAddress.tinh);
+      setSelectedProvince(foundProvinces ? foundProvinces.ProvinceID : "");
     }
   };
+
+  useEffect(() => {
+    console.log();
+
+    let foundProvinces =
+      provinces.length > 0 &&
+      provinces?.find((item) => item.ProvinceName === formData.tinh);
+    setSelectedProvince(foundProvinces ? foundProvinces.ProvinceID : "");
+  }, [provinces]);
+
+  useEffect(() => {
+    console.log();
+    let foundProvinces =
+      districts.length > 0 &&
+      districts?.find((item) => item.DistrictName === formData?.huyen);
+    setSelectedDistrict(foundProvinces ? foundProvinces.DistrictID : "");
+  }, [districts]);
+
+  useEffect(() => {
+    console.log();
+    let foundProvinces =
+      wards.length > 0 && wards?.find((item) => item.WardName === formData?.xa);
+    setSelectedWard(foundProvinces ? foundProvinces.WardCode : "");
+  }, [wards]);
+
   useEffect(() => {
     loadDiaChi();
-  }, []);
+  }, [provinces]);
 
   const [districtsLoaded, setDistrictsLoaded] = useState(false);
-
-  useEffect(() => {
-    handleSelectChange(selectedValue);
-  }, [districts, wards, selectedValue, provinces]);
 
   return (
     <div className="container mx-auto px-4 ">
@@ -599,7 +740,7 @@ const Payment = () => {
               <div className="mb-2">
                 <select
                   className="form-select w-full p-2 border border-gray-300 rounded-md"
-                  onChange={(e) => handleSelectChange(e.target.value)}
+                  onChange={handleSelectChange}
                 >
                   <option value="">Chọn địa chỉ</option>
                   {dataDiaChi.map((item) => (
@@ -680,14 +821,20 @@ const Payment = () => {
                 <select
                   className="form-select w-full p-2 border border-gray-300 rounded-md"
                   value={formData.tinh}
-                  onChange={handleProvinceChange}
+                  // onChange={(e) => handleProvinceChangeaa(e.target.value)}
+                  onChange={handleProvinceChangeaa}
                   name="tinh"
                 >
                   <option disabled value="">
                     Chọn
                   </option>
                   {provinces.map((province) => (
-                    <option>{province.name}</option>
+                    <option
+                    // value={province.ProvinceID}
+                    // key={province.ProvinceID}
+                    >
+                      {province.ProvinceName}
+                    </option>
                   ))}
                 </select>
               </div>
@@ -708,14 +855,20 @@ const Payment = () => {
                 <select
                   className="form-select w-full p-2 border border-gray-300 rounded-md"
                   value={formData.huyen}
-                  onChange={handleDistrictChange}
+                  // onChange={(e) => handleDistrictChange(e.target.value)}
+                  onChange={handleDistrictChangeaaa}
                   name="huyen"
                 >
                   <option disabled value="">
                     Chọn
                   </option>
                   {districts.map((district) => (
-                    <option>{district.name}</option>
+                    <option
+                    // value={district.DistrictID}
+                    // key={district.DistrictID}
+                    >
+                      {district.DistrictName}
+                    </option>
                   ))}
                 </select>
               </div>
@@ -736,14 +889,20 @@ const Payment = () => {
                 <select
                   className="form-select w-full p-2 border border-gray-300 rounded-md"
                   value={formData.xa}
-                  onChange={handleWardChange}
+                  // onChange={(e) => handleWardChange(e.target.value)}
+                  onChange={handleWardChangeaaa}
+                  disabled={!selectedDistrict}
                   name="xa"
                 >
                   <option disabled value="">
                     Chọn
                   </option>
                   {wards.map((ward) => (
-                    <option>{ward.name}</option>
+                    <option
+                    // value={ward.WardCode} key={ward.WardCode}
+                    >
+                      {ward.WardName}
+                    </option>
                   ))}
                 </select>
               </div>
@@ -973,7 +1132,7 @@ const Payment = () => {
                 </div>
                 <div className="d-flex align-items-center justify-content-between mb-3">
                   <span>Tạm tính:</span>
-                  <span>{tamTinh}</span>
+                  <span>{tamTinh} đ</span>
                   <input
                     type="hidden"
                     value="318000"
@@ -984,7 +1143,7 @@ const Payment = () => {
 
                 <div className="d-flex align-items-center justify-content-between mb-3">
                   <span>Phí vận chuyển:</span>
-                  <span id="price_ship">0 đ</span>
+                  <span id="price_ship">{feeShip ? feeShip : 0} đ</span>
                   <input
                     type="hidden"
                     value="0"
@@ -997,7 +1156,7 @@ const Payment = () => {
                 <div className="d-flex align-items-center justify-content-between mb-3">
                   <span class="text-uppercase">Tổng cộng</span>
                   <span class="fw-bold text-danger" id="total_price_ship">
-                    {tongTien1}
+                    {feeShip ? tongTien1 + feeShip : tongTien1}
                   </span>
                 </div>
                 <div className=" bg-[#C73030] rounded-lg hover:bg-red-700 w-[85px]">
@@ -1013,7 +1172,7 @@ const Payment = () => {
               <>
                 <div className="d-flex align-items-center justify-content-between mb-3">
                   <span>Tạm tính:</span>
-                  <span>{totalAmt}</span>
+                  <span>{totalAmt} đ</span>
                   <input
                     type="hidden"
                     value="318000"
@@ -1024,7 +1183,7 @@ const Payment = () => {
 
                 <div className="d-flex align-items-center justify-content-between mb-3">
                   <span>Phí vận chuyển:</span>
-                  <span id="price_ship">0 đ</span>
+                  <span id="price_ship">{feeShip ? feeShip : 0} đ</span>
                   <input
                     type="hidden"
                     value="0"
@@ -1041,7 +1200,7 @@ const Payment = () => {
                     id="total_price_ship"
                     name="tongTien"
                   >
-                    {totalAmt}
+                    {feeShip ? totalAmt + feeShip : totalAmt} đ
                   </span>
                 </div>
                 <div className=" bg-[#C73030] rounded-lg hover:bg-red-700 w-[85px]">
