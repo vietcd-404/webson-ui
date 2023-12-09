@@ -46,8 +46,11 @@ import emptyCart from "./emptyCart.png";
 import forbidden from "./403.jpg";
 import logoShop from "./logoheva.jpg";
 import logoWhite from "./logo-white.png";
-
+import bannerHome1 from "./Rectangle 11.png";
+import bannerHome2 from "./content-image6a 1.png";
 export {
+  bannerHome1,
+  bannerHome2,
   logoWhite,
   logoShop,
   notfound,
