@@ -169,6 +169,7 @@ const Product = (item) => {
                       giaBan: item.giaBan * ((100 - item.phanTramGiam) / 100),
                       phanTramGiam: item.phanTramGiam,
                       tenThuongHieu: item.tenThuongHieu,
+                      soLuongTon: item.soLuongTon,
                     })
                   )
                 }

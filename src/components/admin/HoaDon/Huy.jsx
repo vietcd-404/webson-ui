@@ -186,23 +186,6 @@ const Huy = () => {
       okText: "OK",
       okType: "danger",
       cancelText: "Đóng",
-      // onOk: async () => {
-      //   try {
-      //     // const values = await formUpdate.validateFields();
-      //     // const response = await updateMau(values, editFormData.maMau);
-      //     // if (response.status === 200) {
-      //     //   console.log(response);
-      //     //   setIsModalOpen(false);
-
-      //       toast.success("Cập nhật thành công!");
-      //       loadTable();
-      //     }
-      //   } catch (error) {
-      //     console.error("Lỗi khi cập nhật loại: ", error);
-      //     toast.error("Cập nhật thất bại.");
-      //   }
-      // },
-
       onCancel: () => {},
     });
   };
@@ -257,11 +240,29 @@ const Huy = () => {
       title: "Tên sản phẩm",
       dataIndex: "tenSanPham",
       key: "tenSanPham",
+      width: "150",
     },
     {
       title: "Số lượng",
       dataIndex: "soLuong",
       key: "soLuong",
+      render: (soLuong, record) => (
+        <input
+          type="number"
+          value={soLuong}
+          name="soLuong"
+          className="border-1"
+        />
+      ),
+    },
+    {
+      title: "Đơn giá",
+      dataIndex: "donGia",
+      key: "thanhTien",
+      render: (donGia, record) => {
+        return <span>{donGia.toLocaleString("en-US")} VNĐ</span>;
+      },
+      width: 140,
     },
     {
       title: "Thành Tiền",
@@ -269,15 +270,16 @@ const Huy = () => {
       key: "thanhTien",
       render: (donGia, record) => {
         const thanhTien = donGia * record.soLuong;
-        return <span>{thanhTien.toLocaleString("en-US")}</span>;
+        return <span>{thanhTien.toLocaleString("en-US")} VNĐ</span>;
       },
+      width: 140,
     },
     {
       title: "Chức năng",
       key: "action",
       render: (_, record) => (
         <Space size="middle">
-          <Button>
+          <Button disabled>
             <DeleteOutlined />
           </Button>
         </Space>
@@ -572,15 +574,30 @@ const Huy = () => {
             }}
           />
           <p className="padding-right mt-2">
+            <Button
+              style={{ color: "white", backgroundColor: "green" }}
+              disabled
+            >
+              Cập nhập sản phẩm
+            </Button>
+          </p>
+          <p className="padding-right mt-2">
             Tổng tiền trước khi giảm:{" "}
-            <span className="text-lg text-bold">{tongTien + giamGia}đ</span>{" "}
+            <span className="text-lg text-bold">
+              {(tongTien + giamGia).toLocaleString("en-US")} VNĐ
+            </span>{" "}
           </p>
           <p className="padding-right">
-            Voucher: <span className="text-lg text-bold">-{giamGia}đ</span>{" "}
+            Voucher:{" "}
+            <span className="text-lg text-bold">
+              -{giamGia.toLocaleString("en-US")} VNĐ
+            </span>{" "}
           </p>
           <p className="padding-right">
             Tổng tiền sau khi giảm:{" "}
-            <span className="text-lg text-bold">{tongTien}đ</span>{" "}
+            <span className="text-lg text-bold">
+              {tongTien.toLocaleString("en-US")} VNĐ
+            </span>{" "}
           </p>
         </div>
       </Modal>

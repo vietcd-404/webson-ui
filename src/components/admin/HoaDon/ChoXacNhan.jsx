@@ -298,6 +298,13 @@ const ChoXacNhan = () => {
               "Số lượng cập nhật vượt quá số lượng tồn kho"
           ) {
             toast.error("Số lượng cập nhật vượt quá số lượng tồn kho");
+          } else if (
+            error.response &&
+            error.response.data &&
+            error.response.data.message ===
+              "Hóa đơn đã thanh toán không thể cập nhập"
+          ) {
+            toast.error("Hóa đơn đã thanh toán không thể cập nhập");
           } else {
             toast.error("Thêm thất bại. Lỗi: " + error.message);
           }
@@ -336,6 +343,14 @@ const ChoXacNhan = () => {
               error.response.data.message === "Không đạt điều kiện voucher!"
             ) {
               toast.error("Không đạt điều kiện voucher!");
+            }
+            if (
+              error.response &&
+              error.response.data &&
+              error.response.data.message ===
+                "Hóa đơn đã thanh toán không thể cập nhập"
+            ) {
+              toast.error("Hóa đơn đã thanh toán không thể cập nhập");
             }
           }
         }

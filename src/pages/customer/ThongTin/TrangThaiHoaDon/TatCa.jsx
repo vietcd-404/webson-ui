@@ -23,6 +23,8 @@ const TatCa = () => {
         return "bg-blue-500 text-white";
       case 4:
         return "bg-red-500 text-white";
+      case 5:
+        return "bg-orange-500 text-white";
       default:
         return "bg-gray-700 text-white";
     }
@@ -33,17 +35,20 @@ const TatCa = () => {
       case 0:
         return "Chờ xác nhận";
       case 1:
-        return "Xác nhận";
+        return "Chờ giao";
       case 2:
         return "Đang giao";
       case 3:
         return "Hoàn thành";
       case 4:
         return "Đã hủy";
+      case 5:
+        return "Đơn hàng tại quầy";
       default:
         return "Chờ xác nhận";
     }
   };
+
   const [data, setData] = useState([]);
   const [messageValue, setMessageValue] = useState(null);
 
@@ -98,17 +103,47 @@ const TatCa = () => {
             <div className="shop-header shop-row">
               <div className="flex items-center justify-between w-full">
                 <div className="flex items-center">
-                  <span className="mr-2"></span>
-                  <span className="ml-2">Đơn hàng đã được tạo ngày </span>
-                  <strong> {item.ngayTao}</strong>
+                  <span className="ml-2">
+                    Đơn hàng đã được tạo ngày: <strong> {item.ngayTao}</strong>
+                  </span>
                 </div>
-                <div
-                  className={`border rounded  p-1 ${getStatusClassName(
-                    item.trangThai
-                  )}`}
-                >
-                  <div className="text-white">
-                    {getStatusText(item.trangThai)}
+                <div className="">
+                  <div
+                    className={`border rounded  p-1 ${getStatusClassName(
+                      item.trangThai
+                    )}`}
+                    style={{ borderRadius: "5px" }}
+                  >
+                    <div className="text-white">
+                      {getStatusText(item.trangThai)}
+                    </div>
+                  </div>
+                  <div className="mt-2">
+                    {item.thanhToan === 1 ? (
+                      <span
+                        style={{
+                          color: "white",
+                          border: "1px solid green",
+                          borderRadius: "5px",
+                          padding: "2px 6px",
+                          backgroundColor: "green",
+                        }}
+                      >
+                        Đã thanh toán
+                      </span>
+                    ) : (
+                      <span
+                        style={{
+                          color: "white",
+                          border: "1px solid red",
+                          borderRadius: "5px",
+                          padding: "2px 6px",
+                          backgroundColor: "red",
+                        }}
+                      >
+                        Chưa thanh toán
+                      </span>
+                    )}
                   </div>
                 </div>
               </div>
