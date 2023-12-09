@@ -20,6 +20,10 @@ export const findVoucherById = async (id) => {
   return await api.get(`/admin/voucher/${id}`);
 };
 
+export const updateStatusVoucher = async (voucher, maVoucher) => {
+  return await api.put(`/admin/voucher/update-stutus/${maVoucher}`, voucher);
+};
+
 export const findVoucher = async () => {
   return await api.get(`/user/voucher`);
 };

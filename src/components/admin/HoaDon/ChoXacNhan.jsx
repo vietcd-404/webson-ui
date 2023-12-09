@@ -39,6 +39,7 @@ const ChoXacNhan = () => {
   const [tableDataProduct, setTableDataProduct] = useState([]);
   const [tongTien, setTongTien] = useState(0);
   const [giamGia, setGiamGia] = useState(0);
+  const [phiShip, setPhiShip] = useState(0);
   const [formUpdate] = Form.useForm();
   const [editFormData, setEditFormData] = useState(null);
   const [isEditModalOpen, setIsEditModalOpen] = useState(false);
@@ -92,6 +93,7 @@ const ChoXacNhan = () => {
       setTableDataProduct(response1.data);
       setTotalPageProduct(response1.totalPage);
       setTongTien(response1.data[0].tongTien);
+      setPhiShip(response1.data[0].phiShip);
       if (response1.data[0].tienGiam == null) {
         setGiamGia(0);
       } else {
@@ -646,7 +648,7 @@ const ChoXacNhan = () => {
             </Button>
           )}
 
-          {record.trangThai === 0 && (
+          {record.trangThai === 0 && record.thanhToan === 0 && (
             <Button onClick={() => handleUpdateStatus(4, record.maHoaDon)}>
               Hủy
             </Button>
@@ -901,9 +903,15 @@ const ChoXacNhan = () => {
             </span>{" "}
           </p>
           <p className="padding-right">
+            Phí ship:{" "}
+            <span className="text-lg text-bold">
+              +{phiShip.toLocaleString("en-US")} VNĐ
+            </span>{" "}
+          </p>
+          <p className="padding-right">
             Tổng tiền sau khi giảm:{" "}
             <span className="text-lg text-bold">
-              {tongTien.toLocaleString("en-US")} VNĐ
+              {(tongTien + phiShip).toLocaleString("en-US")} VNĐ
             </span>{" "}
           </p>
         </div>

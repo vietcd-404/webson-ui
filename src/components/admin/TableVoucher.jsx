@@ -7,6 +7,7 @@ import {
   Modal,
   Row,
   Space,
+  Switch,
   Table,
 } from "antd";
 import React, { useEffect, useState } from "react";
@@ -26,6 +27,7 @@ import {
   createVoucher,
   deleteVoucher,
   findAllVoucher,
+  updateStatusVoucher,
   updateVoucher,
 } from "../../services/VoucherService";
 import SearchInput from "./SearchInput";
@@ -39,7 +41,7 @@ const TableVoucher = () => {
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [isEditModalOpen, setIsEditModalOpen] = useState(false);
   const [editFormData, setEditFormData] = useState(null); // Data for editing
-
+  const [switchStatus, setSwitchStatus] = useState({});
   const [form] = Form.useForm();
   const [formUpdate] = Form.useForm();
 
@@ -222,6 +224,26 @@ const TableVoucher = () => {
     });
   };
 
+  const handleSwitchChange = async (record, checked) => {
+    try {
+      const response = await updateStatusVoucher(
+        { ...record, trangThai: checked ? 0 : 1 },
+        record.maVoucher
+      );
+      if (response.status === 200) {
+        setSwitchStatus((prevStatus) => ({
+          ...prevStatus,
+          [record.maVoucher]: checked,
+        }));
+        toast.success("Cập nhật trạng thái thành công!");
+        loadTable();
+      }
+    } catch (error) {
+      console.error("Lỗi khi cập nhật trạng thái voucher: ", error);
+      toast.error("Cập nhật trạng thái thất bại.");
+    }
+  };
+
   const columns = [
     {
       title: "Tên",
@@ -280,8 +302,12 @@ const TableVoucher = () => {
       title: "Trạng Thái",
       dataIndex: "trangThai",
       key: "trangThai",
-      render: (trangThai) =>
-        trangThai === 0 ? "Hoạt động" : "Không hoạt động",
+      render: (_, record) => (
+        <Switch
+          checked={record.trangThai === 0}
+          onChange={(checked) => handleSwitchChange(record, checked)}
+        />
+      ),
     },
     {
       title: "Chức năng",
