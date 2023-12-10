@@ -15,6 +15,7 @@ const AuthContext = createContext();
 export const AuthProvider = ({ children }) => {
   const [user, setUser] = useState(JSON.parse(localStorage.getItem("user")));
   const navigate = useNavigate();
+  let sessionTimer;
 
   const signin = async (username, password) => {
     try {
@@ -51,7 +52,7 @@ export const AuthProvider = ({ children }) => {
           replace: true,
         });
       } else if (data.vaiTro === "ROLE_STAFF") {
-        navigate("/admin/ban-hang", {
+        navigate("/admin/tong-quan", {
           replace: true,
         });
       }
@@ -98,10 +99,10 @@ export const AuthProvider = ({ children }) => {
     setUser(null);
     localStorage.removeItem("user");
     localStorage.removeItem("items");
+    clearTimeout(sessionTimer);
     navigate("/signin", {
       replace: true,
     });
-    clearTimeout(sessionTimer);
   };
 
   const value = useMemo(
@@ -111,14 +112,10 @@ export const AuthProvider = ({ children }) => {
       signout,
       signup,
     }),
-
-    // eslint-disable-next-line
     [user]
   );
-  let sessionTimer;
 
   useEffect(() => {
-    // Khi component AuthProvider được render hoặc user thay đổi, bắt đầu hoặc cập nhật timer
     if (user) {
       startSessionTimer();
     }
