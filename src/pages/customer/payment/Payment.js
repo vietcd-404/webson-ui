@@ -826,7 +826,7 @@ const Payment = () => {
                   name="tinh"
                 >
                   <option disabled value="">
-                    Chọn
+                    ---Tỉnh/Thành phố---
                   </option>
                   {provinces.map((province) => (
                     <option
@@ -860,7 +860,7 @@ const Payment = () => {
                   name="huyen"
                 >
                   <option disabled value="">
-                    Chọn
+                    ---Quận/Huyện---
                   </option>
                   {districts.map((district) => (
                     <option
@@ -891,11 +891,10 @@ const Payment = () => {
                   value={formData.xa}
                   // onChange={(e) => handleWardChange(e.target.value)}
                   onChange={handleWardChangeaaa}
-                  disabled={!selectedDistrict}
                   name="xa"
                 >
                   <option disabled value="">
-                    Chọn
+                    ---Phường/Xã---
                   </option>
                   {wards.map((ward) => (
                     <option

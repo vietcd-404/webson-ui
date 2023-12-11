@@ -346,7 +346,7 @@ function ThongTinDonHang() {
       districts.length > 0 &&
       districts?.find((item) => item.DistrictName === formData?.huyen);
     setSelectedDistrict(foundProvinces ? foundProvinces.DistrictID : "");
-  }, [districts, wards]);
+  }, [districts]);
 
   useEffect(() => {
     console.log();
@@ -698,126 +698,133 @@ function ThongTinDonHang() {
                   </div>
                 )} */}
                 <>
-                  <div className="mb-4 flex items-center">
-                    <div className="w-[33%] pr-2">
-                      <label
-                        htmlFor="province"
-                        className="block text-gray-700 text-sm font-bold mb-2"
-                      >
-                        Tỉnh thành <span className="text-red-500">*</span>
-                      </label>
-                      <select
-                        className="form-select w-full p-2 border border-gray-300 rounded-md"
-                        value={formData.tinh}
-                        onChange={handleProvinceChangeaa}
-                        name="tinh"
-                      >
-                        <option disabled value="">
-                          Chọn
-                        </option>
-                        {provinces.map((province) => (
-                          <option
-                            key={province.ProvinceID}
-                            // value={province.ProvinceName}
+                  {hoaDon.trangThai === 0 && (
+                    <>
+                      <div className="mb-4 flex items-center">
+                        <div className="w-[33%] pr-2">
+                          <label
+                            htmlFor="province"
+                            className="block text-gray-700 text-sm font-bold mb-2"
                           >
-                            {province.ProvinceName}
-                          </option>
-                        ))}
-                      </select>
-                    </div>
+                            Tỉnh thành <span className="text-red-500">*</span>
+                          </label>
+                          <select
+                            className="form-select w-full p-2 border border-gray-300 rounded-md"
+                            value={formData.tinh}
+                            onChange={handleProvinceChangeaa}
+                            name="tinh"
+                          >
+                            <option disabled value="">
+                              ---Tỉnh/Thành ph
+                            </option>
+                            {provinces.map((province) => (
+                              <option
+                                key={province.ProvinceID}
+                                // value={province.ProvinceName}
+                              >
+                                {province.ProvinceName}
+                              </option>
+                            ))}
+                          </select>
+                        </div>
 
-                    <div className="w-[33%] pr-2">
-                      <label
-                        htmlFor="district"
-                        className="block text-gray-700 text-sm font-bold mb-2"
-                      >
-                        Quận huyện <span className="text-red-500">*</span>
-                      </label>
-                      <select
-                        className="form-select w-full p-2 border border-gray-300 rounded-md"
-                        value={formData.huyen}
-                        onChange={handleDistrictChangeaaa}
-                        name="huyen"
-                      >
-                        <option disabled value="">
-                          Chọn
-                        </option>
-                        {districts.map((district) => (
-                          <option
-                            key={district.DistrictID}
-                            // value={district.DistrictName}
+                        <div className="w-[33%] pr-2">
+                          <label
+                            htmlFor="district"
+                            className="block text-gray-700 text-sm font-bold mb-2"
                           >
-                            {district.DistrictName}
-                          </option>
-                        ))}
-                      </select>
-                    </div>
+                            Quận huyện <span className="text-red-500">*</span>
+                          </label>
+                          <select
+                            className="form-select w-full p-2 border border-gray-300 rounded-md"
+                            value={formData.huyen}
+                            onChange={handleDistrictChangeaaa}
+                            name="huyen"
+                          >
+                            <option disabled value="">
+                              ---Quận/Huyện---
+                            </option>
+                            {districts.map((district) => (
+                              <option
+                                key={district.DistrictID}
+                                // value={district.DistrictName}
+                              >
+                                {district.DistrictName}
+                              </option>
+                            ))}
+                          </select>
+                        </div>
 
-                    <div className="w-[33%] pr-2">
-                      <label
-                        htmlFor="ward"
-                        className="block text-gray-700 text-sm font-bold mb-2"
-                      >
-                        Phường xã <span className="text-red-500">*</span>
-                      </label>
-                      <select
-                        className="form-select w-full p-2 border border-gray-300 rounded-md"
-                        value={formData.xa}
-                        onChange={handleWardChangeaaa}
-                        name="xa"
-                      >
-                        <option disabled>Chọn</option>
-                        {wards.map((ward) => (
-                          <option
-                            key={ward.WardCode}
-                            // value={ward.WardName}
+                        <div className="w-[33%] pr-2">
+                          <label
+                            htmlFor="ward"
+                            className="block text-gray-700 text-sm font-bold mb-2"
                           >
-                            {ward.WardName}
-                          </option>
-                        ))}
-                      </select>
-                    </div>
-                  </div>
-                  <div className="mb-4 flex items-center">
-                    <div className="w-[33%] pr-2">
-                      {errors.tinh && (
-                        <p className="text-sm text-red-500 font-titleFont font-semibold px-4">
-                          <span className="font-bold italic mr-1">!</span>
-                          {errors.tinh}
-                        </p>
-                      )}
-                    </div>
-                    <div className="w-[33%] pr-2">
-                      {errors.huyen && (
-                        <p className="text-sm text-red-500 font-titleFont font-semibold px-4">
-                          <span className="font-bold italic mr-1">!</span>
-                          {errors.huyen}
-                        </p>
-                      )}
-                    </div>
-                    <div className="w-[33%] pr-2">
-                      {errors.xa && (
-                        <p className="text-sm text-red-500 font-titleFont font-semibold px-4">
-                          <span className="font-bold italic mr-1">!</span>
-                          {errors.xa}
-                        </p>
-                      )}
-                    </div>
-                  </div>
-                  <div className="mb-4">
-                    <label className="block text-gray-700 text-sm font-bold mb-2">
-                      Địa chỉ chi tiết <span className="text-red-500">*</span>
-                    </label>
-                    <input
-                      type="text"
-                      className="form-input w-full"
-                      name="diaChi"
-                      value={formData.diaChi}
-                      class="form-control"
-                      onChange={handleChange}
-                    />
-                  </div>
-                  <div className="mb-4">Phí ship: {feeShip} đ</div>
+                            Phường xã <span className="text-red-500">*</span>
+                          </label>
+                          <select
+                            className="form-select w-full p-2 border border-gray-300 rounded-md"
+                            value={formData.xa}
+                            onChange={handleWardChangeaaa}
+                            name="xa"
+                          >
+                            <option disabled value="">
+                              ---Phường/Xã---
+                            </option>
+                            {wards.map((ward) => (
+                              <option
+                                key={ward.WardCode}
+                                // value={ward.WardName}
+                              >
+                                {ward.WardName}
+                              </option>
+                            ))}
+                          </select>
+                        </div>
+                      </div>
+                      <div className="mb-4 flex items-center">
+                        <div className="w-[33%] pr-2">
+                          {errors.tinh && (
+                            <p className="text-sm text-red-500 font-titleFont font-semibold px-4">
+                              <span className="font-bold italic mr-1">!</span>
+                              {errors.tinh}
+                            </p>
+                          )}
+                        </div>
+                        <div className="w-[33%] pr-2">
+                          {errors.huyen && (
+                            <p className="text-sm text-red-500 font-titleFont font-semibold px-4">
+                              <span className="font-bold italic mr-1">!</span>
+                              {errors.huyen}
+                            </p>
+                          )}
+                        </div>
+                        <div className="w-[33%] pr-2">
+                          {errors.xa && (
+                            <p className="text-sm text-red-500 font-titleFont font-semibold px-4">
+                              <span className="font-bold italic mr-1">!</span>
+                              {errors.xa}
+                            </p>
+                          )}
+                        </div>
+                      </div>
+                      <div className="mb-4">
+                        <label className="block text-gray-700 text-sm font-bold mb-2">
+                          Địa chỉ chi tiết{" "}
+                          <span className="text-red-500">*</span>
+                        </label>
+                        <input
+                          type="text"
+                          className="form-input w-full"
+                          name="diaChi"
+                          value={formData.diaChi}
+                          class="form-control"
+                          onChange={handleChange}
+                        />
+                      </div>
+                      <div className="mb-4">Phí ship: {feeShip} đ</div>
+                    </>
+                  )}
                 </>
 
                 <div className="flex justify-between">
@@ -825,7 +832,7 @@ function ThongTinDonHang() {
                     <div className="p-2 bg-blue-600 border w-[150px] grid place-items-center rounded">
                       <button
                         className="text-white"
-                        onClick={handleUpdateOrder}
+                        onClick={() => handleUpdateOrder()}
                       >
                         Thay đổi thông tin
                       </button>
