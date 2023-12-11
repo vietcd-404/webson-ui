@@ -21,8 +21,6 @@ import { themYthich } from "../../../../services/SanPhamYeuThichService";
 import { useAuth } from "../../../../pages/customer/Account/AuthProvider";
 
 const Product = (item) => {
-  console.log("item: ", item);
-
   const [maSanPhamID, setmaSanPhamID] = useState();
   const [soLuong, setSoLuong] = useState();
   const [data, setData] = useState([]);

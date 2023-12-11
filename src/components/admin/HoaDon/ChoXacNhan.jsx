@@ -114,6 +114,7 @@ const ChoXacNhan = () => {
       tinh: response.data[0].tinh,
       huyen: response.data[0].huyen,
       xa: response.data[0].xa,
+      tenPhuongThucThanhToan: response.data[0].tenPhuongThucThanhToan,
       phiShip: response.data[0].phiShip,
     });
     loadProductInOrder(response.data[0].maHoaDon);
@@ -933,7 +934,7 @@ const ChoXacNhan = () => {
                 labelCol={{ span: 8 }}
                 wrapperCol={{ span: 16 }}
               >
-                <Input disabled />
+                <Input className="border-none" />
               </Form.Item>
               <Form.Item
                 label="Tên người nhận"
@@ -975,6 +976,20 @@ const ChoXacNhan = () => {
                 ]}
               >
                 <Input />
+              </Form.Item>
+              <Form.Item
+                label="Kiểu thanh toán:"
+                name="tenPhuongThucThanhToan"
+                labelCol={{ span: 8 }}
+                wrapperCol={{ span: 16 }}
+                rules={[
+                  {
+                    required: true,
+                    message: "Phương thức thanh toán không để trống!",
+                  },
+                ]}
+              >
+                <Input className="border-none" />
               </Form.Item>
             </Col>
             <Col span={12}>

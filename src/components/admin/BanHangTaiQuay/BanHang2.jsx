@@ -23,7 +23,7 @@ import {
   themSanPhamTaiQuay,
   updateSoLuongTaiQuay,
   xoaSanPhamTaiQuay,
-} from "../../../services/BanHangTaiQuay";
+} from "../../../services/BanHangTaiQuayService";
 import {
   DeleteOutlined,
   PlusCircleOutlined,
@@ -86,6 +86,18 @@ const HoaDon2 = () => {
     trong: "",
   });
 
+  function validatePhoneNumber(phoneNumber) {
+    if (!phoneNumber) {
+      return "Số điện thoại không được để trống";
+    }
+
+    const phoneNumberPattern = /^\d{10}$/;
+    if (!phoneNumberPattern.test(phoneNumber)) {
+      return "Số điện thoại không hợp lệ";
+    }
+    return null;
+  }
+
   const handleChange = (e) => {
     const { name, value } = e.target;
     const selectedAddress = khachHang.find(
@@ -100,13 +112,11 @@ const HoaDon2 = () => {
     }
 
     if (name === "maNguoiDung" && value === "KhachNgoai") {
-      // Nếu chọn option "Khách ngoài", đặt giá trị của maNguoiDung bằng null
       setFormData({
         ...formData,
         [name]: null,
       });
     } else {
-      // Ngược lại, giữ nguyên giá trị của maNguoiDung
       setFormData({
         ...formData,
         [name]: value,
@@ -184,10 +194,13 @@ const HoaDon2 = () => {
       message.error("Không có sản phẩm nào nên không thể thanh toán");
       return;
     }
+    const phoneNumberError = validatePhoneNumber(formData.sdt);
+    if (phoneNumberError) {
+      message.error(phoneNumberError);
+      return;
+    }
     try {
-      // const maHoaDon = items.find((item) => item.key === maHoaDon)?.maHoaDon;
       await thanhToanHoaDon(maHoaDon, formData);
-      console.log(maHoaDon);
       message.success("Thanh toán thành công");
       remove(activeKey);
       return;
@@ -210,12 +223,9 @@ const HoaDon2 = () => {
   }, [items]);
 
   const onChangeSoLuong = (value, record) => {
-    // Update the quantity for the specific record in your data
     record.soLuong = value;
-    // You may also want to update the "Thành tiền" column based on the new quantity
     record.thanhTien = value * record.giaBan;
 
-    // Log the changed value for demonstration purposes
     console.log("changed", value);
   };
   const onChange = (key) => {
@@ -293,78 +303,6 @@ const HoaDon2 = () => {
     }
     // newTabIndex.current++;
   };
-  // const handleQuantityChange = async (
-  //   event,
-  //   maHoaDonCT,
-  //   maHoaDon,
-  //   maxQuantity
-  // ) => {
-  //   const newQuantity = event.target.value; // Ensure it's parsed as an integer
-
-  //   if (newQuantity > 0) {
-  //     try {
-  //       await updateSoLuongTaiQuay(maHoaDonCT, newQuantity, maHoaDon);
-
-  //       loadSanPham();
-  //       loadDaThemSanPham(maHoaDon);
-  //     } catch (error) {
-  //       console.error("Failed to update quantity:", error);
-  //       message.error(error.response.data.message);
-  //     }
-  //     setDaThemSP((prevData) =>
-  //       prevData.map((item) =>
-  //         item.maHoaDonCT === maHoaDonCT
-  //           ? { ...item, soLuong: newQuantity }
-  //           : item
-  //       )
-  //     );
-  //   }
-  // };
-
-  // const handleQuantityChange = async (
-  //   event,
-  //   maHoaDonCT,
-  //   maHoaDon,
-  //   maxQuantity,
-  //   action
-  // ) => {
-  //   let newQuantity;
-
-  //   if (action === "increment") {
-  //     newQuantity++;
-  //   } else if (action === "decrement") {
-  //     newQuantity--;
-  //   } else {
-  //     newQuantity = parseInt(event.target.value, 10);
-  //   }
-
-  //   if (maxQuantity + 1 === 0 || newQuantity < 1) {
-  //     // Handle error or show a message
-  //     console.error("Quantity exceeds the maximum limit");
-  //     message.error("Số lượng vượt giới hạn");
-  //     return;
-  //   }
-
-  //   if (maxQuantity > 1) {
-  //     try {
-  //       await updateSoLuongTaiQuay(maHoaDonCT, newQuantity, maHoaDon);
-
-  //       loadSanPham();
-  //       loadDaThemSanPham(maHoaDon);
-  //     } catch (error) {
-  //       console.error("Failed to update quantity:", error);
-  //       message.error(error.response.data.message);
-  //     }
-
-  //     setDaThemSP((prevData) =>
-  //       prevData.map((item) =>
-  //         item.maHoaDonCT === maHoaDonCT
-  //           ? { ...item, soLuong: newQuantity }
-  //           : item
-  //       )
-  //     );
-  //   }
-  // };
 
   const handleQuantityChange = async (action, record) => {
     loadDaThemSanPham(record.maHoaDon);

@@ -34,8 +34,6 @@ const host = "https://provinces.open-api.vn/api/";
 
 function ThongTinDonHang() {
   const { maHoaDon } = useParams();
-
-  console.log(maHoaDon);
   const [messageValue, setMessageValue] = useState(null);
 
   const [donHang, setDonHang] = useState([]);
@@ -609,15 +607,6 @@ function ThongTinDonHang() {
         <div>
           <WebSocketService setValue={setMessageValue} connetTo="orderStatus" />
           <ToastContainer />
-          {/* {data.map((item, index) => (
-            <React.Fragment key={index} className="p-2 bg-slate-400">
-              {index === 0 && item.dieuKien && (
-                <div className="text-3xl">
-                  Bạn đã áp voucher không thể sửa được số lượng hóa đơn này
-                </div>
-              )}
-            </React.Fragment>
-          ))} */}
           {donHang.map((hoaDon) => (
             <div className="container mx-auto mt-8">
               <div className="border rounded p-4" key={hoaDon.maHoaDon}>
