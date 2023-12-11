@@ -117,8 +117,6 @@ const ChoXacNhan = () => {
       tenPhuongThucThanhToan: response.data[0].tenPhuongThucThanhToan,
       phiShip: response.data[0].phiShip,
     });
-    console.log(selectedProvince);
-
     loadProductInOrder(response.data[0].maHoaDon);
     setIsEditModalOpen(true);
   };
@@ -771,7 +769,6 @@ const ChoXacNhan = () => {
 
   const handleProvinceChange = async (provinceId) => {
     setSelectedProvince(provinceId);
-    setSelectedProvince("");
     setSelectedWard("");
 
     try {
