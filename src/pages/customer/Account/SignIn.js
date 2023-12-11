@@ -31,10 +31,10 @@ const SignIn = () => {
   const handleSignUp = async (e) => {
     e.preventDefault();
     if (!username) {
-      setErrEmail("User name không bỏ trông");
+      setErrEmail("User name không được bỏ trông");
     }
     if (!password) {
-      setErrPassword("Mật khẩu không bỏ trống");
+      setErrPassword("Mật khẩu không được bỏ trống");
     }
 
     await signin(username, password);

@@ -117,6 +117,8 @@ const ChoXacNhan = () => {
       tenPhuongThucThanhToan: response.data[0].tenPhuongThucThanhToan,
       phiShip: response.data[0].phiShip,
     });
+    console.log(selectedProvince);
+
     loadProductInOrder(response.data[0].maHoaDon);
     setIsEditModalOpen(true);
   };
@@ -744,7 +746,6 @@ const ChoXacNhan = () => {
   }, [provinces]);
 
   useEffect(() => {
-    console.log();
     let foundProvinces =
       districts.length > 0 &&
       districts?.find((item) => item.DistrictName === editFormData.huyen);
@@ -752,7 +753,6 @@ const ChoXacNhan = () => {
   }, [districts, wards]);
 
   useEffect(() => {
-    console.log();
     let foundProvinces =
       wards.length > 0 &&
       wards?.find((item) => item.WardName === editFormData.xa);
@@ -817,7 +817,6 @@ const ChoXacNhan = () => {
       tinh: selectedProvince.ProvinceName,
     }));
     handleProvinceChange(selectedProvince.ProvinceID);
-    console.log(selectedProvince.ProvinceName);
   };
   // Thay doi huyen
   const handleDistrictChangeaaa = (selectedValue) => {
@@ -830,7 +829,6 @@ const ChoXacNhan = () => {
       ...editFormData,
       huyen: selectedDistrict.DistrictName,
     });
-    console.log(selectedDistrict.DistrictName);
 
     handleDistrictChange(selectedDistrict.DistrictID);
   };

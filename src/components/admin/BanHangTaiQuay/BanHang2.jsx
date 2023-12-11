@@ -206,6 +206,14 @@ const HoaDon2 = () => {
       return;
     } catch (error) {
       console.log("Lỗi ", error);
+      if (
+        error.response &&
+        error.response.status === 400 &&
+        error.response.data &&
+        error.response.data.message !== null
+      ) {
+        message.error(error.response.data.message);
+      }
     }
   };
 
