@@ -186,7 +186,7 @@ const TatCa = () => {
                   <span className="font-bold text-lg">{item.tongTien} đ</span>
                 </div>
                 <div className=" ml-4 flex justify-items-end mt-3 ">
-                  {item.trangThai === 0 && (
+                  {item.trangThai === 0 && item.thanhToan === 0 && (
                     <div className="border-[3px] mr-2 border-red-600">
                       {" "}
                       <button

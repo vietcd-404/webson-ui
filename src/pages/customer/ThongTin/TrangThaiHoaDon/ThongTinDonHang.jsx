@@ -43,11 +43,9 @@ function ThongTinDonHang() {
   const [provinces, setProvinces] = useState([]);
   const [districts, setDistricts] = useState([]);
   const [wards, setWards] = useState([]);
-  const [selectedProvince, setSelectedProvince] = useState("");
-  const [selectedDistrict, setSelectedDistrict] = useState("");
-  const [selectedWard, setSelectedWard] = useState("");
-  const [show, setShow] = useState(false);
-  const [showDiaChi, setShowDiaChi] = useState(false);
+  const [selectedProvince, setSelectedProvince] = useState(""); //Tỉnh
+  const [selectedDistrict, setSelectedDistrict] = useState(""); //Huyện
+  const [selectedWard, setSelectedWard] = useState(""); //Xã
 
   // const loadSanPham = async () => {
   //   try {

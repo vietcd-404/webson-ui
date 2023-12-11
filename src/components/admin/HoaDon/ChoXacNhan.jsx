@@ -29,6 +29,12 @@ import SockJS from "sockjs-client";
 import { format } from "date-fns";
 import { getAllLocByAdmin } from "../../../services/SanPhamService";
 import { tab } from "@testing-library/user-event/dist/tab";
+import {
+  hienHuyen,
+  hienTinh,
+  hienXa,
+} from "../../../services/GiaoHangNhanhService";
+import axios from "axios";
 const { Option } = Select;
 
 const ChoXacNhan = () => {
@@ -39,8 +45,21 @@ const ChoXacNhan = () => {
   const [tableDataProduct, setTableDataProduct] = useState([]);
   const [tongTien, setTongTien] = useState(0);
   const [giamGia, setGiamGia] = useState(0);
+  const [phiShip, setPhiShip] = useState(0);
   const [formUpdate] = Form.useForm();
-  const [editFormData, setEditFormData] = useState(null);
+  const [editFormData, setEditFormData] = useState({
+    maHoaDon: "",
+    tenNguoiDung: "",
+    tenNguoiNhan: "",
+    email: "",
+    sdt: "",
+    diaChi: "",
+    tinh: "",
+    huyen: "",
+    xa: "",
+    phiShip: "",
+    diaChiChiTiet: "",
+  });
   const [isEditModalOpen, setIsEditModalOpen] = useState(false);
   const [messageValue, setMessageValue] = useState(null);
 
@@ -57,11 +76,32 @@ const ChoXacNhan = () => {
   const [maHD, setMaHD] = useState("");
   const [updateProductSL, setUpdateProductSL] = useState([]);
 
+  // Dia chi
+  const [provinces, setProvinces] = useState([]);
+  const [districts, setDistricts] = useState([]);
+  const [wards, setWards] = useState([]);
+  const [selectedProvince, setSelectedProvince] = useState("");
+  const [selectedDistrict, setSelectedDistrict] = useState("");
+  const [selectedWard, setSelectedWard] = useState("");
+
   // Hiển thị thông tin chi tiết order
   const showEditModal = async (record) => {
     setMaHD(null);
     const response = await inforUserHoaDon(record.maHoaDon);
-    setEditFormData(response.data[0]);
+    setEditFormData((prevFormData) => ({
+      ...prevFormData,
+      maHoaDon: response.data[0].maHoaDon,
+      tenNguoiDung: response.data[0].tenNguoiDung,
+      tenNguoiNhan: response.data[0].tenNguoiNhan,
+      email: response.data[0].email,
+      sdt: response.data[0].sdt,
+      diaChi: response.data[0].diaChi,
+      diaChiChiTiet: response.data[0].diaChiChiTiet,
+      tinh: response.data[0].tinh,
+      huyen: response.data[0].huyen,
+      xa: response.data[0].xa,
+      phiShip: response.data[0].phiShip,
+    }));
     setMaHD(response.data[0].maHoaDon);
     formUpdate.setFieldsValue({
       maHoaDon: response.data[0].maHoaDon,
@@ -74,6 +114,7 @@ const ChoXacNhan = () => {
       tinh: response.data[0].tinh,
       huyen: response.data[0].huyen,
       xa: response.data[0].xa,
+      phiShip: response.data[0].phiShip,
     });
     loadProductInOrder(response.data[0].maHoaDon);
     setIsEditModalOpen(true);
@@ -92,6 +133,7 @@ const ChoXacNhan = () => {
       setTableDataProduct(response1.data);
       setTotalPageProduct(response1.totalPage);
       setTongTien(response1.data[0].tongTien);
+      setPhiShip(response1.data[0].phiShip);
       if (response1.data[0].tienGiam == null) {
         setGiamGia(0);
       } else {
@@ -249,6 +291,7 @@ const ChoXacNhan = () => {
       onOk: async () => {
         try {
           const values = await formUpdate.validateFields();
+          values.phiShip = phiShip;
           const response = await updatetHoaDonByAdmin(
             editFormData.maHoaDon,
             values
@@ -260,8 +303,18 @@ const ChoXacNhan = () => {
             fetchData();
           }
         } catch (error) {
-          console.error("Lỗi khi cập nhật loại: ", error);
-          toast.error("Cập nhật thất bại.");
+          if (
+            error.response &&
+            error.response.status === 400 &&
+            error.response.data &&
+            error.response.data.message !== null
+          ) {
+            toast.error(error.response.data.message);
+          } else {
+            toast.error("Cập nhật thất bại.");
+            console.error("Lỗi khi cập nhật: ", error);
+          }
+
           setIsEditModalOpen(true);
         }
       },
@@ -374,7 +427,6 @@ const ChoXacNhan = () => {
       setTableDataProduct(updatedData);
       setUpdateProductSL(updatedData);
     }
-    console.log(updateProductSL);
   };
 
   const updateProductQuantity = async () => {
@@ -646,7 +698,7 @@ const ChoXacNhan = () => {
             </Button>
           )}
 
-          {record.trangThai === 0 && (
+          {record.trangThai === 0 && record.thanhToan === 0 && (
             <Button onClick={() => handleUpdateStatus(4, record.maHoaDon)}>
               Hủy
             </Button>
@@ -676,6 +728,178 @@ const ChoXacNhan = () => {
       draggable: true,
     });
   };
+
+  ////-------------Load địa chỉ
+  useEffect(() => {
+    loadProvinces();
+  }, []);
+
+  //---------Detail địa chỉ hiện lên
+  useEffect(() => {
+    let foundProvinces =
+      provinces.length > 0 &&
+      provinces?.find((item) => item.ProvinceName === editFormData.tinh);
+    setSelectedProvince(foundProvinces ? foundProvinces.ProvinceID : "");
+  }, [provinces]);
+
+  useEffect(() => {
+    console.log();
+    let foundProvinces =
+      districts.length > 0 &&
+      districts?.find((item) => item.DistrictName === editFormData.huyen);
+    setSelectedDistrict(foundProvinces ? foundProvinces.DistrictID : "");
+  }, [districts, wards]);
+
+  useEffect(() => {
+    console.log();
+    let foundProvinces =
+      wards.length > 0 &&
+      wards?.find((item) => item.WardName === editFormData.xa);
+    setSelectedWard(foundProvinces ? foundProvinces.WardCode : "");
+  }, [wards]);
+  //-------------------------------------
+
+  const loadProvinces = async () => {
+    try {
+      const response = await hienTinh();
+      setProvinces(response.data.data);
+    } catch (error) {
+      console.error("Lỗi khi gọi API: ", error);
+    }
+  };
+
+  const handleProvinceChange = async (provinceId) => {
+    setSelectedProvince(provinceId);
+    setSelectedProvince("");
+    setSelectedWard("");
+
+    try {
+      const response = await hienHuyen(provinceId);
+      setDistricts(response.data.data);
+    } catch (error) {
+      console.error("Lỗi khi gọi API: ", error);
+    }
+  };
+
+  const handleDistrictChange = async (districtId) => {
+    setSelectedDistrict(districtId);
+    setSelectedWard("");
+    try {
+      const response = await hienXa(districtId);
+      setWards(response.data.data);
+    } catch (error) {
+      console.error("Lỗi khi gọi API: ", error);
+    }
+  };
+  const handleWardChange = (wardId) => {
+    setSelectedWard(wardId);
+  };
+
+  // Thay doi thanh pho
+  const handleProvinceChangeaa = (selectedValue) => {
+    setEditFormData((prevFormData) => ({
+      ...prevFormData,
+      huyen: "",
+      xa: "",
+    }));
+    formUpdate.setFieldValue("huyen", "");
+    formUpdate.setFieldValue("xa", "");
+
+    const selectedProvinceName = selectedValue;
+    const selectedProvince = provinces.find(
+      (province) => province.ProvinceName === selectedProvinceName
+    );
+
+    setSelectedProvince(selectedProvinceName);
+    setEditFormData((prevFormData) => ({
+      ...prevFormData,
+      tinh: selectedProvince.ProvinceName,
+    }));
+    handleProvinceChange(selectedProvince.ProvinceID);
+    console.log(selectedProvince.ProvinceName);
+  };
+  // Thay doi huyen
+  const handleDistrictChangeaaa = (selectedValue) => {
+    const selectedDistrictName = selectedValue;
+    const selectedDistrict = districts.find(
+      (district) => district.DistrictName === selectedDistrictName
+    );
+    setSelectedDistrict(selectedDistrictName);
+    setEditFormData({
+      ...editFormData,
+      huyen: selectedDistrict.DistrictName,
+    });
+    console.log(selectedDistrict.DistrictName);
+
+    handleDistrictChange(selectedDistrict.DistrictID);
+  };
+
+  // Thay doi xa
+
+  const handleWardChangeaaa = (selectedValue) => {
+    const selectedWardName = selectedValue;
+    const selectedWard = wards.find(
+      (wards) => wards.WardName === selectedWardName
+    );
+    setSelectedWard(selectedWardName);
+    setEditFormData({
+      ...editFormData,
+      xa: selectedWard.WardName,
+    });
+    console.log(selectedWard.WardName);
+
+    handleWardChange(selectedWard.WardCode);
+  };
+
+  const caculateFee = async () => {
+    try {
+      const response = await axios.post(
+        "https://online-gateway.ghn.vn/shiip/public-api/v2/shipping-order/fee",
+        {
+          service_id: null,
+          service_type_id: 2,
+          to_district_id: Number(selectedDistrict),
+          to_ward_code: selectedWard,
+          height: 50,
+          length: 20,
+          weight: 200,
+          width: 20,
+          insurance_value: 10000,
+          cod_failed_amount: 2000,
+          coupon: null,
+        },
+        {
+          headers: {
+            token: "508b262b-8072-11ee-96dc-de6f804954c9",
+            "Content-Type": "application/json",
+            ShopId: 4691092,
+          },
+        }
+      );
+      setPhiShip(response.data.data.total);
+    } catch (error) {
+      console.log("Error:", error);
+    }
+  };
+  useEffect(() => {
+    if (selectedProvince) {
+      handleProvinceChange(selectedProvince);
+    }
+  }, [selectedProvince]);
+
+  useEffect(() => {
+    if (selectedDistrict) {
+      handleDistrictChange(selectedDistrict);
+    }
+  }, [selectedDistrict]);
+
+  useEffect(() => {
+    if (selectedWard) {
+      caculateFee();
+    } else {
+      return;
+    }
+  }, [selectedWard]);
 
   return (
     <div>
@@ -755,37 +979,74 @@ const ChoXacNhan = () => {
             </Col>
             <Col span={12}>
               <Form.Item
-                label="Tỉnh"
+                label="Tỉnh thành"
                 name="tinh"
-                labelCol={{ span: 8 }}
-                wrapperCol={{ span: 16 }}
                 rules={[
-                  {
-                    required: true,
-                    message: "(Tỉnh)Thành phố không để trống!",
-                  },
+                  { required: true, message: "Vui lòng chọn tỉnh thành!" },
                 ]}
+                labelCol={{ span: 8 }}
+                wrapperCol={{ span: 16 }}
               >
-                <Input />
+                <Select
+                  onChange={(value) => handleProvinceChangeaa(value)}
+                  placeholder="Chọn"
+                >
+                  {provinces.map((province) => (
+                    <Select.Option
+                      key={province.ProvinceID}
+                      value={province.ProvinceName}
+                    >
+                      {province.ProvinceName}
+                    </Select.Option>
+                  ))}
+                </Select>
               </Form.Item>
+
               <Form.Item
-                label="Huyện"
+                label="Quận huyện"
                 name="huyen"
+                rules={[
+                  { required: true, message: "Vui lòng chọn quận huyện!" },
+                ]}
                 labelCol={{ span: 8 }}
                 wrapperCol={{ span: 16 }}
-                rules={[{ required: true, message: "Huyện không để trống!" }]}
               >
-                <Input />
+                <Select
+                  onChange={(value) => handleDistrictChangeaaa(value)}
+                  placeholder="Chọn"
+                >
+                  {districts.map((district) => (
+                    <Select.Option
+                      key={district.DistrictID}
+                      value={district.DistrictName}
+                    >
+                      {district.DistrictName}
+                    </Select.Option>
+                  ))}
+                </Select>
               </Form.Item>
+
               <Form.Item
-                label="Xã"
+                label="Phường xã"
                 name="xa"
+                rules={[
+                  { required: true, message: "Vui lòng chọn phường xã!" },
+                ]}
                 labelCol={{ span: 8 }}
                 wrapperCol={{ span: 16 }}
-                rules={[{ required: true, message: "Xã không để trống!" }]}
               >
-                <Input />
+                <Select
+                  onChange={(value) => handleWardChangeaaa(value)}
+                  placeholder="Chọn"
+                >
+                  {wards.map((ward) => (
+                    <Select.Option key={ward.WardCode} value={ward.WardName}>
+                      {ward.WardName}
+                    </Select.Option>
+                  ))}
+                </Select>
               </Form.Item>
+
               <Form.Item
                 label="Địa chỉ chi tiết"
                 name="diaChi"
@@ -901,9 +1162,15 @@ const ChoXacNhan = () => {
             </span>{" "}
           </p>
           <p className="padding-right">
+            Phí ship:{" "}
+            <span className="text-lg text-bold">
+              +{phiShip.toLocaleString("en-US")} VNĐ
+            </span>{" "}
+          </p>
+          <p className="padding-right">
             Tổng tiền sau khi giảm:{" "}
             <span className="text-lg text-bold">
-              {tongTien.toLocaleString("en-US")} VNĐ
+              {(tongTien + phiShip).toLocaleString("en-US")} VNĐ
             </span>{" "}
           </p>
         </div>
