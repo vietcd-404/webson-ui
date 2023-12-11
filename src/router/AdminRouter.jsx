@@ -24,7 +24,7 @@ import NotFound from "../pages/customer/Account/NotFound";
 import BanHangTaiQuay from "../pages/admin/BanHangTaiQuay/BanHangTaiQuay";
 import { ProtectedRoute } from "../pages/customer/Account/ProtectedRoute";
 import QuanLyHDTaiQuay from "../pages/admin/BanHangTaiQuay/QuanLyHDTaiQuay";
-
+import XuatHoaDon from "../components/admin/XuatHoaDon";
 const AdminRouter = () => {
   return (
     <div>
@@ -221,6 +221,16 @@ const AdminRouter = () => {
             <ProtectedRoute userRole={["ROLE_ADMIN"]}>
               <LayoutAdmin>
                 <Voucher />
+              </LayoutAdmin>
+            </ProtectedRoute>
+          }
+        />
+        <Route
+          path="/xuathd"
+          element={
+            <ProtectedRoute userRole={["ROLE_ADMIN"]}>
+              <LayoutAdmin>
+                <XuatHoaDon />
               </LayoutAdmin>
             </ProtectedRoute>
           }
