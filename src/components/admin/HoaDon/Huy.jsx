@@ -183,17 +183,6 @@ const Huy = () => {
     });
   };
 
-  const handleUpdateProduct = () => {
-    Modal.confirm({
-      title: "Xác nhận",
-      icon: <ExclamationCircleFilled />,
-      content: "Bạn có chắc muốn cập nhập loại không?",
-      okText: "OK",
-      okType: "danger",
-      cancelText: "Đóng",
-      onCancel: () => {},
-    });
-  };
   const handleSearchTypeChange = (value) => {
     setSearchType(value);
   };
@@ -472,7 +461,7 @@ const Huy = () => {
       <Modal
         open={isEditModalOpen}
         onCancel={handleEditCancel}
-        onOk={handleUpdateProduct}
+        onOk={handleEditCancel}
         width={1000}
       >
         <p className="text-bold mb-2" style={{ fontSize: "20px" }}>

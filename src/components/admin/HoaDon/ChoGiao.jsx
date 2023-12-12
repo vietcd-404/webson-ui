@@ -17,6 +17,9 @@ import {
   productInforHoaDon,
   searchHoaDon,
 } from "../../../services/HoaDonService";
+import jsPDF from "jspdf";
+import html2canvas from "html2canvas";
+import XuatHoaDon from "../XuatHoaDon";
 const { Option } = Select;
 const ChoXacNhan = ({ updateCountByStatus }) => {
   const [totalPage, setTotalPage] = useState(1);
@@ -37,6 +40,9 @@ const ChoXacNhan = ({ updateCountByStatus }) => {
 
   // Phí ship
   const [phiShip, setPhiShip] = useState(0);
+
+  // Xuất hóa đơn
+  const [isXuatHoaDonVisible, setIsXuatHoaDonVisible] = useState(false);
 
   const showEditModal = async (record) => {
     const response = await inforUserHoaDon(record.maHoaDon);
@@ -64,7 +70,6 @@ const ChoXacNhan = ({ updateCountByStatus }) => {
       } else {
         setGiamGia(response1.data[0].tienGiam);
       }
-      console.log(response1.data);
       setLoading(false);
     } catch (error) {
       console.error("Lỗi khi gọi API: ", error);
@@ -176,35 +181,6 @@ const ChoXacNhan = ({ updateCountByStatus }) => {
           toast.error("Cập nhật thất bại.");
         }
       },
-
-      onCancel: () => {},
-    });
-  };
-
-  const handleUpdateProduct = () => {
-    Modal.confirm({
-      title: "Xác nhận",
-      icon: <ExclamationCircleFilled />,
-      content: "Bạn có chắc muốn cập nhập loại không?",
-      okText: "OK",
-      okType: "danger",
-      cancelText: "Đóng",
-      // onOk: async () => {
-      //   try {
-      //     // const values = await formUpdate.validateFields();
-      //     // const response = await updateMau(values, editFormData.maMau);
-      //     // if (response.status === 200) {
-      //     //   console.log(response);
-      //     //   setIsModalOpen(false);
-
-      //       toast.success("Cập nhật thành công!");
-      //       loadTable();
-      //     }
-      //   } catch (error) {
-      //     console.error("Lỗi khi cập nhật loại: ", error);
-      //     toast.error("Cập nhật thất bại.");
-      //   }
-      // },
 
       onCancel: () => {},
     });
@@ -487,13 +463,27 @@ const ChoXacNhan = ({ updateCountByStatus }) => {
     },
   ];
 
+  const exportPDF = () => {
+    setIsXuatHoaDonVisible(true);
+    const input = document.getElementById("pdf-content");
+    html2canvas(input).then((canvas) => {
+      const pdf = new jsPDF();
+      const imgData = canvas.toDataURL("image/png");
+
+      const pdfWidth = pdf.internal.pageSize.getWidth();
+      const pdfHeight = (canvas.height * pdfWidth) / canvas.width;
+      pdf.addImage(imgData, "PNG", 0, 0, pdfWidth, pdfHeight);
+      pdf.save("invoice.pdf");
+    });
+  };
+
   return (
     <div>
       <ToastContainer />
       <Modal
         open={isEditModalOpen}
         onCancel={handleEditCancel}
-        onOk={handleUpdateProduct}
+        onOk={handleEditCancel}
         width={1000}
       >
         <p className="text-bold mb-2" style={{ fontSize: "20px" }}>
@@ -638,6 +628,25 @@ const ChoXacNhan = ({ updateCountByStatus }) => {
               {(tongTien + phiShip).toLocaleString("en-US")} VNĐ
             </span>{" "}
           </p>
+        </div>
+        <div className="row mt-3 mb-3">
+          <div className="col-10"></div>
+          <div className="col-1">
+            <Button
+              style={{ color: "white", backgroundColor: "red" }}
+              onClick={() => exportPDF()}
+            >
+              Xuất hóa đơn
+            </Button>
+          </div>
+        </div>
+        <div style={{ display: "none" }}>
+          {isXuatHoaDonVisible && (
+            <XuatHoaDon
+              editFormData={editFormData}
+              tableDataProduct={tableDataProduct}
+            />
+          )}
         </div>
       </Modal>
       <Card title="Lọc hóa đơn" bordered={true} className="mb-2">

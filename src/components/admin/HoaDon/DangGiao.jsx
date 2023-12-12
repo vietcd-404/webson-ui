@@ -181,34 +181,6 @@ const DangGiao = () => {
     });
   };
 
-  const handleUpdateProduct = () => {
-    Modal.confirm({
-      title: "Xác nhận",
-      icon: <ExclamationCircleFilled />,
-      content: "Bạn có chắc muốn cập nhập loại không?",
-      okText: "OK",
-      okType: "danger",
-      cancelText: "Đóng",
-      // onOk: async () => {
-      //   try {
-      //     // const values = await formUpdate.validateFields();
-      //     // const response = await updateMau(values, editFormData.maMau);
-      //     // if (response.status === 200) {s
-      //     //   console.log(response);
-      //     //   setIsModalOpen(false);
-
-      //       toast.success("Cập nhật thành công!");
-      //       loadTable();
-      //     }
-      //   } catch (error) {
-      //     console.error("Lỗi khi cập nhật loại: ", error);
-      //     toast.error("Cập nhật thất bại.");
-      //   }
-      // },
-
-      onCancel: () => {},
-    });
-  };
   const handleSearchTypeChange = (value) => {
     setSearchType(value);
   };
@@ -476,7 +448,7 @@ const DangGiao = () => {
       <Modal
         open={isEditModalOpen}
         onCancel={handleEditCancel}
-        onOk={handleUpdateProduct}
+        onOk={handleEditCancel}
         width={1000}
       >
         <p className="text-bold mb-2" style={{ fontSize: "20px" }}>

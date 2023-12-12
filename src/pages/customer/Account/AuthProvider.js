@@ -52,7 +52,7 @@ export const AuthProvider = ({ children }) => {
           replace: true,
         });
       } else if (data.vaiTro === "ROLE_STAFF") {
-        navigate("/admin/tong-quan", {
+        navigate("/admin/ban-hang", {
           replace: true,
         });
       }

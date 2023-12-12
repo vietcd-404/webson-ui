@@ -170,23 +170,21 @@ const HoaDon2 = () => {
   };
   const handleAddToCart = async (maSanPhamCT, maHoaDon) => {
     try {
-      await themSanPhamTaiQuay(maSanPhamCT, 1, maHoaDon);
-
-      // Swal.fire({
-      //   title: "Thành công!",
-      //   text: "Thêm vào giỏ hàng thành công",
-      //   icon: "success",
-      // });
-      setShowProductList(false);
-      setSelectedValue(maSanPhamCT);
-      loadDaThemSanPham(maHoaDon);
-      loadSanPham();
-      setSearchText("");
-      message.success("Thêm thành công");
+      const response = await themSanPhamTaiQuay(maSanPhamCT, 1, maHoaDon);
+      if (response.status === 200) {
+        setShowProductList(false);
+        setSelectedValue(maSanPhamCT);
+        loadDaThemSanPham(maHoaDon);
+        loadSanPham();
+        setSearchText("");
+        message.success("Thêm thành công");
+      }
       return;
     } catch (error) {
       console.log("Lỗi ", error);
-      message.error(error.response?.data?.message || "Error adding to cart");
+      message.error(
+        error.response?.data?.message || "Lỗi khi thêm vào giỏ hàng"
+      );
     }
   };
   const handleThanhToan = async (maHoaDon) => {
