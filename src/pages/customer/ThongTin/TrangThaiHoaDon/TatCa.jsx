@@ -104,45 +104,29 @@ const TatCa = () => {
               <div className="flex items-center justify-between w-full">
                 <div className="flex items-center">
                   <span className="ml-2">
-                    Đơn hàng đã được tạo ngày: <strong> {item.ngayTao}</strong>
+                    <span>Đơn hàng đã được tạo ngày: </span>{" "}
+                    <strong> {item.ngayTao}</strong>
                   </span>
                 </div>
-                <div className="">
+                <div className=" flex items-center w-[22%]">
                   <div
-                    className={`border rounded  p-1 ${getStatusClassName(
+                    className={`border rounded-3xl w-[120px] bg-opacity-80 p-1 text-center ${getStatusClassName(
                       item.trangThai
                     )}`}
-                    style={{ borderRadius: "5px" }}
                   >
                     <div className="text-white">
                       {getStatusText(item.trangThai)}
                     </div>
                   </div>
-                  <div className="mt-2">
+                  <div className="ml-3">
                     {item.thanhToan === 1 ? (
-                      <span
-                        style={{
-                          color: "white",
-                          border: "1px solid green",
-                          borderRadius: "5px",
-                          padding: "2px 6px",
-                          backgroundColor: "green",
-                        }}
-                      >
+                      <div className="rounded-3xl w-[130px] bg-opacity-80 p-1 text-center bg-green-500 text-white">
                         Đã thanh toán
-                      </span>
+                      </div>
                     ) : (
-                      <span
-                        style={{
-                          color: "white",
-                          border: "1px solid red",
-                          borderRadius: "5px",
-                          padding: "2px 6px",
-                          backgroundColor: "red",
-                        }}
-                      >
+                      <div className="rounded-3xl w-[130px] bg-opacity-80 p-1 text-center bg-red-500 text-white">
                         Chưa thanh toán
-                      </span>
+                      </div>
                     )}
                   </div>
                 </div>
@@ -190,7 +174,7 @@ const TatCa = () => {
                     <div className="border-[3px] mr-2 border-red-600">
                       {" "}
                       <button
-                        className=" py-1 px-3 mr-2 text-red-600 uppercase"
+                        className=" py-1 px-3 mr-2 text-red-600 uppercase hover:opacity-80"
                         type="button"
                         onClick={() => handleHuy(item.maHoaDon)}
                       >
