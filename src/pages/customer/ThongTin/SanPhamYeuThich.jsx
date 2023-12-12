@@ -57,32 +57,40 @@ const SanPhamYeuThich = () => {
         <div className="mt-5">
           <div className="container mx-auto mb-4 border py-2">
             <div>
-              <div className="layout-page-checkout mt-4 mb-5">
-                <div className="page-title mb-2 font-bold text-2xl">
-                  Danh sách yêu thích
-                </div>
+              {data.length === 0 ? (
+                <>
+                  <div>Rất tiếc không có sản phẩm yêu thích nào</div>
+                </>
+              ) : (
+                <>
+                  <div className="layout-page-checkout mt-4 mb-5">
+                    <div className="page-title mb-2 font-bold text-2xl">
+                      Danh sách yêu thích
+                    </div>
 
-                <div className="table-container overflow-x-auto">
-                  <table className="page-table table table-hover mb-4">
-                    <thead>
-                      <tr className="font-bold">
-                        <th></th>
-                        <th>Sản phẩm</th>
-                        <th>Giá sản phẩm</th>
-                        <th>Thao tác</th>
-                      </tr>
-                    </thead>
-                    <tbody>
-                      {data.map((item) => (
-                        <ItemsFavorite
-                          item={item}
-                          xoa={() => handleDelete(item.maSanPhamCT)}
-                        />
-                      ))}
-                    </tbody>
-                  </table>
-                </div>
-              </div>
+                    <div className="table-container overflow-x-auto">
+                      <table className="page-table table table-hover mb-4">
+                        <thead>
+                          <tr className="font-bold">
+                            <th></th>
+                            <th>Sản phẩm</th>
+                            <th>Giá sản phẩm</th>
+                            <th>Thao tác</th>
+                          </tr>
+                        </thead>
+                        <tbody>
+                          {data.map((item) => (
+                            <ItemsFavorite
+                              item={item}
+                              xoa={() => handleDelete(item.maSanPhamCT)}
+                            />
+                          ))}
+                        </tbody>
+                      </table>
+                    </div>
+                  </div>
+                </>
+              )}
             </div>
           </div>
         </div>

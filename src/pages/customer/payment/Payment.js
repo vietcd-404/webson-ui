@@ -499,7 +499,7 @@ const Payment = () => {
 
         const updatedFormData = {
           ...formData,
-          tongTien: feeShip ? totalAmt + feeShip : totalAmt,
+          tongTien: feeShip ? totalAmt : totalAmt,
           phiShip: feeShip ? feeShip : 0,
           soLuongList: maSanPhamCTArray.map((item) => item.soLuong),
         };
@@ -826,7 +826,7 @@ const Payment = () => {
                   name="tinh"
                 >
                   <option disabled value="">
-                    Chọn
+                    ---Tỉnh/Thành phố---
                   </option>
                   {provinces.map((province) => (
                     <option
@@ -860,7 +860,7 @@ const Payment = () => {
                   name="huyen"
                 >
                   <option disabled value="">
-                    Chọn
+                    ---Quận/Huyện---
                   </option>
                   {districts.map((district) => (
                     <option
@@ -891,11 +891,10 @@ const Payment = () => {
                   value={formData.xa}
                   // onChange={(e) => handleWardChange(e.target.value)}
                   onChange={handleWardChangeaaa}
-                  disabled={!selectedDistrict}
                   name="xa"
                 >
                   <option disabled value="">
-                    Chọn
+                    ---Phường/Xã---
                   </option>
                   {wards.map((ward) => (
                     <option
@@ -977,14 +976,16 @@ const Payment = () => {
             <div class=" bg-white max-h-[345px] overflow-y-auto">
               {user
                 ? data.map((item) => (
-                    <div className="flex list-product mb-4">
-                      <Link to={`/product/${item.maSanPhamCT}`}>
-                        <img
-                          src={`data:image/png;base64,${item.anh}`}
-                          alt={item.tenSanPham}
-                          className="img-fluid flex-shrink-0 w-[30%]" // Use flex-shrink-0 to prevent image shrinking
-                        />
-                      </Link>
+                    <div className="flex list-product mb-4 p-2">
+                      <div className="w-[35%]">
+                        <Link to={`/product/${item.maSanPhamCT}`}>
+                          <img
+                            src={`data:image/png;base64,${item.anh}`}
+                            alt={item.tenSanPham}
+                            className="img-fluid flex-shrink-0 w-[100%] h-[120px]" // Use flex-shrink-0 to prevent image shrinking
+                          />
+                        </Link>
+                      </div>
 
                       <div className="item-info ml-4">
                         <p className="item-brand mb-0 fw-bold text-uppercase">

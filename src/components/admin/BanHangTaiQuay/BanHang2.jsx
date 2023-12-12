@@ -136,7 +136,7 @@ const HoaDon2 = () => {
   const loadSanPham = async () => {
     try {
       const response = await getAllTaiQuay();
-      setDataSanPham(response.data.content);
+      setDataSanPham(response.data);
     } catch (error) {
       console.error("Lỗi khi gọi API: ", error);
     }
@@ -317,7 +317,7 @@ const HoaDon2 = () => {
 
       if (action === "increment") {
         console.log(record.soLuongTon);
-        if (record.soLuongTon > 0) {
+        if (record.soLuong < record.soLuongTon) {
           newQuantity = record.soLuong + 1;
           loadDaThemSanPham(record.maHoaDon);
         } else {

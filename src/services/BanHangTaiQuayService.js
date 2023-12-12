@@ -13,7 +13,7 @@ export const hienHoaDonTaiQuay = async () => {
 };
 
 export const getAllTaiQuay = async () => {
-  return await api.get(`/guest/san-pham/get-all`);
+  return await api.get(`/staff/san-pham/get-all`);
 };
 
 export const findSanPham = async (maHoaDon) => {

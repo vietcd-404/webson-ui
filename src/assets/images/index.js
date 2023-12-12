@@ -48,7 +48,15 @@ import logoShop from "./logoheva.jpg";
 import logoWhite from "./logo-white.png";
 import bannerHome1 from "./Rectangle 11.png";
 import bannerHome2 from "./content-image6a 1.png";
+import iconBill from "./icon-order.png";
+import iconAccount from "./icon-account.png";
+import iconAddress from "./address.svg";
+import iconHeart from "./heart.svg";
 export {
+  iconAddress,
+  iconHeart,
+  iconAccount,
+  iconBill,
   bannerHome1,
   bannerHome2,
   logoWhite,

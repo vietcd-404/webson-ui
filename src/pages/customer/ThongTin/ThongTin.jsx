@@ -1,5 +1,12 @@
 import React from "react";
 import { Link, useLocation } from "react-router-dom";
+import {
+  iconAccount,
+  iconAddress,
+  iconBill,
+  iconHeart,
+} from "../../../assets/images";
+import Image from "../../../components/customer/designLayouts/Image";
 
 const ThongTin = ({ children }) => {
   const location = useLocation();
@@ -14,40 +21,49 @@ const ThongTin = ({ children }) => {
         <ul className="space-y-2 p-4">
           <li
             className={`border-b border-gray-200 py-2 ${
-              location.pathname === "/invoices" ? "bg-[#ff6600] text-white" : ""
+              location.pathname === "/invoices" ? " text-blue-700" : ""
             }`}
           >
             <Link to="/invoices" className="hover:text-blue-500">
-              Hóa đơn
+              <div className="flex row-auto">
+                <Image className="w-[10%] mr-5" imgSrc={iconBill} /> Hóa đơn
+              </div>
             </Link>
           </li>
           <li
             className={`border-b border-gray-200 py-2 ${
-              location.pathname === "/profile" ? "bg-[#ff6600] text-white" : ""
+              location.pathname === "/profile" ? " text-blue-700" : ""
             }`}
           >
             <Link to="/profile" className="hover:text-blue-500">
-              Thông tin cá nhân
+              <div className="flex row-auto">
+                <Image className="w-[10%] mr-5" imgSrc={iconAccount} /> Thông
+                tin cá nhân
+              </div>
             </Link>
           </li>
           <li
             className={`border-b border-gray-200 py-2 ${
-              location.pathname === "/my-favorites"
-                ? "bg-[#ff6600] text-white"
-                : ""
+              location.pathname === "/my-favorites" ? " text-blue-700" : ""
             }`}
           >
             <Link to="/my-favorites" className="hover:text-blue-500">
-              Sản phẩm yêu thích
+              <div className="flex row-auto">
+                <Image className="w-[10%] mr-5" imgSrc={iconHeart} /> Sản phẩm
+                yêu thích
+              </div>
             </Link>
           </li>
           <li
             className={`border-b border-gray-200 py-2 ${
-              location.pathname === "/address" ? "bg-[#ff6600] text-white" : ""
+              location.pathname === "/address" ? " text-blue-700" : ""
             }`}
           >
             <Link to="/address" className="hover:text-blue-500">
-              Sổ địa chỉ
+              <div className="flex row-auto">
+                <Image className="w-[10%] mr-5" imgSrc={iconAddress} /> Sổ địa
+                chỉ
+              </div>
             </Link>
           </li>
         </ul>
