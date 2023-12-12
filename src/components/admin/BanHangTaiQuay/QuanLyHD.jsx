@@ -68,6 +68,7 @@ const ChoXacNhan = () => {
       maHoaDon: response.data[0].maHoaDon,
       tenNguoiDung: response.data[0].tenNguoiDung,
       tenNguoiNhan: response.data[0].tenNguoiNhan,
+      tenNhanVien: response.data[0].tenNhanVien,
       email: response.data[0].email,
       sdt: response.data[0].sdt,
       diaChi: response.data[0].diaChi,
@@ -75,6 +76,7 @@ const ChoXacNhan = () => {
       tinh: response.data[0].tinh,
       huyen: response.data[0].huyen,
       xa: response.data[0].xa,
+      tenPhuongThucThanhToan: response.data[0].tenPhuongThucThanhToan,
     });
     loadProductInOrder(response.data[0].maHoaDon);
     setIsEditModalOpen(true);
@@ -736,16 +738,26 @@ const ChoXacNhan = () => {
                 <Input disabled />
               </Form.Item>
               <Form.Item
-                label="Tên người nhận"
-                name="tenNguoiNhan"
+                label="Tên nhân viên"
+                name="tenNhanVien"
                 labelCol={{ span: 8 }}
                 wrapperCol={{ span: 16 }}
                 rules={[
-                  { required: true, message: "Tên người nhận không để trống!" },
+                  { required: true, message: "Tên nhân viên không để trống!" },
                 ]}
               >
-                <Input placeholder="Nguyen Van A..." />
+                <Input disabled />
               </Form.Item>
+              <Form.Item
+                label="Hình thức thanh toán"
+                name="tenPhuongThucThanhToan"
+                labelCol={{ span: 8 }}
+                wrapperCol={{ span: 16 }}
+              >
+                <Input disabled className="border-none" />
+              </Form.Item>
+            </Col>
+            <Col span={12}>
               <Form.Item
                 label="Email"
                 name="email"
@@ -775,49 +787,6 @@ const ChoXacNhan = () => {
                 ]}
               >
                 <Input />
-              </Form.Item>
-            </Col>
-            <Col span={12}>
-              <Form.Item
-                label="Tỉnh"
-                name="tinh"
-                labelCol={{ span: 8 }}
-                wrapperCol={{ span: 16 }}
-                rules={[
-                  {
-                    required: true,
-                    message: "(Tỉnh)Thành phố không để trống!",
-                  },
-                ]}
-              >
-                <Input />
-              </Form.Item>
-              <Form.Item
-                label="Huyện"
-                name="huyen"
-                labelCol={{ span: 8 }}
-                wrapperCol={{ span: 16 }}
-                rules={[{ required: true, message: "Huyện không để trống!" }]}
-              >
-                <Input />
-              </Form.Item>
-              <Form.Item
-                label="Xã"
-                name="xa"
-                labelCol={{ span: 8 }}
-                wrapperCol={{ span: 16 }}
-                rules={[{ required: true, message: "Xã không để trống!" }]}
-              >
-                <Input />
-              </Form.Item>
-              <Form.Item
-                label="Địa chỉ chi tiết"
-                name="diaChi"
-                labelCol={{ span: 8 }}
-                wrapperCol={{ span: 16 }}
-                rules={[{ required: true, message: "Địa chỉ không để trống!" }]}
-              >
-                <Input.TextArea rows={4} />
               </Form.Item>
             </Col>
           </Row>

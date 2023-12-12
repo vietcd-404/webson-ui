@@ -423,6 +423,10 @@ const TableNguoiDung = () => {
                         required: true,
                         message: "Tài khoản không được để trống!",
                       },
+                      {
+                        min: 6,
+                        message: "Tài khoản phải có ít nhất 6 ký tự!",
+                      },
                     ]}
                   >
                     <Input placeholder="Username" />
@@ -435,6 +439,10 @@ const TableNguoiDung = () => {
                       {
                         required: true,
                         message: "Mật khẩu không được để trống!",
+                      },
+                      {
+                        min: 6,
+                        message: "Mật khẩu phải có ít nhất 6 ký tự!",
                       },
                     ]}
                   >
@@ -614,6 +622,10 @@ const TableNguoiDung = () => {
                   {
                     required: true,
                     message: "Mật khẩu không được để trống!",
+                  },
+                  {
+                    min: 6,
+                    message: "Mật khẩu phải có ít nhất 6 ký tự!",
                   },
                 ]}
               >

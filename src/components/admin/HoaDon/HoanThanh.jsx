@@ -33,6 +33,10 @@ const HoanThanh = () => {
   const [searchType, setSearchType] = useState(null);
   const [searchValue, setSearchValue] = useState(null);
   const [form] = Form.useForm();
+
+  // Phí ship
+  const [phiShip, setPhiShip] = useState(0);
+
   const showEditModal = async (record) => {
     const response = await inforUserHoaDon(record.maHoaDon);
     setEditFormData(response.data[0]);
@@ -53,6 +57,7 @@ const HoanThanh = () => {
       setTableDataProduct(response1.data);
       setTotalPageProduct(response1.totalPage);
       setTongTien(response1.data[0].tongTien);
+      setPhiShip(response1.data[0].phiShip);
       if (response1.data[0].tienGiam == null) {
         setGiamGia(0);
       } else {
@@ -559,9 +564,15 @@ const HoanThanh = () => {
             </span>{" "}
           </p>
           <p className="padding-right">
+            Phí ship:{" "}
+            <span className="text-lg text-bold">
+              +{phiShip.toLocaleString("en-US")} VNĐ
+            </span>{" "}
+          </p>
+          <p className="padding-right">
             Tổng tiền sau khi giảm:{" "}
             <span className="text-lg text-bold">
-              {tongTien.toLocaleString("en-US")} VNĐ
+              {(tongTien + phiShip).toLocaleString("en-US")} VNĐ
             </span>{" "}
           </p>
         </div>

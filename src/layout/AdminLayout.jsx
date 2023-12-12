@@ -112,7 +112,7 @@ const LayoutAdmin = ({ children }) => {
           left: 0,
         }}
       >
-        <Image src={logoWhite} width="100%" height="125px" preview="" />
+        <Image src={logoWhite} width="90%" height="125px" preview="" />
         <div className="demo-logo-vertical" />
         <Menu
           theme="dark"

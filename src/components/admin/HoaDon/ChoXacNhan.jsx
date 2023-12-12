@@ -114,6 +114,7 @@ const ChoXacNhan = () => {
       tinh: response.data[0].tinh,
       huyen: response.data[0].huyen,
       xa: response.data[0].xa,
+      tenPhuongThucThanhToan: response.data[0].tenPhuongThucThanhToan,
       phiShip: response.data[0].phiShip,
     });
     loadProductInOrder(response.data[0].maHoaDon);
@@ -743,7 +744,6 @@ const ChoXacNhan = () => {
   }, [provinces]);
 
   useEffect(() => {
-    console.log();
     let foundProvinces =
       districts.length > 0 &&
       districts?.find((item) => item.DistrictName === editFormData.huyen);
@@ -751,7 +751,6 @@ const ChoXacNhan = () => {
   }, [districts, wards]);
 
   useEffect(() => {
-    console.log();
     let foundProvinces =
       wards.length > 0 &&
       wards?.find((item) => item.WardName === editFormData.xa);
@@ -770,7 +769,6 @@ const ChoXacNhan = () => {
 
   const handleProvinceChange = async (provinceId) => {
     setSelectedProvince(provinceId);
-    setSelectedProvince("");
     setSelectedWard("");
 
     try {
@@ -816,7 +814,6 @@ const ChoXacNhan = () => {
       tinh: selectedProvince.ProvinceName,
     }));
     handleProvinceChange(selectedProvince.ProvinceID);
-    console.log(selectedProvince.ProvinceName);
   };
   // Thay doi huyen
   const handleDistrictChangeaaa = (selectedValue) => {
@@ -829,7 +826,6 @@ const ChoXacNhan = () => {
       ...editFormData,
       huyen: selectedDistrict.DistrictName,
     });
-    console.log(selectedDistrict.DistrictName);
 
     handleDistrictChange(selectedDistrict.DistrictID);
   };
@@ -933,7 +929,7 @@ const ChoXacNhan = () => {
                 labelCol={{ span: 8 }}
                 wrapperCol={{ span: 16 }}
               >
-                <Input disabled />
+                <Input className="border-none" />
               </Form.Item>
               <Form.Item
                 label="Tên người nhận"
@@ -975,6 +971,20 @@ const ChoXacNhan = () => {
                 ]}
               >
                 <Input />
+              </Form.Item>
+              <Form.Item
+                label="Kiểu thanh toán:"
+                name="tenPhuongThucThanhToan"
+                labelCol={{ span: 8 }}
+                wrapperCol={{ span: 16 }}
+                rules={[
+                  {
+                    required: true,
+                    message: "Phương thức thanh toán không để trống!",
+                  },
+                ]}
+              >
+                <Input className="border-none" />
               </Form.Item>
             </Col>
             <Col span={12}>
