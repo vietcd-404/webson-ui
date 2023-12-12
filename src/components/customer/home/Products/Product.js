@@ -130,8 +130,14 @@ const Product = (item) => {
             />
           </Link>
         </div>
-        <div className="absolute top-6 left-8">
-          {item.badge && <Badge text="New" />}
+        <div className="absolute top-2 right-0">
+          {item.phanTramGiam === 0 ? (
+            <></>
+          ) : (
+            <>
+              <Badge text={`Sale ${item.phanTramGiam}%`} />
+            </>
+          )}
         </div>
         <div className="w-full h-32 absolute bg-white -bottom-[130px] group-hover:bottom-0 duration-700">
           <ul className="w-full h-full flex flex-col items-end justify-center gap-2 font-titleFont px-2 border-l border-r">
@@ -207,12 +213,18 @@ const Product = (item) => {
               </Link>
             </p>
           </h2>
-          <del className="text-[#767676] text-[14px]">{item.giaBan} đ</del>
+          {item.phanTramGiam === 0 ? (
+            <></>
+          ) : (
+            <>
+              <del className="text-[#767676] text-[14px]">{item.giaBan} đ</del>
+            </>
+          )}
         </div>
         <div>
           <div className="flex justify-between">
-            <p className="text-[#767676] text-[14px]">{item.tenMau}</p>
-            <p className="text-[#767676] text-[16px]">
+            {/* <p className="text-[#767676] text-[14px]">{item.tenMau}</p> */}
+            <p className="text-red-600 text-[20px] ">
               {item.giaBan * ((100 - item.phanTramGiam) / 100)} đ
             </p>
           </div>

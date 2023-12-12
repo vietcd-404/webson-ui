@@ -81,9 +81,10 @@ const BestSellers = () => {
       console.error("Lỗi khi gọi API hoặc xử lý dữ liệu: ", error);
     }
   };
-  const handleAddToCart = async () => {
+  const handleAddToCart = async (maSanPhamCT) => {
     try {
-      await themGioHang(products.maSanPhamCT, 1);
+      await themGioHang(maSanPhamCT, 1);
+
       Swal.fire({
         title: "Thành công!",
         text: "Thêm vào giỏ hàng thành công",
@@ -94,7 +95,6 @@ const BestSellers = () => {
       toast.error(error.response?.data?.message || "Error adding to cart");
     }
   };
-
   const handleAddToCartSession = async () => {
     try {
       await themGioHangSession(products.maSanPhamCT, 1);
@@ -131,9 +131,9 @@ const BestSellers = () => {
                   <ul className="w-full h-full flex flex-col items-end justify-center gap-2 font-titleFont px-2 border-l border-r">
                     <Link to={`/product/${product.maSanPhamCT}`}>
                       <li
-                        onClick={() =>
-                          handleProductDetails(product.maSanPhamCT)
-                        }
+                        // onClick={() =>
+                        //   handleProductDetails(product.maSanPhamCT)
+                        // }
                         className="text-[#767676] hover:text-primeColor text-sm font-normal border-b-[1px] border-b-gray-200 hover:border-b-primeColor flex items-center justify-end gap-2 hover:cursor-pointer pb-1 duration-300 w-full hover:text-pink-500"
                       >
                         Xem chi tiết
@@ -144,7 +144,7 @@ const BestSellers = () => {
                     </Link>
                     {user ? (
                       <li
-                        onClick={() => handleAddToCart(product.maSanPhamCT)}
+                        onClick={() => handleAddToCart(product.maSanPhamCT, 1)}
                         className="text-[#767676] hover:text-primeColor text-sm font-normal border-b-[1px] border-b-gray-200 hover:border-b-primeColor flex items-center justify-end gap-2 hover:cursor-pointer pb-1 duration-300 w-full hover:text-pink-500"
                       >
                         Thêm vào giỏ hàng
@@ -160,9 +160,13 @@ const BestSellers = () => {
                               maSanPhamCT: product.maSanPhamCT,
                               tenSanPham: product.tenSanPham,
                               soLuong: 1,
-                              anh: product.danhSachAnh,
-                              giaBan: product.giaBan,
+                              anh: product.img,
+                              giaBan:
+                                product.giaBan *
+                                ((100 - product.phanTramGiam) / 100),
+                              phanTramGiam: product.phanTramGiam,
                               tenThuongHieu: product.tenThuongHieu,
+                              soLuongTon: product.soLuongTon,
                             })
                           )
                         }
@@ -190,21 +194,25 @@ const BestSellers = () => {
                     <p
                       className="hover:text-pink-500 translate-x-0 overflow-hidden whitespace-nowrap"
                       style={{ textOverflow: "ellipsis", maxWidth: "200px" }}
-                      onClick={() => handleProductDetails(product.maSanPhamCT)}
+                      // onClick={() => handleProductDetails(product.maSanPhamCT)}
                     >
                       {product.tenSanPham}
                     </p>
                   </h2>
-                  <del className="text-[#767676] text-[14px]">
-                    {product.giaBan} đ
-                  </del>
+                  {product.phanTramGiam === 0 ? (
+                    <></>
+                  ) : (
+                    <>
+                      <del className="text-[#767676] text-[14px]">
+                        {product.giaBan} đ
+                      </del>
+                    </>
+                  )}
                 </div>
                 <div>
                   <div className="flex justify-between">
-                    <p className="text-[#767676] text-[14px]">
-                      {product.tenMau}
-                    </p>
-                    <p className="text-[#767676] text-[16px]">
+                    {/* <p className="text-[#767676] text-[14px]">{item.tenMau}</p> */}
+                    <p className="text-red-600 text-[20px] ">
                       {product.giaBan * ((100 - product.phanTramGiam) / 100)} đ
                     </p>
                   </div>

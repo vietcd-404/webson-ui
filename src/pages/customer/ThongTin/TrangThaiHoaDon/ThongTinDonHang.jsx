@@ -167,7 +167,7 @@ function ThongTinDonHang() {
   useEffect(() => {
     loadSanPham();
     loadHoaDonChitiet();
-  }, [maHoaDon, messageValue, provinces]);
+  }, [maHoaDon, messageValue]);
 
   const [tongTien, setTongTien] = useState("");
   useEffect(() => {

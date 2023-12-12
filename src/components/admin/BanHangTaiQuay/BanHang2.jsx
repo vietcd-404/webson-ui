@@ -126,7 +126,7 @@ const HoaDon2 = () => {
   const loadSanPham = async () => {
     try {
       const response = await getAllTaiQuay();
-      setDataSanPham(response.data.content);
+      setDataSanPham(response.data);
     } catch (error) {
       console.error("Lỗi khi gọi API: ", error);
     }

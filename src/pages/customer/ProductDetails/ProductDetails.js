@@ -17,6 +17,39 @@ import Slider from "react-slick";
 import { toast, ToastContainer } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
 import { useSelector } from "react-redux";
+import { Image } from "antd";
+
+const CustomNextArrow = (props) => {
+  const { className, style, onClick } = props;
+  return (
+    <div
+      className={className}
+      style={{
+        ...style,
+        display: "block",
+        background: "black",
+        borderRadius: "11px",
+      }}
+      onClick={onClick}
+    />
+  );
+};
+
+const CustomPrevArrow = (props) => {
+  const { className, style, onClick } = props;
+  return (
+    <div
+      className={className}
+      style={{
+        ...style,
+        display: "block",
+        background: "black",
+        borderRadius: "11px",
+      }}
+      onClick={onClick}
+    />
+  );
+};
 const ProductDetails = (props) => {
   const [prevLocation, setPrevLocation] = useState("");
   const location = useLocation();
@@ -30,6 +63,7 @@ const ProductDetails = (props) => {
   const { maSanPhamCT } = useParams();
 
   const [dataImg, setDataImg] = useState([]);
+  const [anh, danhSachAnh] = useState([]);
   const products = useSelector((state) => state.orebiReducer.products);
   const loadSanPhamDetail = async () => {
     try {
@@ -43,6 +77,7 @@ const ProductDetails = (props) => {
   useEffect(() => {
     loadSanPhamDetail();
     loadSanPham();
+    loadAnh();
     setPrevLocation(location.pathname);
   }, [maSanPhamCT]);
 
@@ -53,6 +88,15 @@ const ProductDetails = (props) => {
     console.log("Thương hiệu", response);
   };
 
+  const loadAnh = async () => {
+    try {
+      const response = await getDetailById(maSanPhamCT);
+      danhSachAnh(response.data[0].danhSachAnh);
+      console.log("APINNNNNNsdfsdfd: ", response.data[0].danhSachAnh);
+    } catch (error) {
+      console.error("Lỗi khi gọi API: ", error);
+    }
+  };
   const loadSanPham = async () => {
     try {
       const response = await getDetailById(maSanPhamCT);
@@ -63,17 +107,10 @@ const ProductDetails = (props) => {
     }
   };
 
-  const slideNho = {
-    dots: true,
-    infinite: true,
-    speed: 500,
-    slidesToShow: 3,
-    slidesToScroll: 1,
-  };
   const settings = {
     infinite: true,
     speed: 500,
-    slidesToShow: 4,
+    slidesToShow: Math.min(4, dataImg.length),
     slidesToScroll: 1,
     nextArrow: <SampleNextArrow />,
     prevArrow: <SamplePrevArrow />,
@@ -104,6 +141,16 @@ const ProductDetails = (props) => {
       },
     ],
   };
+  const settingsThumbnail = {
+    dots: false,
+    infinite: true,
+    speed: 500,
+    slidesToShow: 1,
+    slidesToScroll: 1,
+
+    nextArrow: <CustomNextArrow />,
+    prevArrow: <CustomPrevArrow />,
+  };
   return (
     <div className="container mx-auto border-b-[1px] border-b-gray-300">
       <ToastContainer />
@@ -111,19 +158,33 @@ const ProductDetails = (props) => {
         <div className="xl:-mt-10 -mt-7">
           <Breadcrumbs title="" prevLocation={prevLocation} />
         </div>
-        <div className="w-full grid grid-cols-1 md:grid-cols-2 xl:grid-cols-6 gap-4 h-full -mt-5 xl:-mt-8 pb-10 bg-gray-100 p-4">
+        <div className="w-full grid grid-cols-1 md:grid-cols-2 xl:grid-cols-6 gap-4 h-full -mt-5 xl:-mt-8 pb-10  p-4">
           <div className="h-full xl:col-span-2">
             {data.map((sp) => (
               <img
+                key={sp.maSanPhamCT}
                 className="w-full h-[500px] object-cover rounded-lg shadow-md"
-                src={`data:image/png;base64,${sp.img}`}
+                src={`data:image/png;base64,${sp.img[0]}`}
                 alt={sp.tenSanPham}
               />
             ))}
+            <div className="mt-4 flex flex-row">
+              {/* <Slider {...settingsThumbnail}> */}
+              {anh.map((item) => (
+                <div key={item.maSanPhamCT} className="mr-2">
+                  <Image
+                    // className="w-full h-[100px] object-cover rounded-lg shadow-md cursor-pointer"
+                    width="100%"
+                    height="100px"
+                    src={`data:image/png;base64,${item.anh}`}
+                    alt=""
+                  />
+                </div>
+              ))}
+              {/* </Slider> */}
+            </div>
           </div>
-          <div>
-            <Slider {...slideNho}></Slider>
-          </div>
+
           <div className="h-full w-full md:col-span-2 xl:col-span-3 xl:p-8 flex flex-col gap-6 justify-center">
             {data.map((sp) => (
               <ProductInfo item={sp} />
