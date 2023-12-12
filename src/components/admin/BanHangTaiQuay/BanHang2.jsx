@@ -319,7 +319,7 @@ const HoaDon2 = () => {
 
       if (action === "increment") {
         console.log(record.soLuongTon);
-        if (record.soLuongTon > 0) {
+        if (record.soLuong < record.soLuongTon) {
           newQuantity = record.soLuong + 1;
           loadDaThemSanPham(record.maHoaDon);
         } else {

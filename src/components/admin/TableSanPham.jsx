@@ -11,6 +11,8 @@ import {
   Tag,
   Checkbox,
   Switch,
+  Spin,
+  Flex,
 } from "antd";
 
 import { EditOutlined, DeleteOutlined } from "@ant-design/icons";
@@ -347,8 +349,22 @@ const TableSanPham = () => {
       </Modal>
 
       {loading ? (
-        <p>Loading...</p>
+        <div className="">
+          {/* <Flex align="center" gap="middle">
+            <Spin />
+          </Flex> */}
+          Loading...
+        </div>
       ) : (
+        /* <div
+        className={`fixed top-0 left-0 w-full h-full flex justify-center items-center bg-white bg-opacity-50 z-50 ${
+          loading ? "" : "hidden"
+        }`}
+      >
+        <div className="">
+          <Spin size="large" />
+        </div>
+      </div> */
         <Table
           columns={columns}
           dataSource={data}

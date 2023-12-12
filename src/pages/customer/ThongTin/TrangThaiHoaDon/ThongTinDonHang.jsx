@@ -702,7 +702,7 @@ function ThongTinDonHang() {
                             name="tinh"
                           >
                             <option disabled value="">
-                              ---Tỉnh/Thành ph
+                              ---Tỉnh/Thành phố---
                             </option>
                             {provinces.map((province) => (
                               <option

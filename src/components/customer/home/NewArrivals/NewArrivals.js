@@ -162,7 +162,7 @@ const NewArrivals = () => {
                     <img
                       className="w-full h-[90%] cursor-pointer"
                       alt={product.tenSanPham}
-                      src={`data:image/png;base64,${product.danhSachAnh}`}
+                      src={`data:image/png;base64,${product.danhSachAnh[0]}`}
                     />
                   </Link>
                 </div>
