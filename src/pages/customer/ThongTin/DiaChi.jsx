@@ -1,8 +1,10 @@
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useRef, useState } from "react";
 import {
   createDiaChi,
   deleteDiaChi,
   findAllDiaChi,
+  getByDiaChi,
+  updateDiaChi,
 } from "../../../services/DiaChiService";
 import ModelDiaChi from "./ModelThemDiaChi";
 import axios from "axios";
@@ -24,6 +26,7 @@ const DiaChi = () => {
   const [selectedDistrict, setSelectedDistrict] = useState("");
   const [selectedWard, setSelectedWard] = useState("");
   const [formData, setFormData] = useState({
+    maDiaChi: "",
     sdt: "",
     diaChi: "",
     tinh: "",
@@ -126,9 +129,33 @@ const DiaChi = () => {
       }
     }
   };
+
   useEffect(() => {
     loadProvinces();
   }, []);
+
+  useEffect(() => {
+    console.log();
+    let foundProvinces =
+      provinces.length > 0 &&
+      provinces?.find((item) => item.ProvinceName === formData?.tinh);
+    setSelectedProvince(foundProvinces ? foundProvinces.ProvinceID : "");
+  }, [provinces]);
+
+  useEffect(() => {
+    console.log();
+    let foundProvinces =
+      districts.length > 0 &&
+      districts?.find((item) => item.DistrictName === formData?.huyen);
+    setSelectedDistrict(foundProvinces ? foundProvinces.DistrictID : "");
+  }, [districts]);
+
+  useEffect(() => {
+    console.log();
+    let foundProvinces =
+      wards.length > 0 && wards?.find((item) => item.WardName === formData?.xa);
+    setSelectedWard(foundProvinces ? foundProvinces.WardCode : "");
+  }, [wards]);
 
   const loadProvinces = async () => {
     try {
@@ -140,23 +167,12 @@ const DiaChi = () => {
   };
 
   const handleProvinceChange = async (provinceId) => {
-    const selectedProvinces = provinces.find(
-      (province) => province.ProvinceName === provinceId
-    );
-    if (selectedProvinces) {
-      console.log(selectedProvinces.ProvinceName);
-      setSelectedProvince(selectedProvinces.ProvinceID);
-      setFormData({
-        ...formData,
-        tinh: selectedProvinces.ProvinceName, // or use the appropriate property
-      });
-    }
-    console.log(selectedProvinces);
-    // setSelectedProvince(formData.tinh);
-    // setSelectedProvince(selectedProvinces.ProvinceID);
-    setSelectedDistrict(""); // Reset district when province changes
+    setSelectedProvince(provinceId);
+    setSelectedProvince("");
+    setSelectedWard("");
+
     try {
-      const response = await hienHuyen(selectedProvinces.ProvinceID);
+      const response = await hienHuyen(provinceId);
       setDistricts(response.data.data);
     } catch (error) {
       console.error("Lỗi khi gọi API: ", error);
@@ -164,40 +180,66 @@ const DiaChi = () => {
   };
 
   const handleDistrictChange = async (districtId) => {
-    const selectedDistrict = districts.find(
-      (districts) => districts.DistrictName === districtId
-    );
-
-    if (selectedDistrict) {
-      console.log(selectedDistrict.DistrictName);
-      setSelectedDistrict(selectedDistrict.DistrictID);
-      setFormData({
-        ...formData,
-        huyen: selectedDistrict.DistrictName, // or use the appropriate property
-      });
-    }
-    setSelectedWard(""); // Reset district when province changes
-
+    setSelectedDistrict(districtId);
+    setSelectedWard("");
     try {
-      const response = await hienXa(selectedDistrict.DistrictID);
+      const response = await hienXa(districtId);
       setWards(response.data.data);
     } catch (error) {
       console.error("Lỗi khi gọi API: ", error);
     }
   };
-
   const handleWardChange = (wardId) => {
-    const selectedWard = wards.find((wards) => wards.WardName === wardId);
+    setSelectedWard(wardId);
+  };
 
-    if (selectedWard) {
-      console.log(selectedWard.WardName);
-      setSelectedWard(selectedWard.WardCode);
-      setFormData({
-        ...formData,
-        xa: selectedWard.WardName, // or use the appropriate property
-      });
-    }
-    // setSelectedWard(wardId);
+  const handleProvinceChangeaa = (event) => {
+    setFormData((prevFormData) => ({
+      ...prevFormData,
+      huyen: "",
+      xa: "",
+    }));
+    const selectedProvinceName = event.target.value;
+    const selectedProvince = provinces.find(
+      (province) => province.ProvinceName === selectedProvinceName
+    );
+
+    setSelectedProvince(selectedProvinceName);
+    setFormData((prevFormData) => ({
+      ...prevFormData,
+      tinh: selectedProvince.ProvinceName,
+    }));
+    handleProvinceChange(selectedProvince.ProvinceID);
+    console.log(selectedProvince.ProvinceName);
+  };
+  const handleDistrictChangeaaa = (event) => {
+    const selectedDistrictName = event.target.value;
+    const selectedDistrict = districts.find(
+      (district) => district.DistrictName === selectedDistrictName
+    );
+    setSelectedDistrict(selectedDistrictName);
+    setFormData({
+      ...formData,
+      huyen: selectedDistrict.DistrictName,
+    });
+    console.log(selectedDistrict.DistrictName);
+
+    handleDistrictChange(selectedDistrict.DistrictID);
+  };
+
+  const handleWardChangeaaa = (event) => {
+    const selectedWardName = event.target.value;
+    const selectedWard = wards.find(
+      (wards) => wards.WardName === selectedWardName
+    );
+    setSelectedWard(selectedWardName);
+    setFormData({
+      ...formData,
+      xa: selectedWard.WardName,
+    });
+    console.log(selectedWard.WardName);
+
+    handleWardChange(selectedWard.WardCode);
   };
   const [feeShip, setFeeShip] = useState();
 
@@ -262,13 +304,75 @@ const DiaChi = () => {
   useEffect(() => {
     loadDiaChi();
   }, []);
+  const frm = useRef();
+  const [dataDiaChi, setDataDiaChi] = useState([]);
+  const handleFinDiaChi = async (ma) => {
+    try {
+      const response = await getByDiaChi(ma);
+      setDataDiaChi(response.data);
+      console.log(response.data);
+      const dataDiaChi = response.data;
+      setFormData((prevFormData) => ({
+        ...prevFormData,
+        maDiaChi: dataDiaChi.maDiaChi,
+        huyen: dataDiaChi.huyen,
+        xa: dataDiaChi.xa,
+        tinh: dataDiaChi.tinh,
+        diaChi: dataDiaChi.diaChi,
+        sdt: dataDiaChi.sdt,
+      }));
+      setIsModalOpenEdit(true);
+      let foundProvinces =
+        provinces.length > 0 &&
+        provinces?.find((item) => item.ProvinceName === dataDiaChi.tinh);
+      console.log(foundProvinces);
+      setSelectedProvince(foundProvinces ? foundProvinces.ProvinceID : "");
+    } catch (error) {
+      // Handle errors, such as displaying an error message
+      console.log("Lỗi ", error);
+      toast.error(error.response.data.message);
+      //   setLoading(false);
+    }
+  };
+
+  const handleUpdateDiaChi = async (ma) => {
+    if (validateForm()) {
+      //   setLoading(true);
+      try {
+        await updateDiaChi(formData, ma);
+        // setLoading(true);
+        Swal.fire({
+          title: "Tạo địa chỉ!",
+          text: "Tạo địa chỉ thành công",
+          icon: "success",
+        });
+
+        setIsModalOpenEdit(false);
+        loadDiaChi();
+      } catch (error) {
+        // Handle errors, such as displaying an error message
+        console.log("Lỗi ", error);
+        toast.error(error.response.data.message);
+        //   setLoading(false);
+      }
+    }
+  };
   const [isModalOpen, setIsModalOpen] = useState(false);
+  const [isModalOpenEdit, setIsModalOpenEdit] = useState(false);
+
   const openModal = () => {
     setIsModalOpen(true);
+  };
+  const openModalEdit = (ma) => {
+    handleFinDiaChi(ma);
+    // setIsModalOpenEdit(true);
   };
 
   const closeModal = () => {
     setIsModalOpen(false);
+  };
+  const closeModalEdit = () => {
+    setIsModalOpenEdit(false);
   };
   useEffect(() => {
     if (!isModalOpen) {
@@ -285,6 +389,22 @@ const DiaChi = () => {
       setSelectedWard("");
     }
   }, [isModalOpen]);
+
+  useEffect(() => {
+    if (!isModalOpenEdit) {
+      setFormData({
+        ...formData,
+        huyen: "",
+        xa: "",
+        tinh: "",
+        diaChi: "",
+        sdt: "",
+      });
+      setSelectedDistrict("");
+      setSelectedProvince("");
+      setSelectedWard("");
+    }
+  }, [isModalOpenEdit]);
   return (
     <div className="flex min-h-screen container mx-auto m-10">
       <div className="min-h-screen w-[759px] ">
@@ -295,7 +415,12 @@ const DiaChi = () => {
                 <div className="flex items-center justify-between w-full">
                   <div className="flex items-center">
                     <span className="mr-2"></span>
-                    <span className="ml-2">Địa chỉ: </span>
+                    <span
+                      className="ml-2 font-bold cursor-pointer"
+                      onClick={() => handleFinDiaChi(item.maDiaChi)}
+                    >
+                      Chỉnh sửa{" "}
+                    </span>
                     <strong> {item.loaiDiaChi}</strong>
                   </div>
                   <div>
@@ -428,7 +553,7 @@ const DiaChi = () => {
                   <select
                     className="form-select w-full p-2 border border-gray-300 rounded-md"
                     value={formData.tinh}
-                    onChange={(e) => handleProvinceChange(e.target.value)}
+                    onChange={handleProvinceChangeaa}
                     name="tinh"
                   >
                     <option disabled value="">
@@ -456,7 +581,7 @@ const DiaChi = () => {
                   <select
                     className="form-select w-full p-2 border border-gray-300 rounded-md"
                     value={formData.huyen}
-                    onChange={(e) => handleDistrictChange(e.target.value)}
+                    onChange={handleDistrictChangeaaa}
                     name="huyen"
                   >
                     <option disabled value="">
@@ -484,7 +609,7 @@ const DiaChi = () => {
                   <select
                     className="form-select w-full p-2 border border-gray-300 rounded-md"
                     value={formData.xa}
-                    onChange={(e) => handleWardChange(e.target.value)}
+                    onChange={handleWardChangeaaa}
                     name="xa"
                   >
                     <option disabled value="">
@@ -524,6 +649,187 @@ const DiaChi = () => {
                     onClick={() => handleAddDiaChi()}
                   >
                     <button>Thêm</button>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </>
+        }
+      />
+      <ModelDiaChi
+        isOpen={isModalOpenEdit}
+        closeModal={closeModalEdit}
+        title="Sửa địa chỉ"
+        content={
+          <>
+            <div>
+              <div className="border rounded p-2">
+                <div className="border-b-2 p-2">
+                  <span className="font-bold text-lg">Thông tin địa chỉ</span>
+                </div>
+                {/* <div className="flex flex-wrap mt-6 pr-3 pl-3">
+                  <label className="block text-gray-700 text-sm font-bold mb-2">
+                    Họ và tên <span className="text-red-500">*</span>
+                  </label>
+                  <input
+                    type="text"
+                    class="form-control"
+                    name="tenNguoiNhan"
+                    value={formData.tenNguoiNhan}
+                    onChange={handleChange}
+                  />
+                </div> */}
+                {/* {errors.tenNguoiNhan && (
+                  <p className="text-sm text-red-500 font-titleFont font-semibold px-4">
+                    <span className="font-bold italic mr-1">!</span>
+                    {errors.tenNguoiNhan}
+                  </p>
+                )} */}
+                <div className="flex flex-wrap mt-6 pr-3 pl-3">
+                  <label className="block text-gray-700 text-sm font-bold mb-2">
+                    Số điện thoại<span className="text-red-500">*</span>
+                  </label>
+                  <input
+                    type="text"
+                    class="form-control"
+                    placeholder=""
+                    name="sdt"
+                    value={formData.sdt}
+                    onChange={handleChange}
+                  />
+                </div>
+                {errors.sdt && (
+                  <p className="text-sm text-red-500 font-titleFont font-semibold px-4">
+                    <span className="font-bold italic mr-1">!</span>
+                    {errors.sdt}
+                  </p>
+                )}
+                {/* <div className="flex flex-wrap mt-6 pr-3 pl-3">
+                  <label className="block text-gray-700 text-sm font-bold mb-2">
+                    Email <span className="text-red-500">*</span>
+                  </label>
+                  <input
+                    type="text"
+                    class="form-control"
+                    placeholder=""
+                    name="email"
+                    value={formData.email}
+                    onChange={handleChange}
+                  />
+                </div> */}
+                {/* {errors.email && (
+                  <p className="text-sm text-red-500 font-titleFont font-semibold px-4">
+                    <span className="font-bold italic mr-1">!</span>
+                    {errors.email}
+                  </p>
+                )} */}
+                <div className="flex flex-wrap mt-6 pr-3 pl-3">
+                  <label
+                    htmlFor="province"
+                    className="block text-gray-700 text-sm font-bold mb-2"
+                  >
+                    Tỉnh thành <span className="text-red-500">*</span>
+                  </label>
+                  <select
+                    className="form-select w-full p-2 border border-gray-300 rounded-md"
+                    value={formData.tinh}
+                    onChange={handleProvinceChangeaa}
+                    name="tinh"
+                  >
+                    <option disabled value="">
+                      Chọn
+                    </option>
+                    {provinces.map((province) => (
+                      <option>{province.ProvinceName}</option>
+                    ))}
+                  </select>
+                </div>
+                {errors.tinh && (
+                  <p className="text-sm text-red-500 font-titleFont font-semibold px-4">
+                    <span className="font-bold italic mr-1">!</span>
+                    {errors.tinh}
+                  </p>
+                )}
+
+                <div className="flex flex-wrap mt-6 pr-3 pl-3">
+                  <label
+                    htmlFor="district"
+                    className="block text-gray-700 text-sm font-bold mb-2"
+                  >
+                    Quận huyện <span className="text-red-500">*</span>
+                  </label>
+                  <select
+                    className="form-select w-full p-2 border border-gray-300 rounded-md"
+                    value={formData.huyen}
+                    onChange={handleDistrictChangeaaa}
+                    name="huyen"
+                  >
+                    <option disabled value="">
+                      Chọn
+                    </option>
+                    {districts.map((district) => (
+                      <option>{district.DistrictName}</option>
+                    ))}
+                  </select>
+                </div>
+                {errors.huyen && (
+                  <p className="text-sm text-red-500 font-titleFont font-semibold px-4">
+                    <span className="font-bold italic mr-1">!</span>
+                    {errors.huyen}
+                  </p>
+                )}
+
+                <div className="flex flex-wrap mt-6 pr-3 pl-3">
+                  <label
+                    htmlFor="ward"
+                    className="block text-gray-700 text-sm font-bold mb-2"
+                  >
+                    Phường xã <span className="text-red-500">*</span>
+                  </label>
+                  <select
+                    className="form-select w-full p-2 border border-gray-300 rounded-md"
+                    value={formData.xa}
+                    onChange={handleWardChangeaaa}
+                    name="xa"
+                  >
+                    <option disabled value="">
+                      Chọn
+                    </option>
+                    {wards.map((ward) => (
+                      <option>{ward.WardName}</option>
+                    ))}
+                  </select>
+                </div>
+                {errors.xa && (
+                  <p className="text-sm text-red-500 font-titleFont font-semibold px-4">
+                    <span className="font-bold italic mr-1">!</span>
+                    {errors.xa}
+                  </p>
+                )}
+                <div className="flex flex-wrap mt-6 pr-3 pl-3">
+                  <label className="block text-gray-700 text-sm font-bold mb-2">
+                    Địa chỉ <span className="text-red-500">*</span>
+                  </label>
+                  <input
+                    type="text"
+                    class="form-control"
+                    name="diaChi"
+                    value={formData.diaChi}
+                    onChange={handleChange}
+                  />
+                </div>
+                {errors.diaChi && (
+                  <p className="text-sm text-red-500 font-titleFont font-semibold px-4">
+                    <span className="font-bold italic mr-1">!</span>
+                    {errors.diaChi}
+                  </p>
+                )}
+                <div className="flex flex-col items-end mt-4">
+                  <div
+                    className="p-2 border rounded-md bg-pink-300 w-28 flex justify-center cursor-pointer"
+                    onClick={() => handleUpdateDiaChi(formData.maDiaChi)}
+                  >
+                    <button>Sửa</button>
                   </div>
                 </div>
               </div>

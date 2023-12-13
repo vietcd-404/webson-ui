@@ -9,6 +9,7 @@ import { useNavigate } from "react-router-dom";
 import { APP_BASE_URL } from "../../../configs/constans";
 import { toast } from "react-toastify";
 import Swal from "sweetalert2";
+import Cookies from "js-cookie";
 
 const AuthContext = createContext();
 
@@ -36,6 +37,19 @@ export const AuthProvider = ({ children }) => {
       }
 
       const data = await response.json();
+      if (data.trangThai === 0) {
+        setTimeout(() => {
+          const email = data.email;
+          navigate(`/active?email=${email}`, {
+            replace: true,
+          });
+        }, 3000);
+        return;
+      }
+      // const cookies = new Cookies();
+      // Cookies.set("jwt", JSON.stringify(data.token), { httpOnly: true });
+      // Cookies.set("jwt", JSON.stringify(data.token), { httpOnly: true });
+
       localStorage.setItem("user", JSON.stringify(data));
       setUser(data);
       Swal.fire({
@@ -97,6 +111,7 @@ export const AuthProvider = ({ children }) => {
 
   const signout = () => {
     setUser(null);
+    Cookies.remove("jwt");
     localStorage.removeItem("user");
     localStorage.removeItem("items");
     clearTimeout(sessionTimer);
