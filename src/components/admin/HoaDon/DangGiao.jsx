@@ -17,6 +17,7 @@ import {
   productInforHoaDon,
   searchHoaDon,
 } from "../../../services/HoaDonService";
+import XuatHoaDon from "../XuatHoaDon";
 const { Option } = Select;
 
 const DangGiao = () => {
@@ -38,6 +39,9 @@ const DangGiao = () => {
 
   // Phí ship
   const [phiShip, setPhiShip] = useState(0);
+
+  // Xuất hóa đơn
+  const [isXuatHoaDonVisible, setIsXuatHoaDonVisible] = useState(false);
 
   const showEditModal = async (record) => {
     const response = await inforUserHoaDon(record.maHoaDon);
@@ -181,34 +185,6 @@ const DangGiao = () => {
     });
   };
 
-  const handleUpdateProduct = () => {
-    Modal.confirm({
-      title: "Xác nhận",
-      icon: <ExclamationCircleFilled />,
-      content: "Bạn có chắc muốn cập nhập loại không?",
-      okText: "OK",
-      okType: "danger",
-      cancelText: "Đóng",
-      // onOk: async () => {
-      //   try {
-      //     // const values = await formUpdate.validateFields();
-      //     // const response = await updateMau(values, editFormData.maMau);
-      //     // if (response.status === 200) {s
-      //     //   console.log(response);
-      //     //   setIsModalOpen(false);
-
-      //       toast.success("Cập nhật thành công!");
-      //       loadTable();
-      //     }
-      //   } catch (error) {
-      //     console.error("Lỗi khi cập nhật loại: ", error);
-      //     toast.error("Cập nhật thất bại.");
-      //   }
-      // },
-
-      onCancel: () => {},
-    });
-  };
   const handleSearchTypeChange = (value) => {
     setSearchType(value);
   };
@@ -470,13 +446,21 @@ const DangGiao = () => {
     },
   ];
 
+  const isPrintOke = () => {
+    setIsXuatHoaDonVisible(true);
+  };
+
+  const isPrintCancel = () => {
+    setIsXuatHoaDonVisible(false);
+  };
+
   return (
     <div>
       <ToastContainer />
       <Modal
         open={isEditModalOpen}
         onCancel={handleEditCancel}
-        onOk={handleUpdateProduct}
+        onOk={handleEditCancel}
         width={1000}
       >
         <p className="text-bold mb-2" style={{ fontSize: "20px" }}>
@@ -622,6 +606,28 @@ const DangGiao = () => {
             </span>{" "}
           </p>
         </div>
+        <div className="row mt-3 mb-3">
+          <div className="col-10"></div>
+          <div className="col-1">
+            <Button
+              style={{ color: "white", backgroundColor: "red" }}
+              onClick={() => isPrintOke()}
+            >
+              Xuất hóa đơn
+            </Button>
+          </div>
+        </div>
+        <Modal
+          open={isXuatHoaDonVisible}
+          onCancel={isPrintCancel}
+          onOk={isPrintCancel}
+          width={1000}
+        >
+          <XuatHoaDon
+            editFormData={editFormData}
+            tableDataProduct={tableDataProduct}
+          />
+        </Modal>
       </Modal>
       <Card title="Lọc hóa đơn" bordered={true} className="mb-2">
         <form className="mb-2">

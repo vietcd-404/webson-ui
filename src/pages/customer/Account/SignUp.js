@@ -38,7 +38,13 @@ const SignUp = () => {
       valid = false;
     }
 
-    if (formData.sdt < 10) {
+    if (formData.sdt.length !== 10) {
+      newErrors.sdt = "Số điện thoại cần có đúng 10 chữ số";
+      valid = false;
+    }
+
+    const phonePattern = /^\d+$/;
+    if (!phonePattern.test(formData.sdt)) {
       newErrors.sdt = "Số điện thoại không hợp lệ";
       valid = false;
     }

@@ -1,53 +1,69 @@
-import React from "react";
+import React, { useRef } from "react";
+import { logo } from "../../assets/images";
 import jsPDF from "jspdf";
 import html2canvas from "html2canvas";
-import { logo } from "../../assets/images";
-class XuatHoaDon extends React.Component {
-  exportPDF = () => {
-    const input = document.getElementById("pdf-content");
+import { Button } from "antd";
+import { format } from "date-fns";
+const XuatHoaDon = ({ editFormData, tableDataProduct }) => {
+  const getStatusText = (status) => {
+    switch (status) {
+      case 0:
+        return "Chờ xác nhận";
+      case 1:
+        return "Đã xác nhận";
+      case 2:
+        return "Đang giao";
+      case 3:
+        return "Hoàn thành";
+      case 4:
+        return "Đã hủy";
+      case 5:
+        return "Hóa đơn tại quầy";
+      default:
+        return "Chờ xác nhận";
+    }
+  };
 
+  const exportPDF = () => {
+    const input = document.getElementById("pdf-content");
     html2canvas(input).then((canvas) => {
       const pdf = new jsPDF();
       const imgData = canvas.toDataURL("image/png");
 
-      // Lấy kích thước của trang PDF và tính toán kích thước cho ảnh
       const pdfWidth = pdf.internal.pageSize.getWidth();
       const pdfHeight = (canvas.height * pdfWidth) / canvas.width;
-
-      // Thêm ảnh từ canvas vào tệp PDF
       pdf.addImage(imgData, "PNG", 0, 0, pdfWidth, pdfHeight);
-
-      // Lưu tệp PDF
       pdf.save("invoice.pdf");
     });
   };
 
-  render() {
-    return (
-      <div>
-        <button onClick={this.exportPDF}>Export PDF</button>
-        <div id="pdf-content" className="card">
+  return (
+    <div style={{ fontFamily: "Arial, sans-serif" }}>
+      <div className="card m-5" id="pdf-content">
+        <div>
           <div className="card-header bg-black"></div>
           <div className="card-body">
             <div className="container">
               <div className="row">
-                <div className="col-xl-12">
-                  <i className="far fa-building text-danger fa-6x float-start"></i>
-                </div>
-              </div>
-
-              <div className="row">
                 <div className="col-xl-9">
                   <img src={logo} alt="Logo" width="80" />
                 </div>
-                <div className="col-xl-3">
-                  <ul className="list-unstyled">
+                <div class="col-xl-3">
+                  <ul class="list-unstyled">
                     <li style={{ fontSize: "30px", color: "red" }}>
                       Heva Shop
                     </li>
-                    <li>Địa chỉ: Phạm Văn Bạch-Yên Hòa-Cầu Giấy Hà Nội</li>
-                    <li>Sđt: +84.9313.32203</li>
-                    <li>Email: hevashop@mail.com</li>
+                    <li>
+                      {" "}
+                      <strong>Địa chỉ:</strong> Phạm Văn Bạch-Yên Hòa-Cầu Giấy
+                      Hà Nội
+                    </li>
+                    <li>
+                      <strong>Sđt:</strong> +84.9313.32203
+                    </li>
+                    <li>
+                      <strong> Email</strong>: hevashop@mail.com
+                    </li>
                   </ul>
                 </div>
               </div>
@@ -59,18 +75,28 @@ class XuatHoaDon extends React.Component {
                 >
                   Hóa Đơn
                 </h3>
-                <p c>#HD</p>
+                <p c>#HD0000{editFormData.maHoaDon}</p>
               </div>
               <div
                 className="row clear-both mx-3 mt-2"
                 style={{ fontSize: "15px" }}
               >
-                <div>Ngày mua:</div>
-                <div>Khách hàng:</div>
-                <div>Địa chỉ:</div>
-                <div>Số điện thoại:</div>
-                <div>Địa chỉ:</div>
-                <div>Nhân viên:</div>
+                <div>
+                  <strong>Ngày mua:</strong> {editFormData.ngayTao}
+                </div>
+                <div>
+                  <strong>Khách hàng:</strong> {editFormData.tenNguoiDung}
+                </div>
+                <div>
+                  <strong>Địa chỉ:</strong>{" "}
+                  {editFormData.diaChiChiTiet ? editFormData.diaChiChiTie : ""}
+                </div>
+                <div>
+                  <strong>Số điện thoại:</strong> {editFormData.sdt}
+                </div>
+                <div>
+                  <strong>Nhân viên:</strong> {editFormData.tenNhanVien}
+                </div>
               </div>
               <div className="row mx-3 mt-3">
                 <p
@@ -91,12 +117,14 @@ class XuatHoaDon extends React.Component {
                     </tr>
                   </thead>
                   <tbody>
-                    <tr>
-                      <td></td>
-                      <td></td>
-                      <td></td>
-                      <td></td>
-                    </tr>
+                    {tableDataProduct.map((product, index) => (
+                      <tr key={index}>
+                        <td>{product.tenSanPham}</td>
+                        <td>{product.soLuong}</td>
+                        <td>{product.donGia}</td>
+                        <td>{product.soLuong * product.donGia}</td>
+                      </tr>
+                    ))}
                   </tbody>
                 </table>
               </div>
@@ -112,7 +140,11 @@ class XuatHoaDon extends React.Component {
                           fontSize: "17px",
                         }}
                       >
-                        Tổng tiền: -
+                        Tổng tiền:{" "}
+                        {(
+                          editFormData.tongTien + editFormData.tienGiam
+                        ).toLocaleString("en-US")}{" "}
+                        VNĐ
                       </span>
                     </li>
                     <li>
@@ -124,7 +156,12 @@ class XuatHoaDon extends React.Component {
                           fontSize: "17px",
                         }}
                       >
-                        Chiết khấu: %
+                        Chiết khấu: (-){" "}
+                        {(editFormData.tienGiam
+                          ? editFormData.tienGiam
+                          : "0"
+                        ).toLocaleString("en-US")}{" "}
+                        VNĐ
                       </span>
                     </li>
                     <li>
@@ -136,7 +173,12 @@ class XuatHoaDon extends React.Component {
                           fontSize: "17px",
                         }}
                       >
-                        Phí ship: -
+                        Phí ship: (+){" "}
+                        {(editFormData.phiShip
+                          ? editFormData.phiShip
+                          : "0"
+                        ).toLocaleString("en-US")}{" "}
+                        VNĐ
                       </span>
                     </li>
                     <li>
@@ -148,7 +190,10 @@ class XuatHoaDon extends React.Component {
                           fontSize: "17px",
                         }}
                       >
-                        Trạng thái: -
+                        {editFormData && editFormData.trangThai === 5
+                          ? "Hóa đơn:"
+                          : `Trạng thái:`}{" "}
+                        {""} {getStatusText(editFormData.trangThai)}
                       </span>
                     </li>
                   </ul>
@@ -168,7 +213,13 @@ class XuatHoaDon extends React.Component {
                       fontFamily: "Arial, Helvetica, sans-serif",
                     }}
                   >
-                    Thành tiền: <span></span>
+                    Thành tiền:{" "}
+                    <span>
+                      {(
+                        editFormData.tongTien + editFormData.phiShip
+                      ).toLocaleString("en-US")}
+                      VNĐ{" "}
+                    </span>
                   </p>
                 </div>
               </div>
@@ -179,8 +230,16 @@ class XuatHoaDon extends React.Component {
           </div>
         </div>
       </div>
-    );
-  }
-}
+      <div style={{ textAlign: "center" }}>
+        <Button
+          style={{ color: "white", backgroundColor: "red" }}
+          onClick={exportPDF}
+        >
+          In hóa đơn
+        </Button>
+      </div>
+    </div>
+  );
+};
 
 export default XuatHoaDon;
