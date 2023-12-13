@@ -11,7 +11,6 @@ import {
 import { Modal, Space, Table } from "antd";
 import { ToastContainer, toast } from "react-toastify";
 import {
-  capNhapThanhToanHoaDonByAdmin,
   capNhapTrangThaiHoaDonByAdmin,
   getAllOrderByAdmin,
   huytHoaDonByAdmin,
@@ -30,10 +29,17 @@ import SockJS from "sockjs-client";
 import { format } from "date-fns";
 import { getAllLocByAdmin } from "../../../services/SanPhamService";
 import { tab } from "@testing-library/user-event/dist/tab";
+import {
+  hienHuyen,
+  hienTinh,
+  hienXa,
+} from "../../../services/GiaoHangNhanhService";
+import axios from "axios";
 import XuatHoaDon from "../XuatHoaDon";
 const { Option } = Select;
 
-const ChoXacNhan = () => {
+const HoaDonDesign = (props) => {
+  const { trangThaiHD } = props;
   const [totalPage, setTotalPage] = useState(1);
   const [totalPageProduct, setTotalPageProduct] = useState(1);
   const [loading, setLoading] = useState(true);
@@ -41,8 +47,25 @@ const ChoXacNhan = () => {
   const [tableDataProduct, setTableDataProduct] = useState([]);
   const [tongTien, setTongTien] = useState(0);
   const [giamGia, setGiamGia] = useState(0);
+  const [phiShip, setPhiShip] = useState(0);
   const [formUpdate] = Form.useForm();
-  const [editFormData, setEditFormData] = useState(null);
+  const [editFormData, setEditFormData] = useState({
+    maHoaDon: "",
+    tenNguoiDung: "",
+    tenNguoiNhan: "",
+    email: "",
+    sdt: "",
+    diaChi: "",
+    tinh: "",
+    huyen: "",
+    xa: "",
+    phiShip: "",
+    diaChiChiTiet: "",
+    tongTien: "",
+    tenNhanVien: "",
+    trangThai: "",
+    tienGiam: "",
+  });
   const [isEditModalOpen, setIsEditModalOpen] = useState(false);
   const [messageValue, setMessageValue] = useState(null);
 
@@ -59,6 +82,14 @@ const ChoXacNhan = () => {
   const [maHD, setMaHD] = useState("");
   const [updateProductSL, setUpdateProductSL] = useState([]);
 
+  // Dia chi
+  const [provinces, setProvinces] = useState([]);
+  const [districts, setDistricts] = useState([]);
+  const [wards, setWards] = useState([]);
+  const [selectedProvince, setSelectedProvince] = useState("");
+  const [selectedDistrict, setSelectedDistrict] = useState("");
+  const [selectedWard, setSelectedWard] = useState("");
+
   // Xuất hóa đơn
   const [isXuatHoaDonVisible, setIsXuatHoaDonVisible] = useState(false);
 
@@ -66,13 +97,29 @@ const ChoXacNhan = () => {
   const showEditModal = async (record) => {
     setMaHD(null);
     const response = await inforUserHoaDon(record.maHoaDon);
-    setEditFormData(response.data[0]);
+    setEditFormData((prevFormData) => ({
+      ...prevFormData,
+      maHoaDon: response.data[0].maHoaDon,
+      tenNguoiDung: response.data[0].tenNguoiDung,
+      tenNguoiNhan: response.data[0].tenNguoiNhan,
+      email: response.data[0].email,
+      sdt: response.data[0].sdt,
+      diaChi: response.data[0].diaChi,
+      diaChiChiTiet: response.data[0].diaChiChiTiet,
+      tinh: response.data[0].tinh,
+      huyen: response.data[0].huyen,
+      xa: response.data[0].xa,
+      phiShip: response.data[0].phiShip,
+      tongTien: response.data[0].tongTien,
+      tenNhanVien: response.data[0].tenNguoiNhan,
+      trangThai: response.data[0].trangThai,
+      tienGiam: response.data[0].tienGiam,
+    }));
     setMaHD(response.data[0].maHoaDon);
     formUpdate.setFieldsValue({
       maHoaDon: response.data[0].maHoaDon,
       tenNguoiDung: response.data[0].tenNguoiDung,
       tenNguoiNhan: response.data[0].tenNguoiNhan,
-      tenNhanVien: response.data[0].tenNhanVien,
       email: response.data[0].email,
       sdt: response.data[0].sdt,
       diaChi: response.data[0].diaChi,
@@ -81,6 +128,7 @@ const ChoXacNhan = () => {
       huyen: response.data[0].huyen,
       xa: response.data[0].xa,
       tenPhuongThucThanhToan: response.data[0].tenPhuongThucThanhToan,
+      phiShip: response.data[0].phiShip,
     });
     loadProductInOrder(response.data[0].maHoaDon);
     setIsEditModalOpen(true);
@@ -89,6 +137,7 @@ const ChoXacNhan = () => {
   const handleEditCancel = () => {
     formUpdate.resetFields();
     setIsEditModalOpen(false);
+    setSearchQuery("");
     fetchData();
   };
 
@@ -99,6 +148,7 @@ const ChoXacNhan = () => {
       setTableDataProduct(response1.data);
       setTotalPageProduct(response1.totalPage);
       setTongTien(response1.data[0].tongTien);
+      setPhiShip(response1.data[0].phiShip);
       if (response1.data[0].tienGiam == null) {
         setGiamGia(0);
       } else {
@@ -129,7 +179,7 @@ const ChoXacNhan = () => {
 
   const loadTable = async () => {
     try {
-      const response = await getAllOrderByAdmin(5);
+      const response = await getAllOrderByAdmin(trangThaiHD);
       setTotalPage(response.totalPage);
       setLoading(false);
     } catch (error) {
@@ -140,7 +190,7 @@ const ChoXacNhan = () => {
 
   const fetchData = async () => {
     try {
-      const response = await getAllOrderByAdmin(5);
+      const response = await getAllOrderByAdmin(trangThaiHD);
 
       if (
         response.data &&
@@ -178,8 +228,6 @@ const ChoXacNhan = () => {
         return "Hoàn thành";
       case 4:
         return "Đã hủy";
-      case 5:
-        return "Bán tại quầy";
       default:
         return "Chờ xác nhận";
     }
@@ -245,33 +293,6 @@ const ChoXacNhan = () => {
     fetchData();
   };
 
-  // Cập nhập thanh toán
-  const handleUpdatePaid = (thanhToan, maHD) => {
-    Modal.confirm({
-      title: "Xác nhận",
-      icon: <ExclamationCircleFilled />,
-      content:
-        "Bạn có chắc muốn cập nhập trạng thái thanh toán cho đơn hàng không?",
-      okText: "Đồng ý",
-      okType: "danger",
-      cancelText: "Đóng",
-      onOk: async () => {
-        try {
-          const response = await capNhapThanhToanHoaDonByAdmin(thanhToan, maHD);
-          if (response.status === 200) {
-            toast.success("Cập nhật trạng thái đơn hàng thành công!");
-            fetchData();
-          }
-        } catch (error) {
-          console.error("Lỗi khi cập nhật: ", error);
-          toast.error("Cập nhật thất bại.");
-        }
-      },
-
-      onCancel: () => {},
-    });
-  };
-
   // Cập nhập thông tin đơn hàng
   const handleUpdate = () => {
     Modal.confirm({
@@ -285,6 +306,7 @@ const ChoXacNhan = () => {
       onOk: async () => {
         try {
           const values = await formUpdate.validateFields();
+          values.phiShip = phiShip;
           const response = await updatetHoaDonByAdmin(
             editFormData.maHoaDon,
             values
@@ -296,8 +318,18 @@ const ChoXacNhan = () => {
             fetchData();
           }
         } catch (error) {
-          console.error("Lỗi khi cập nhật loại: ", error);
-          toast.error("Cập nhật thất bại.");
+          if (
+            error.response &&
+            error.response.status === 400 &&
+            error.response.data &&
+            error.response.data.message !== null
+          ) {
+            toast.error(error.response.data.message);
+          } else {
+            toast.error("Cập nhật thất bại.");
+            console.error("Lỗi khi cập nhật: ", error);
+          }
+
           setIsEditModalOpen(true);
         }
       },
@@ -411,7 +443,6 @@ const ChoXacNhan = () => {
       setTableDataProduct(updatedData);
       setUpdateProductSL(updatedData);
     }
-    console.log(updateProductSL);
   };
 
   const updateProductQuantity = async () => {
@@ -623,8 +654,8 @@ const ChoXacNhan = () => {
             break;
           default:
             statusStyle = {
-              color: "green",
-              border: "1px solid green",
+              color: "#FFD700",
+              border: "1px solid #FFD700",
               borderRadius: "5px",
               padding: "2px 6px",
             };
@@ -657,7 +688,7 @@ const ChoXacNhan = () => {
             borderRadius: "5px",
             padding: "2px 6px",
           };
-          text = "Chờ thanh toán";
+          text = "Chưa thanh toán";
         }
 
         return (
@@ -678,9 +709,26 @@ const ChoXacNhan = () => {
       key: "action",
       render: (_, record) => (
         <Space size="middle">
-          {record.trangThai === 5 && record.thanhToan === 0 && (
-            <Button onClick={() => handleUpdatePaid(1, record.maHoaDon)}>
-              Đã Thanh Toán
+          {record.trangThai === 0 && (
+            <Button onClick={() => handleUpdateStatus(1, record.maHoaDon)}>
+              Xác nhận
+            </Button>
+          )}
+
+          {record.trangThai === 0 && record.thanhToan === 0 && (
+            <Button onClick={() => handleUpdateStatus(4, record.maHoaDon)}>
+              Hủy
+            </Button>
+          )}
+          {record.trangThai === 1 && (
+            <Button onClick={() => handleUpdateStatus(2, record.maHoaDon)}>
+              Xác nhận
+            </Button>
+          )}
+
+          {record.trangThai === 1 && (
+            <Button onClick={() => handleUpdateStatus(0, record.maHoaDon)}>
+              Hủy
             </Button>
           )}
         </Space>
@@ -698,15 +746,6 @@ const ChoXacNhan = () => {
       ),
     },
   ];
-
-  const isPrintOke = () => {
-    setIsXuatHoaDonVisible(true);
-  };
-
-  const isPrintCancel = () => {
-    setIsXuatHoaDonVisible(false);
-  };
-
   const notify = () => {
     toast.success("Đã nhận được đơn hàng mới!", {
       position: "top-right",
@@ -718,6 +757,182 @@ const ChoXacNhan = () => {
     });
   };
 
+  ////-------------Load địa chỉ
+  useEffect(() => {
+    loadProvinces();
+  }, []);
+
+  //---------Detail địa chỉ hiện lên
+  useEffect(() => {
+    let foundProvinces =
+      provinces.length > 0 &&
+      provinces?.find((item) => item.ProvinceName === editFormData.tinh);
+    setSelectedProvince(foundProvinces ? foundProvinces.ProvinceID : "");
+  }, [provinces]);
+
+  useEffect(() => {
+    let foundProvinces =
+      districts.length > 0 &&
+      districts?.find((item) => item.DistrictName === editFormData.huyen);
+    setSelectedDistrict(foundProvinces ? foundProvinces.DistrictID : "");
+  }, [districts, wards]);
+
+  useEffect(() => {
+    let foundProvinces =
+      wards.length > 0 &&
+      wards?.find((item) => item.WardName === editFormData.xa);
+    setSelectedWard(foundProvinces ? foundProvinces.WardCode : "");
+  }, [wards]);
+  //-------------------------------------
+
+  const loadProvinces = async () => {
+    try {
+      const response = await hienTinh();
+      setProvinces(response.data.data);
+    } catch (error) {
+      console.error("Lỗi khi gọi API: ", error);
+    }
+  };
+
+  const handleProvinceChange = async (provinceId) => {
+    setSelectedProvince(provinceId);
+    setSelectedWard("");
+
+    try {
+      const response = await hienHuyen(provinceId);
+      setDistricts(response.data.data);
+    } catch (error) {
+      console.error("Lỗi khi gọi API: ", error);
+    }
+  };
+
+  const handleDistrictChange = async (districtId) => {
+    setSelectedDistrict(districtId);
+    setSelectedWard("");
+    try {
+      const response = await hienXa(districtId);
+      setWards(response.data.data);
+    } catch (error) {
+      console.error("Lỗi khi gọi API: ", error);
+    }
+  };
+  const handleWardChange = (wardId) => {
+    setSelectedWard(wardId);
+  };
+
+  // Thay doi thanh pho
+  const handleProvinceChangeaa = (selectedValue) => {
+    setEditFormData((prevFormData) => ({
+      ...prevFormData,
+      huyen: "",
+      xa: "",
+    }));
+    formUpdate.setFieldValue("huyen", "");
+    formUpdate.setFieldValue("xa", "");
+
+    const selectedProvinceName = selectedValue;
+    const selectedProvince = provinces.find(
+      (province) => province.ProvinceName === selectedProvinceName
+    );
+
+    setSelectedProvince(selectedProvinceName);
+    setEditFormData((prevFormData) => ({
+      ...prevFormData,
+      tinh: selectedProvince.ProvinceName,
+    }));
+    handleProvinceChange(selectedProvince.ProvinceID);
+  };
+  // Thay doi huyen
+  const handleDistrictChangeaaa = (selectedValue) => {
+    const selectedDistrictName = selectedValue;
+    const selectedDistrict = districts.find(
+      (district) => district.DistrictName === selectedDistrictName
+    );
+    setSelectedDistrict(selectedDistrictName);
+    setEditFormData({
+      ...editFormData,
+      huyen: selectedDistrict.DistrictName,
+    });
+
+    handleDistrictChange(selectedDistrict.DistrictID);
+  };
+
+  // Thay doi xa
+
+  const handleWardChangeaaa = (selectedValue) => {
+    const selectedWardName = selectedValue;
+    const selectedWard = wards.find(
+      (wards) => wards.WardName === selectedWardName
+    );
+    setSelectedWard(selectedWardName);
+    setEditFormData({
+      ...editFormData,
+      xa: selectedWard.WardName,
+    });
+    console.log(selectedWard.WardName);
+
+    handleWardChange(selectedWard.WardCode);
+  };
+
+  const caculateFee = async () => {
+    try {
+      const response = await axios.post(
+        "https://online-gateway.ghn.vn/shiip/public-api/v2/shipping-order/fee",
+        {
+          service_id: null,
+          service_type_id: 2,
+          to_district_id: Number(selectedDistrict),
+          to_ward_code: selectedWard,
+          height: 50,
+          length: 20,
+          weight: 200,
+          width: 20,
+          insurance_value: 10000,
+          cod_failed_amount: 2000,
+          coupon: null,
+        },
+        {
+          headers: {
+            token: "508b262b-8072-11ee-96dc-de6f804954c9",
+            "Content-Type": "application/json",
+            ShopId: 4691092,
+          },
+        }
+      );
+      setPhiShip(response.data.data.total);
+    } catch (error) {
+      console.log("Error:", error);
+    }
+  };
+  useEffect(() => {
+    if (selectedProvince) {
+      handleProvinceChange(selectedProvince);
+    }
+  }, [selectedProvince]);
+
+  useEffect(() => {
+    if (selectedDistrict) {
+      handleDistrictChange(selectedDistrict);
+    }
+  }, [selectedDistrict]);
+
+  useEffect(() => {
+    if (selectedWard) {
+      caculateFee();
+    } else {
+      return;
+    }
+  }, [selectedWard]);
+
+  // Xuất hóa đơn
+  const isPrintOke = () => {
+    setIsXuatHoaDonVisible(true);
+  };
+
+  const isPrintCancel = () => {
+    setIsXuatHoaDonVisible(false);
+  };
+
   return (
     <div>
       <WebSocketService setValue={setMessageValue} connetTo="orderStatus" />
@@ -726,7 +941,7 @@ const ChoXacNhan = () => {
       <Modal
         open={isEditModalOpen}
         onCancel={handleEditCancel}
-        onOk={handleUpdate}
+        onOk={handleEditCancel}
         width={900}
       >
         <p className="text-bold mb-2" style={{ fontSize: "20px" }}>
@@ -750,29 +965,19 @@ const ChoXacNhan = () => {
                 labelCol={{ span: 8 }}
                 wrapperCol={{ span: 16 }}
               >
-                <Input disabled />
+                <Input className="border-none" />
               </Form.Item>
               <Form.Item
-                label="Tên nhân viên"
-                name="tenNhanVien"
+                label="Tên người nhận"
+                name="tenNguoiNhan"
                 labelCol={{ span: 8 }}
                 wrapperCol={{ span: 16 }}
                 rules={[
-                  { required: true, message: "Tên nhân viên không để trống!" },
+                  { required: true, message: "Tên người nhận không để trống!" },
                 ]}
               >
-                <Input disabled />
+                <Input placeholder="Nguyen Van A..." />
               </Form.Item>
-              <Form.Item
-                label="Hình thức thanh toán"
-                name="tenPhuongThucThanhToan"
-                labelCol={{ span: 8 }}
-                wrapperCol={{ span: 16 }}
-              >
-                <Input disabled className="border-none" />
-              </Form.Item>
-            </Col>
-            <Col span={12}>
               <Form.Item
                 label="Email"
                 name="email"
@@ -803,6 +1008,100 @@ const ChoXacNhan = () => {
               >
                 <Input />
               </Form.Item>
+              <Form.Item
+                label="Kiểu thanh toán:"
+                name="tenPhuongThucThanhToan"
+                labelCol={{ span: 8 }}
+                wrapperCol={{ span: 16 }}
+                rules={[
+                  {
+                    required: true,
+                    message: "Phương thức thanh toán không để trống!",
+                  },
+                ]}
+              >
+                <Input className="border-none" />
+              </Form.Item>
+            </Col>
+            <Col span={12}>
+              <Form.Item
+                label="Tỉnh thành"
+                name="tinh"
+                rules={[
+                  { required: true, message: "Vui lòng chọn tỉnh thành!" },
+                ]}
+                labelCol={{ span: 8 }}
+                wrapperCol={{ span: 16 }}
+              >
+                <Select
+                  onChange={(value) => handleProvinceChangeaa(value)}
+                  placeholder="Chọn"
+                >
+                  {provinces.map((province) => (
+                    <Select.Option
+                      key={province.ProvinceID}
+                      value={province.ProvinceName}
+                    >
+                      {province.ProvinceName}
+                    </Select.Option>
+                  ))}
+                </Select>
+              </Form.Item>
+
+              <Form.Item
+                label="Quận huyện"
+                name="huyen"
+                rules={[
+                  { required: true, message: "Vui lòng chọn quận huyện!" },
+                ]}
+                labelCol={{ span: 8 }}
+                wrapperCol={{ span: 16 }}
+              >
+                <Select
+                  onChange={(value) => handleDistrictChangeaaa(value)}
+                  placeholder="Chọn"
+                >
+                  {districts.map((district) => (
+                    <Select.Option
+                      key={district.DistrictID}
+                      value={district.DistrictName}
+                    >
+                      {district.DistrictName}
+                    </Select.Option>
+                  ))}
+                </Select>
+              </Form.Item>
+
+              <Form.Item
+                label="Phường xã"
+                name="xa"
+                rules={[
+                  { required: true, message: "Vui lòng chọn phường xã!" },
+                ]}
+                labelCol={{ span: 8 }}
+                wrapperCol={{ span: 16 }}
+              >
+                <Select
+                  onChange={(value) => handleWardChangeaaa(value)}
+                  placeholder="Chọn"
+                >
+                  {wards.map((ward) => (
+                    <Select.Option key={ward.WardCode} value={ward.WardName}>
+                      {ward.WardName}
+                    </Select.Option>
+                  ))}
+                </Select>
+              </Form.Item>
+
+              <Form.Item
+                label="Địa chỉ chi tiết"
+                name="diaChi"
+                labelCol={{ span: 8 }}
+                wrapperCol={{ span: 16 }}
+                rules={[{ required: true, message: "Địa chỉ không để trống!" }]}
+              >
+                <Input.TextArea rows={4} />
+              </Form.Item>
             </Col>
           </Row>
           <Button type="primary" onClick={handleUpdate}>
@@ -829,9 +1128,15 @@ const ChoXacNhan = () => {
             />
             {searchQuery && (
               <div
-                className={`w-full mt-1 ml-3 lg:mt-0 lg:left-0 lg:right-0 absolute z-50 overflow-y-scroll shadow-2xl scrollbar-hide cursor-pointer`}
+                className={`w-600 mt-1 ml-3 lg:mt-0 lg:left-0 lg:right-0 absolute z-50 overflow-y-scroll shadow-2xl scrollbar-hide cursor-pointer`}
               >
-                <div style={{ maxHeight: "400px", overflowY: "auto" }}>
+                <div
+                  style={{
+                    maxHeight: "400px",
+                    width: "600px",
+                    overflowY: "auto",
+                  }}
+                >
                   {searchQuery &&
                     filteredProducts.map((item) => (
                       <div
@@ -912,9 +1217,15 @@ const ChoXacNhan = () => {
             </span>{" "}
           </p>
           <p className="padding-right">
+            Phí ship:{" "}
+            <span className="text-lg text-bold">
+              +{phiShip.toLocaleString("en-US")} VNĐ
+            </span>{" "}
+          </p>
+          <p className="padding-right">
             Tổng tiền sau khi giảm:{" "}
             <span className="text-lg text-bold">
-              {tongTien.toLocaleString("en-US")} VNĐ
+              {(tongTien + phiShip).toLocaleString("en-US")} VNĐ
             </span>{" "}
           </p>
         </div>
@@ -929,7 +1240,17 @@ const ChoXacNhan = () => {
             </Button>
           </div>
         </div>
-
+        <Modal
+          open={isXuatHoaDonVisible}
+          onCancel={isPrintCancel}
+          onOk={isPrintCancel}
+          width={1000}
+        >
+          <XuatHoaDon
+            editFormData={editFormData}
+            tableDataProduct={tableDataProduct}
+          />
+        </Modal>
         <Modal
           open={isXuatHoaDonVisible}
           onCancel={isPrintCancel}
@@ -1006,4 +1327,4 @@ const ChoXacNhan = () => {
   );
 };
 
-export default ChoXacNhan;
+export default HoaDonDesign;
