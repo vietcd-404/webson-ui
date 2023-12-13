@@ -600,7 +600,7 @@ const DangGiao = () => {
             </span>{" "}
           </p>
           <p className="padding-right">
-            Tổng tiền sau khi giảm:{" "}
+            Thành tiền:{" "}
             <span className="text-lg text-bold">
               {(tongTien + phiShip).toLocaleString("en-US")} VNĐ
             </span>{" "}

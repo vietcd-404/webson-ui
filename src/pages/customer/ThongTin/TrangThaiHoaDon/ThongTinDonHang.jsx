@@ -674,7 +674,7 @@ function ThongTinDonHang() {
                   <span className=" text-gray-700 text-sm font-bold">
                     Phí ship:{" "}
                   </span>
-                  {hoaDon.phiShip} đ
+                  {hoaDon.phiShip} VNĐ
                 </div>
                 {/* 
                 {hoaDon.trangThai === 0 && (
@@ -809,10 +809,15 @@ function ThongTinDonHang() {
                           onChange={handleChange}
                         />
                       </div>
-                      <div className="mb-4">Phí ship: {feeShip} đ</div>
                     </>
                   )}
                 </>
+                <div className="mt-2 mb-4">
+                  Phí ship:{" "}
+                  <span className="text-lg font-bold">
+                    + {hoaDon.phiShip.toLocaleString("en-US")} VNĐ
+                  </span>
+                </div>
 
                 <div className="flex justify-between">
                   {hoaDon.trangThai === 0 && (
@@ -825,74 +830,102 @@ function ThongTinDonHang() {
                       </button>
                     </div>
                   )}
-                  <div>
-                    Tổng tiền:{" "}
-                    <span className="text-lg font-bold">
-                      {hoaDon.tongTien} đ
-                    </span>
-                  </div>
                 </div>
               </div>
             </div>
           ))}
         </div>
-        <div className="table-container overflow-x-auto">
-          <p className="font-bold">Danh sách sản phẩm</p>
-          <table className="page-table table table-hover mb-4">
-            <thead>
-              <tr className="font-bold">
-                <th></th>
-                <th>Sản phẩm</th>
-                <th>Giá sản phẩm</th>
-                <th>Số lượng</th>
-                <th>Thành tiền</th>
-                <th>Thao tác</th>
-              </tr>
-            </thead>
-            <tbody>
-              {data.map((item) => (
-                <FormSanPham
-                  item={item}
-                  xoa={() => xoaSanPhamCT(item.maHoaDonCT)}
-                  cong={() => handleQuantityChange("decrement", item)}
-                  tru={() => handleQuantityChange("increment", item)}
-                  // updateSoLuong={(e) =>
-                  //   handleQuantityChange(
-                  //     e,
-                  //     item.maHoaDonCT,
-                  //     item.maHoaDon,
-                  //     item.soLuongTon,
-                  //     item.dieuKien,
-                  //     item.giaBan
-                  //   )
-                  // }
-                  trangThai={item.trangThai !== 0}
-                />
-              ))}
-            </tbody>
-          </table>
-        </div>
-        <div>
-          <div className="p-4">
-            {data.map((item, index) => (
-              <React.Fragment key={index}>
-                {index === 0 && item.trangThai === 0 && (
-                  <button
-                    className="bg-blue-500 text-white px-4 py-2 rounded hover:bg-blue-700"
-                    onClick={openModal}
-                  >
-                    Thêm sản phẩm
-                  </button>
-                )}
-              </React.Fragment>
-            ))}
+        <div className="table-container overflow-x-auto mt-6">
+          <div className="card ml-3" style={{ width: "976px" }}>
+            <div className="mb-3">
+              <div className="p-5">
+                {data.map((item, index) => (
+                  <React.Fragment key={index}>
+                    {index === 0 && item.trangThai === 0 && (
+                      <button
+                        className="bg-red-500 text-white px-4 py-2 rounded hover:bg-blue-700"
+                        onClick={openModal}
+                      >
+                        Thêm sản phẩm
+                      </button>
+                    )}
+                  </React.Fragment>
+                ))}
 
-            <Model
-              isOpen={isModalOpen}
-              closeModal={closeModal}
-              title="Thêm sản phẩm vào hóa đơn"
-              content={<ThemSanPhamVaoHoaDon maHoaDon={maHoaDon} />}
-            />
+                <Model
+                  isOpen={isModalOpen}
+                  closeModal={closeModal}
+                  title="Thêm sản phẩm vào hóa đơn"
+                  content={<ThemSanPhamVaoHoaDon maHoaDon={maHoaDon} />}
+                />
+              </div>
+            </div>
+            <p className="font-bold">Danh sách sản phẩm</p>
+            <table className="page-table table table-hover mb-4">
+              <thead>
+                <tr className="font-bold">
+                  <th></th>
+                  <th>Sản phẩm</th>
+                  <th>Giá sản phẩm</th>
+                  <th>Số lượng</th>
+                  <th>Thành tiền</th>
+                  <th>Thao tác</th>
+                </tr>
+              </thead>
+              <tbody>
+                {data.map((item) => (
+                  <FormSanPham
+                    item={item}
+                    xoa={() => xoaSanPhamCT(item.maHoaDonCT)}
+                    cong={() => handleQuantityChange("decrement", item)}
+                    tru={() => handleQuantityChange("increment", item)}
+                    // updateSoLuong={(e) =>
+                    //   handleQuantityChange(
+                    //     e,
+                    //     item.maHoaDonCT,
+                    //     item.maHoaDon,
+                    //     item.soLuongTon,
+                    //     item.dieuKien,
+                    //     item.giaBan
+                    //   )
+                    // }
+                    trangThai={item.trangThai !== 0}
+                  />
+                ))}
+              </tbody>
+            </table>
+            {donHang.map((hoaDon) => (
+              <div className="mt-3 ">
+                <div className="mb-2">
+                  Tổng tiền trước:{" "}
+                  <span className="text-lg font-bold">
+                    {(hoaDon.tongTien + hoaDon.tienGiam).toLocaleString(
+                      "en-US"
+                    )}{" "}
+                    VNĐ
+                  </span>
+                </div>
+                <div className="mb-2">
+                  Phí ship:{" "}
+                  <span className="text-lg font-bold">
+                    + {hoaDon.phiShip.toLocaleString("en-US")} VNĐ
+                  </span>
+                </div>
+                <div className="mb-2">
+                  Voucher:{" "}
+                  <span className="text-lg font-bold">
+                    - {hoaDon.tienGiam.toLocaleString("en-US")} VNĐ
+                  </span>
+                </div>
+                <div className="">
+                  Tổng tiền:{" "}
+                  <span className="text-lg font-bold">
+                    {(hoaDon.tongTien + hoaDon.phiShip).toLocaleString("en-US")}{" "}
+                    VNĐ
+                  </span>
+                </div>
+              </div>
+            ))}
           </div>
         </div>
       </div>

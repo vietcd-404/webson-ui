@@ -70,7 +70,7 @@ const Huy = () => {
                   <span className="ml-2">Đơn hàng đã được tạo ngày: </span>
                   <strong> {item.ngayTao}</strong>
                 </div>
-                <div className=" flex items-center w-[22%]">
+                <div className=" flex items-center w-[30%]">
                   <div
                     className={`border rounded-3xl w-[120px] bg-opacity-80 p-1 text-center ${getStatusClassName(
                       item.trangThai

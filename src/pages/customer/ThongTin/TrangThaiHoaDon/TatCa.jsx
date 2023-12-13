@@ -108,13 +108,13 @@ const TatCa = () => {
                     <strong> {item.ngayTao}</strong>
                   </span>
                 </div>
-                <div className=" flex items-center w-[22%]">
-                  <div
-                    className={`border rounded-3xl w-[120px] bg-opacity-80 p-1 text-center ${getStatusClassName(
-                      item.trangThai
-                    )}`}
-                  >
-                    <div className="text-white">
+                <div className=" flex items-center w-[30%]">
+                  <div className="">
+                    <div
+                      className={`rounded-3xl w-[130px] bg-opacity-80 p-1 text-center ${getStatusClassName(
+                        item.trangThai
+                      )}`}
+                    >
                       {getStatusText(item.trangThai)}
                     </div>
                   </div>
