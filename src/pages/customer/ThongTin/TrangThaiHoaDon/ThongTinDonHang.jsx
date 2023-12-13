@@ -566,27 +566,27 @@ function ThongTinDonHang() {
       }
     }
   };
-  const socket = new SockJS("http://localhost:8000/api/anh/ws");
-  const stompClient = Stomp.over(socket);
+  // const socket = new SockJS("http://localhost:8000/api/anh/ws");
+  // const stompClient = Stomp.over(socket);
 
-  useEffect(() => {
-    stompClient.connect({}, (frame) => {
-      console.log("Connected: " + frame);
+  // useEffect(() => {
+  //   stompClient.connect({}, (frame) => {
+  //     console.log("Connected: " + frame);
 
-      // Đăng ký người nghe cho đường dẫn "/topic/tao-hoa-don"
-      stompClient.subscribe("/topic/update", (message) => {
-        const maHoaDon1 = JSON.parse(message.body).maHoaDon;
-        try {
-          const response = hoaDonChiTiet(maHoaDon1);
-          setData(response.data);
-          console.log(response);
-        } catch (error) {
-          console.error("Lỗi khi gọi API: ", error);
-        }
-        // Xử lý thông điệp ở đây, có thể cập nhật UI hoặc thực hiện các tác vụ khác
-      });
-    });
-  });
+  //     // Đăng ký người nghe cho đường dẫn "/topic/tao-hoa-don"
+  //     stompClient.subscribe("/topic/update", (message) => {
+  //       const maHoaDon1 = JSON.parse(message.body).maHoaDon;
+  //       try {
+  //         const response = hoaDonChiTiet(maHoaDon1);
+  //         setData(response.data);
+  //         console.log(response);
+  //       } catch (error) {
+  //         console.error("Lỗi khi gọi API: ", error);
+  //       }
+  //       // Xử lý thông điệp ở đây, có thể cập nhật UI hoặc thực hiện các tác vụ khác
+  //     });
+  //   });
+  // });
 
   const [isModalOpen, setIsModalOpen] = useState(false);
 

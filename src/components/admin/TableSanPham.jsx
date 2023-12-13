@@ -108,7 +108,8 @@ const TableSanPham = () => {
           }
         } catch (error) {
           console.error("Lỗi khi tạo sản phẩm : ", error);
-          toast.error("Thêm mới thất bại.");
+          toast.error(error.response.data.message);
+          // toast.error("Thêm mới thất bại.");
         }
       },
       onCancel: () => {},

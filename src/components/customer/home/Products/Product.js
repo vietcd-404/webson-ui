@@ -122,7 +122,7 @@ const Product = (item) => {
         <div>
           <Link to={`/product/${item.maSanPhamCT}`}>
             <img
-              className="w-full h-[90%] cursor-pointer"
+              className="w-full h-[250px] cursor-pointer"
               alt={item.tenSanPham}
               src={`data:image/png;base64,${item.img}`}
             />

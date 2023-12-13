@@ -15,3 +15,7 @@ export const updateDiaChi = async (diaChi, maDiaChi) => {
 export const deleteDiaChi = async (id) => {
   return await api.delete(`/user/dia-chi/delete/${id}`);
 };
+
+export const getByDiaChi = async (ma) => {
+  return await api.get(`/user/dia-chi/${ma}`);
+};

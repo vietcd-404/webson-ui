@@ -69,11 +69,12 @@ function Otp() {
   };
 
   const handleResendOtp = () => {
+    setLoading(true);
     axios
       .get(`http://localhost:8000/api/auth/resend-otp?email=${email}`)
       .then((response) => {
-        setLoading(true);
         toast.success(response.data.message);
+        setLoading(false);
       })
       .catch((error) => {
         toast.error(error.response.data.message);
@@ -110,14 +111,14 @@ function Otp() {
         </div>
         <button
           onClick={handleActivate}
-          className="mt-4 mr-3 px-4 py-2 bg-blue-500 text-white rounded hover:bg-blue-700"
+          className="mt-4 mr-3 px-4 py-2 bg-blue-500 text-white rounded hover:opacity-80"
           disabled={!isOtpValid} // Vô hiệu hóa nút Xác nhận nếu mã OTP không hợp lệ
         >
           Xác nhận
         </button>
         <button
           onClick={handleResendOtp}
-          className="mt-4 px-4 py-2 bg-blue-500 text-white rounded hover-bg-blue-700"
+          className="mt-4 px-4 py-2 bg-blue-500 text-white rounded hover-bg-blue-700 hover:opacity-80"
         >
           Gửi lại
         </button>

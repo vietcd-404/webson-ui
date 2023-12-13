@@ -28,6 +28,7 @@ const SignIn = () => {
     setErrPassword("");
   };
   // ============= Event Handler End here ===============
+  const [loading, setLoading] = useState(false);
   const handleSignUp = async (e) => {
     e.preventDefault();
     if (!username) {
@@ -38,6 +39,7 @@ const SignIn = () => {
     }
 
     await signin(username, password);
+    setLoading(true);
   };
 
   // const handleSubmit = async (e) => {
@@ -47,6 +49,13 @@ const SignIn = () => {
   return (
     <div className="min-h-screen flex items-center justify-center bg-gray-100">
       <ToastContainer />
+      <div
+        className={`fixed top-0 left-0 w-full h-full flex justify-center items-center bg-black bg-opacity-50 z-50 ${
+          loading ? "" : "hidden"
+        }`}
+      >
+        <div className="border-t-4 border-r-[3px] border-l-2 border-gray-700 border-solid rounded-full h-14 w-14 animate-spin"></div>
+      </div>
       <div className="w-full sm:max-w-md">
         <form className="bg-white shadow-md rounded px-8 pt-6 pb-8 mb-4">
           <h1 className="font-semibold text-3xl mb-4 text-center">Đăng Nhập</h1>
