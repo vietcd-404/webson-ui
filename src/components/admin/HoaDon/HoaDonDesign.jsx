@@ -312,7 +312,6 @@ const HoaDonDesign = (props) => {
             values
           );
           if (response.status === 200) {
-            console.log(response);
             setIsEditModalOpen(false);
             toast.success("Cập nhật thành công!");
             fetchData();
