@@ -995,11 +995,11 @@ const ChoXacNhan = () => {
           columns={columns}
           dataSource={tableData}
           pagination={{
-            pageSize: 5,
+            pageSize: 7,
             total: totalPage * 5,
             current: totalPage,
           }}
-          style={{ maxHeight: "500px", overflowY: "auto" }}
+          // style={{ maxHeight: "500px", overflowY: "auto" }}
         />
       )}
     </div>

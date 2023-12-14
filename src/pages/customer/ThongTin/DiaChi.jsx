@@ -342,8 +342,8 @@ const DiaChi = () => {
         await updateDiaChi(formData, ma);
         // setLoading(true);
         Swal.fire({
-          title: "Tạo địa chỉ!",
-          text: "Tạo địa chỉ thành công",
+          title: "Sửa địa chỉ!",
+          text: "Sửa địa chỉ thành công",
           icon: "success",
         });
 

@@ -36,13 +36,20 @@ const LayoutAdmin = ({ children }) => {
       "1",
       <DashboardOutlined />
     ),
-    getItem(
-      <Link to="/admin/san-pham-chi-tiet">Quản lý sản phẩm chi tiết</Link>,
-      "2",
-      <DesktopOutlined />
-    ),
-    getItem("Quản lý thuộc tính", "sub1", <MacCommandOutlined />, [
+    // getItem(
+    //   <Link to="/admin/san-pham-chi-tiet">Quản lý sản phẩm chi tiết</Link>,
+    //   "2",
+    //   <DesktopOutlined />
+    // ),
+    getItem("Quản lý sản phẩm", "sub3", <DesktopOutlined />, [
       getItem(<Link to="/admin/san-pham">Sản phẩm</Link>, "3"),
+      getItem(
+        <Link to="/admin/san-pham-chi-tiet">Chi tiết sản phẩm</Link>,
+        "2"
+      ),
+    ]),
+    getItem("Quản lý thuộc tính", "sub1", <MacCommandOutlined />, [
+      // getItem(<Link to="/admin/san-pham">Sản phẩm</Link>, "3"),
       getItem(<Link to="/admin/loai">Loại</Link>, "4"),
       getItem(<Link to="/admin/thuong-hieu">Thương hiệu</Link>, "5"),
       getItem(<Link to="/admin/mau-sac">Màu</Link>, "6"),

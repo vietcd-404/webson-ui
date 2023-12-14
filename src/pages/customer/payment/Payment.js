@@ -413,6 +413,7 @@ const Payment = () => {
       try {
         if (!formData.tenPhuongThuc) {
           toast.error("Vui lòng chọn phương thức thanh toán");
+          setLoading(false);
           return;
         }
         const updatedFormData = {
@@ -573,6 +574,13 @@ const Payment = () => {
     const selectedVoucher = voucher.find(
       (item) => item.tenVoucher === voucherCode
     );
+    console.log(selectedVoucher);
+
+    if (selectedVoucher.soLuong <= 0) {
+      toast.error("Voucher đã hết ");
+      setSelectedVoucherCode("");
+      return;
+    }
     if (voucherCode === null) {
       toast.error("Voucher không khả dụng hoặc đã được sử dụng trước đó");
       return;
@@ -580,14 +588,16 @@ const Payment = () => {
 
     if (!selectedVoucher || !selectedVoucherCode) {
       toast.warning("Voucher không khả dụng hoặc đã được sử dụng trước đó");
+      console.log(selectedVoucher.soLuong);
       return;
     }
     const dieuKien = selectedVoucher.dieuKien;
-
-    if (tongTien1 <= dieuKien) {
+    if (tongTien1 < dieuKien) {
       toast.error("Không đủ điều kiện áp mã");
+      setSelectedVoucherCode("");
       return tongTien1;
     }
+
     if (voucherDaSuDung) {
       toast.warning("Voucher không khả dụng hoặc đã được sử dụng trước đó");
       return;
@@ -718,7 +728,9 @@ const Payment = () => {
   }, [provinces]);
 
   const [districtsLoaded, setDistrictsLoaded] = useState(false);
-
+  const handleClearClick = () => {
+    setSelectedVoucherCode("");
+  };
   return (
     <div className="container mx-auto px-4 ">
       {/* Breadcrumbs component */}
@@ -1054,15 +1066,23 @@ const Payment = () => {
                         name="tenVoucher"
                         value={selectedVoucherCode}
                         placeholder="Mã Voucher"
-                        onChange={handleInput}
+                        // onChange={handleInput}
                         className="w-full p-2 border rounded-md"
                       />
+                      {selectedVoucherCode && (
+                        <button
+                          onClick={handleClearClick}
+                          className="absolute top-0 right-[171px] m-2 text-gray-500 hover:text-red-500 cursor-pointer"
+                        >
+                          X
+                        </button>
+                      )}
                     </div>
                     <div className="md:ml-2 ml-1">
                       <button
                         type="submit"
                         onClick={handleSubmit}
-                        className="bg-blue-500 p-2 rounded-md text-white"
+                        className="bg-blue-500 p-2 rounded-md text-white hover:opacity-80"
                       >
                         Áp dụng
                       </button>
@@ -1070,7 +1090,7 @@ const Payment = () => {
                   </form>
                   <label
                     onClick={openModal}
-                    className="block text-blue-400 text-sm mb-2  md:text-right md:right-8"
+                    className="block text-blue-400 text-sm mb-2  md:text-right md:right-8 cursor-pointer hover:underline"
                   >
                     Chọn mã
                   </label>
@@ -1121,7 +1141,7 @@ const Payment = () => {
                                     handleVoucherSelection(item.tenVoucher)
                                   }
                                   type="submit"
-                                  className="bg-blue-500 p-2 rounded-md text-white"
+                                  className="bg-blue-500 p-2 rounded-md text-white hover:opacity-80"
                                 >
                                   Áp dụng
                                 </button>

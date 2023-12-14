@@ -836,7 +836,7 @@ function ThongTinDonHang() {
           ))}
         </div>
         <div className="table-container overflow-x-auto mt-6">
-          <div className="card ml-3" style={{ width: "976px" }}>
+          <div className="card ml-3 w-[98%]">
             <div className="mb-3">
               <div className="p-5">
                 {data.map((item, index) => (
