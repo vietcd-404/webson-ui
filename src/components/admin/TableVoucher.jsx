@@ -32,7 +32,6 @@ import {
 } from "../../services/VoucherService";
 import SearchInput from "./SearchInput";
 import moment from "moment";
-import { da, fi } from "date-fns/locale";
 
 const TableVoucher = () => {
   const [data, setData] = useState([]);
@@ -61,12 +60,17 @@ const TableVoucher = () => {
   // Edit
 
   const showEditModal = (record) => {
+    formUpdate.resetFields();
     setEditFormData(record);
     formUpdate.setFieldsValue({
       maVoucher: record.maVoucher,
       soLuong: record.soLuong,
-      thoiGianBatDau: dayjs(record.thoiGianBatDau),
-      thoiGianKetThuc: dayjs(record.thoiGianKetThuc),
+      thoiGianBatDau: dayjs(record.thoiGianBatDau)
+        ? dayjs(record.thoiGianBatDau)
+        : "",
+      thoiGianKetThuc: dayjs(record.thoiGianKetThuc)
+        ? dayjs(record.thoiGianKetThuc)
+        : "",
       giaTriGiam: record.giaTriGiam,
       dieuKien: record.dieuKien,
       giamToiDa: record.giamToiDa,
@@ -85,11 +89,10 @@ const TableVoucher = () => {
   }, []);
 
   const handleStartDateChange = (date, dateString) => {
-    console.log(dateString);
     setStartDate(dateString);
   };
+
   const handleEndDateChange = (date, dateString) => {
-    console.log(dateString);
     setEndDate(dateString);
   };
   const filterVouchersByTimeRange = () => {
@@ -110,12 +113,14 @@ const TableVoucher = () => {
           voucherEndDate.getTime() <= filterEndDate.getTime()
         );
       });
-
       setData(filteredData);
+      setStartDate("");
+      setEndDate("");
     } else {
       console.log("Ngày bắt đầu hoặc ngày kết thúc không hợp lệ");
     }
   };
+
   const handelClear = () => {
     setStartDate(null);
     setEndDate(null);
@@ -152,7 +157,6 @@ const TableVoucher = () => {
           }
           const response = await createVoucher(values);
           if (response.status === 200) {
-            console.log(response);
             setIsModalOpen(false);
             toast.success("Thêm mới thành công!");
             loadTable();
@@ -178,15 +182,15 @@ const TableVoucher = () => {
       onOk: async () => {
         try {
           const values = await formUpdate.validateFields();
+          console.log(values.thoiGianBatDau);
           if (values.thoiGianBatDau.isAfter(values.thoiGianKetThuc)) {
             toast.error("Ngày bắt đầu không được lớn hơn ngày kết thúc");
             return;
           }
           const response = await updateVoucher(values, editFormData.maVoucher);
           if (response.status === 200) {
-            console.log(response);
-            setIsEditModalOpen(false);
             toast.success("Cập nhật thành công!");
+            setIsEditModalOpen(false);
             loadTable();
           }
         } catch (error) {
@@ -533,7 +537,7 @@ const TableVoucher = () => {
               />
               <Button
                 className="ml-5 mr-2 bg-red-500 text-white"
-                onClick={filterVouchersByTimeRange}
+                onClick={() => filterVouchersByTimeRange()}
               >
                 Lọc
               </Button>
