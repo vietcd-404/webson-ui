@@ -87,13 +87,25 @@ const CaNhan = ({ props }) => {
           values.password = user.password;
           if (user.vaiTro === "ROLE_USER") {
             values.vaiTro = 2;
+          } else if (user.vaiTro === "ROLE_STAFF") {
+            values.vaiTro = 3;
           } else if (user.vaiTro === "ROLE_ADMIN") {
             values.vaiTro = 1;
           }
-          console.log(values);
+          values.ho = values.ho.trim();
+          values.ten = values.ten.trim();
+          values.tenDem = values.tenDem.trim();
+          values.email = values.email.trim();
+          values.sdt = values.sdt.trim();
           const response = await updateUser(values, user.id);
           if (response.status === 200) {
-            console.log(response);
+            user.ho = values.ho.trim();
+            user.ten = values.ten.trim();
+            user.tenDem = values.tenDem.trim();
+            user.email = values.email.trim();
+            user.sdt = values.sdt.trim();
+            user.gioiTinh = values.gioiTinh;
+            user.ngaySinh = values.ngaySinh;
             toast.success("Cập nhật thành công!");
           }
         } catch (error) {
@@ -192,6 +204,8 @@ const CaNhan = ({ props }) => {
                   rules={[
                     {
                       required: true,
+                      whitespace: true,
+                      trim: true,
                       message: "Họ không được để trống!",
                     },
                   ]}
@@ -208,6 +222,8 @@ const CaNhan = ({ props }) => {
                   rules={[
                     {
                       required: true,
+                      whitespace: true,
+                      trim: true,
                       message: "Tên đệm không được để trống!",
                     },
                   ]}
@@ -224,6 +240,8 @@ const CaNhan = ({ props }) => {
                   rules={[
                     {
                       required: true,
+                      whitespace: true,
+                      trim: true,
                       message: "Tên không được để trống!",
                     },
                   ]}
@@ -279,6 +297,8 @@ const CaNhan = ({ props }) => {
               rules={[
                 {
                   required: true,
+                  whitespace: true,
+                  trim: true,
                   message: "Số điện thoại không bỏ trống!",
                 },
                 {
@@ -295,6 +315,8 @@ const CaNhan = ({ props }) => {
               rules={[
                 {
                   required: true,
+                  whitespace: true,
+                  trim: true,
                   message: "Email không được để trống!",
                 },
                 {
