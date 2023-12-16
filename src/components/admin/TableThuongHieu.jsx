@@ -84,6 +84,10 @@ const TableThuongHieu = () => {
       onOk: async () => {
         try {
           const values = await form.validateFields();
+          values.tenThuongHieu = values.tenThuongHieu
+            .trim()
+            .replace(/\s+/g, " ");
+
           const response = await createThuongHieu(values);
           if (response.status === 200) {
             console.log(response);
@@ -94,7 +98,12 @@ const TableThuongHieu = () => {
           }
         } catch (error) {
           console.error("Lỗi khi tạo thương hiệu : ", error);
-          toast.error("Thêm mới thất bại.");
+          if (error.response && error.response.status === 400) {
+            toast.error(error.response.data.message);
+            return;
+          } else {
+            toast.error("Thêm mới thất bại.");
+          }
         }
       },
       onCancel: () => {},
@@ -112,6 +121,10 @@ const TableThuongHieu = () => {
       onOk: async () => {
         try {
           const values = await formUpdate.validateFields();
+          values.tenThuongHieu = values.tenThuongHieu
+            .trim()
+            .replace(/\s+/g, " ");
+
           const response = await updateThuongHieu(
             values,
             editFormData.maThuongHieu
@@ -124,7 +137,12 @@ const TableThuongHieu = () => {
           }
         } catch (error) {
           console.error("Lỗi khi cập nhật thương hiệu : ", error);
-          toast.error("Cập nhật thất bại.");
+          if (error.response && error.response.status === 400) {
+            toast.error(error.response.data.message);
+            return;
+          } else {
+            toast.error("Cập nhập thất bại.");
+          }
         }
       },
 
@@ -268,7 +286,12 @@ const TableThuongHieu = () => {
             name="tenThuongHieu"
             style={{ width: "360px", marginLeft: "40px" }}
             rules={[
-              { required: true, message: "Tên loại không được để trống!" },
+              {
+                required: true,
+                whitespace: true,
+                trim: true,
+                message: "Tên thương hiệu không được để trống!",
+              },
             ]}
           >
             <Input placeholder="Tên" />

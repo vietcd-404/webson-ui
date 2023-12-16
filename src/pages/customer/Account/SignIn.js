@@ -39,7 +39,7 @@ const SignIn = () => {
     }
 
     await signin(username, password);
-    setLoading(true);
+    setLoading(false);
   };
 
   // const handleSubmit = async (e) => {

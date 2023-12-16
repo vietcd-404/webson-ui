@@ -24,12 +24,18 @@ const SignUp = () => {
     });
   };
 
+  const validatePhone = (sdt) => {
+    return String(sdt).match(/^0?\d{10}$/);
+  };
   const validateForm = () => {
     let valid = true;
     const newErrors = {};
 
     if (!formData.username) {
       newErrors.username = "Tên đăng nhập không được trống";
+      valid = false;
+    } else if (/\s/.test(formData.username)) {
+      newErrors.username = "Tên đăng nhập không hợp lệ";
       valid = false;
     }
 
@@ -43,14 +49,16 @@ const SignUp = () => {
       valid = false;
     }
 
-    const phonePattern = /^\d+$/;
-    if (!phonePattern.test(formData.sdt)) {
+    if (!formData.sdt || !validatePhone(formData.sdt)) {
       newErrors.sdt = "Số điện thoại không hợp lệ";
       valid = false;
     }
 
     if (formData.password.length < 6) {
       newErrors.password = "Mật khẩu không được nhỏ hơn 6 ký tự";
+      valid = false;
+    } else if (/\s/.test(formData.password)) {
+      newErrors.password = "Mật khẩu không hợp lệ";
       valid = false;
     }
 
@@ -72,10 +80,15 @@ const SignUp = () => {
   // ================= Email Validation End here ===============
   const handleAdd = async (e) => {
     e.preventDefault();
-
+    const updatedFormData = {
+      ...formData,
+      username: formData.username.trim(),
+      email: formData.email.trim(),
+      sdt: formData.sdt.trim(),
+    };
     if (validateForm()) {
       setLoading(true);
-      await dangKy(formData)
+      await dangKy(updatedFormData)
         .then((response) => {
           setLoading(true);
           toast.success(response.data.message);

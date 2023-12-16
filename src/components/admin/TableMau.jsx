@@ -82,6 +82,8 @@ const TableMau = () => {
       onOk: async () => {
         try {
           const values = await form.validateFields();
+          values.tenMau = values.tenMau.trim().replace(/\s+/g, " ");
+
           const response = await createMau(values);
           if (response.status === 200) {
             console.log(response);
@@ -92,7 +94,12 @@ const TableMau = () => {
           }
         } catch (error) {
           console.error("Lỗi khi tạo màu: ", error);
-          toast.error("Thêm mới thất bại.");
+          if (error.response && error.response.status === 400) {
+            toast.error(error.response.data.message);
+            return;
+          } else {
+            toast.error("Thêm mới thất bại.");
+          }
         }
       },
       onCancel: () => {},
@@ -110,6 +117,8 @@ const TableMau = () => {
       onOk: async () => {
         try {
           const values = await formUpdate.validateFields();
+          values.tenMau = values.tenMau.trim().replace(/\s+/g, " ");
+
           const response = await updateMau(values, editFormData.maMau);
           if (response.status === 200) {
             console.log(response);
@@ -120,7 +129,12 @@ const TableMau = () => {
           }
         } catch (error) {
           console.error("Lỗi khi cập nhật loại: ", error);
-          toast.error("Cập nhật thất bại.");
+          if (error.response && error.response.status === 400) {
+            toast.error(error.response.data.message);
+            return;
+          } else {
+            toast.error("Cập nhập thất bại.");
+          }
         }
       },
 

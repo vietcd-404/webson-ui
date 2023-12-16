@@ -84,6 +84,8 @@ const TableLoai = () => {
       onOk: async () => {
         try {
           const values = await form.validateFields();
+          values.tenLoai = values.tenLoai.trim().replace(/\s+/g, " ");
+
           const response = await createLoai(values);
           if (response.status === 200) {
             console.log(response);
@@ -94,7 +96,12 @@ const TableLoai = () => {
           }
         } catch (error) {
           console.error("Lỗi khi tạo loại: ", error);
-          toast.error("Thêm mới thất bại.");
+          if (error.response && error.response.status === 400) {
+            toast.error(error.response.data.message);
+            return;
+          } else {
+            toast.error("Thêm mới thất bại.");
+          }
         }
       },
       onCancel: () => {},
@@ -112,6 +119,8 @@ const TableLoai = () => {
       onOk: async () => {
         try {
           const values = await formUpdate.validateFields();
+          values.tenLoai = values.tenLoai.trim().replace(/\s+/g, " ");
+
           const response = await updateLoai(values, editFormData.maLoai);
           if (response.status === 200) {
             console.log(response);
@@ -121,7 +130,12 @@ const TableLoai = () => {
           }
         } catch (error) {
           console.error("Lỗi khi cập nhật loại: ", error);
-          toast.error("Cập nhật thất bại.");
+          if (error.response && error.response.status === 400) {
+            toast.error(error.response.data.message);
+            return;
+          } else {
+            toast.error("Cập nhập thất bại.");
+          }
         }
       },
 

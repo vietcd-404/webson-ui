@@ -926,7 +926,11 @@ function ThongTinDonHang() {
                 <div className="mb-2">
                   Voucher:{" "}
                   <span className="text-lg font-bold">
-                    - {hoaDon.tienGiam.toLocaleString("en-US")} VNĐ
+                    -{" "}
+                    {(hoaDon.tienGiam ? hoaDon.tienGiam : "0").toLocaleString(
+                      "en-US"
+                    )}{" "}
+                    VNĐ
                   </span>
                 </div>
                 <div className="">

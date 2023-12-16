@@ -65,6 +65,7 @@ const HoaDonDesign = (props) => {
     tenNhanVien: "",
     trangThai: "",
     tienGiam: "",
+    ngayTao: "",
   });
   const [isEditModalOpen, setIsEditModalOpen] = useState(false);
   const [messageValue, setMessageValue] = useState(null);
@@ -114,6 +115,7 @@ const HoaDonDesign = (props) => {
       tenNhanVien: response.data[0].tenNguoiNhan,
       trangThai: response.data[0].trangThai,
       tienGiam: response.data[0].tienGiam,
+      ngayTao: response.data[0].ngayTao,
     }));
     setMaHD(response.data[0].maHoaDon);
     formUpdate.setFieldsValue({

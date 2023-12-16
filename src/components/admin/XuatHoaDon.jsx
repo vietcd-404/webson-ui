@@ -33,7 +33,8 @@ const XuatHoaDon = ({ editFormData, tableDataProduct }) => {
       const pdfWidth = pdf.internal.pageSize.getWidth();
       const pdfHeight = (canvas.height * pdfWidth) / canvas.width;
       pdf.addImage(imgData, "PNG", 0, 0, pdfWidth, pdfHeight);
-      pdf.save("invoice.pdf");
+      // pdf.save("invoice.pdf");
+      pdf.save("HD0000" + editFormData.maHoaDon + ".pdf");
     });
   };
 
@@ -45,24 +46,32 @@ const XuatHoaDon = ({ editFormData, tableDataProduct }) => {
           <div className="card-body">
             <div className="container">
               <div className="row">
-                <div className="col-xl-9">
+                <div className="col-xl-8">
                   <img src={logo} alt="Logo" width="80" />
                 </div>
-                <div class="col-xl-3">
+                <div class=" text-center">
                   <ul class="list-unstyled">
                     <li style={{ fontSize: "30px", color: "red" }}>
                       Heva Shop
                     </li>
                     <li>
+                      <strong>Số điện thoại: </strong> 0328092280
+                    </li>
+                    <li>
+                      <strong>Email: </strong>hevashop@gmail.com
+                    </li>
+                    <li>
                       {" "}
-                      <strong>Địa chỉ:</strong> Phạm Văn Bạch-Yên Hòa-Cầu Giấy
-                      Hà Nội
+                      <strong>Địa chỉ:</strong> Phạm Văn Bạch - Yên Hòa - Cầu
+                      Giấy - Hà Nội
                     </li>
                     <li>
-                      <strong>Sđt:</strong> +84.9313.32203
+                      {" "}
+                      <strong>Ngân hàng:</strong> Techcombank - 902928689999
                     </li>
                     <li>
-                      <strong> Email</strong>: hevashop@mail.com
+                      {" "}
+                      <strong>Chủ tài khoản:</strong> Cao Đức Việt
                     </li>
                   </ul>
                 </div>
@@ -87,15 +96,23 @@ const XuatHoaDon = ({ editFormData, tableDataProduct }) => {
                 <div>
                   <strong>Khách hàng:</strong> {editFormData.tenNguoiDung}
                 </div>
-                <div>
-                  <strong>Địa chỉ:</strong>{" "}
-                  {editFormData.diaChiChiTiet ? editFormData.diaChiChiTie : ""}
-                </div>
+                {editFormData.trangThai === 5 ? (
+                  <></>
+                ) : (
+                  <div>
+                    <strong>Địa chỉ:</strong>{" "}
+                    {editFormData.diaChiChiTiet
+                      ? editFormData.diaChiChiTiet
+                      : ""}
+                  </div>
+                )}
+
                 <div>
                   <strong>Số điện thoại:</strong> {editFormData.sdt}
                 </div>
                 <div>
-                  <strong>Nhân viên:</strong> {editFormData.tenNhanVien}
+                  <strong>Nhân viên:</strong>{" "}
+                  {editFormData.trangThai === 5 ? editFormData.tenNhanVien : ""}
                 </div>
               </div>
               <div className="row mx-3 mt-3">
@@ -128,82 +145,69 @@ const XuatHoaDon = ({ editFormData, tableDataProduct }) => {
                   </tbody>
                 </table>
               </div>
-              <div className="row mt-2 mb-4">
-                <div className="col-xl-8">
-                  <ul className="list-unstyled float-end me-0">
-                    <li>
-                      <span
-                        className="float-start"
-                        style={{
-                          marginRight: "20px",
-                          fontWeight: "bold",
-                          fontSize: "17px",
-                        }}
-                      >
-                        Tổng tiền:{" "}
+              <div className="p-3 mt-2 mb-4">
+                <div className="">
+                  <div className="">
+                    <div className="flex justify-between mb-1">
+                      <div className="text-[17px]">Tổng tiền:</div>
+                      <div className="font-bold">
                         {(
                           editFormData.tongTien + editFormData.tienGiam
                         ).toLocaleString("en-US")}{" "}
                         VNĐ
-                      </span>
-                    </li>
-                    <li>
-                      <span
-                        className="float-start"
-                        style={{
-                          marginRight: "40px",
-                          fontWeight: "bold",
-                          fontSize: "17px",
-                        }}
-                      >
-                        Chiết khấu: (-){" "}
+                      </div>
+                    </div>
+                    <div className="flex justify-between mb-1">
+                      <div className="text-[17px]">Chiết khấu:</div>
+                      <div className="font-bold">
+                        (-){" "}
                         {(editFormData.tienGiam
                           ? editFormData.tienGiam
                           : "0"
                         ).toLocaleString("en-US")}{" "}
                         VNĐ
-                      </span>
-                    </li>
-                    <li>
-                      <span
-                        className="float-start"
-                        style={{
-                          marginRight: "35px",
-                          fontWeight: "bold",
-                          fontSize: "17px",
-                        }}
-                      >
-                        Phí ship: (+){" "}
+                      </div>
+                    </div>
+                    <div className="flex justify-between mb-1">
+                      <div className="text-[17px]">Phí ship:</div>
+                      <div className="font-bold">
+                        (+){" "}
                         {(editFormData.phiShip
                           ? editFormData.phiShip
                           : "0"
                         ).toLocaleString("en-US")}{" "}
                         VNĐ
-                      </span>
-                    </li>
-                    <li>
-                      <span
-                        className="float-start"
-                        style={{
-                          marginRight: "35px",
-                          fontWeight: "bold",
-                          fontSize: "17px",
-                        }}
-                      >
+                      </div>
+                    </div>
+                    <div className="flex justify-between mb-1">
+                      <div className="text-[17px]">
+                        Tổng tiền phải thanh toán:
+                      </div>
+                      <div className="font-bold">
+                        {(
+                          editFormData.tongTien + editFormData.phiShip
+                        ).toLocaleString("en-US")}{" "}
+                        VNĐ
+                      </div>
+                    </div>
+                    <div className="flex justify-between mb-1">
+                      <div className="text-[17px]">
                         {editFormData && editFormData.trangThai === 5
                           ? "Hóa đơn:"
-                          : `Trạng thái:`}{" "}
-                        {""} {getStatusText(editFormData.trangThai)}
-                      </span>
-                    </li>
-                  </ul>
+                          : `Trạng thái:`}
+                      </div>
+                      <div className="font-bold">
+                        {getStatusText(editFormData.trangThai)}
+                      </div>
+                    </div>
+                  </div>
                 </div>
               </div>
 
               <hr />
 
-              <div className="row">
-                <div className="col-xl-8" style={{ marginLeft: "60px" }}>
+              {/* <div className="">
+                <div className="" style={{ marginLeft: "60px" }}>
                   <p
                     className="float-end mt-1"
                     style={{
@@ -222,11 +226,11 @@ const XuatHoaDon = ({ editFormData, tableDataProduct }) => {
                     </span>
                   </p>
                 </div>
-              </div>
+              </div> */}
             </div>
           </div>
-          <div className="card-footer bg-black text-[#ffff] text-center font-size-10">
-            Cảm ơn quý khách
+          <div className="card-footer text-center font-size-10">
+            --- <i>Cảm ơn quý khách !</i> ---
           </div>
         </div>
       </div>

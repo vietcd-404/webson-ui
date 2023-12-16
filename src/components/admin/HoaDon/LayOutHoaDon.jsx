@@ -2,6 +2,8 @@ import React, { useState, useEffect } from "react";
 import { Button, Tabs } from "antd";
 import { Link } from "react-router-dom";
 import { getAllOrderByAdmin } from "../../../services/HoaDonService";
+import WebSocketService from "../../../services/WebSocketService";
+import { toast } from "react-toastify";
 const LayOutHoaDon = ({ children }) => {
   const [countByStatus, setCountByStatus] = useState({
     0: 0,
@@ -34,6 +36,8 @@ const LayOutHoaDon = ({ children }) => {
       loadCount(4),
     ]);
   };
+  const [messageValue, setMessageValue] = useState(null);
+
   useEffect(() => {
     fetchCounts();
   }, []);
@@ -107,6 +111,8 @@ const LayOutHoaDon = ({ children }) => {
   ];
   return (
     <div>
+      <WebSocketService setValue={setMessageValue} connetTo="orderStatus" />
+
       <Tabs defaultActiveKey="1" items={items} />
       <div>{children}</div>
     </div>

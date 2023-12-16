@@ -98,6 +98,8 @@ const TableSanPham = () => {
           const values = await form.validateFields();
           values.doBong = doBong;
           values.doLi = doLi;
+          values.tenSanPham = values.tenSanPham.trim().replace(/\s+/g, " ");
+
           const response = await createSanPham(values);
           if (response.status === 200) {
             console.log(response);
@@ -108,8 +110,13 @@ const TableSanPham = () => {
           }
         } catch (error) {
           console.error("Lỗi khi tạo sản phẩm : ", error);
-          toast.error(error.response.data.message);
-          // toast.error("Thêm mới thất bại.");
+
+          if (error.response && error.response.status === 400) {
+            toast.error(error.response.data.message);
+            return;
+          } else {
+            toast.error("Thêm mới thất bại.");
+          }
         }
       },
       onCancel: () => {},
@@ -129,6 +136,8 @@ const TableSanPham = () => {
           const values = await formUpdate.validateFields();
           values.doBong = doBongEdit; // Sử dụng giá trị doBongEdit
           values.doLi = doLiEdit;
+          values.tenSanPham = values.tenSanPham.trim().replace(/\s+/g, " ");
+
           const response = await updateSanPham(values, editFormData.maSanPham);
           if (response.status === 200) {
             console.log(response);
@@ -139,7 +148,12 @@ const TableSanPham = () => {
           }
         } catch (error) {
           console.error("Lỗi khi cập nhật sản phẩm : ", error);
-          toast.error("Cập nhật thất bại.");
+          if (error.response && error.response.status === 400) {
+            toast.error(error.response.data.message);
+            return;
+          } else {
+            toast.error("Cập nhập thất bại.");
+          }
         }
       },
 

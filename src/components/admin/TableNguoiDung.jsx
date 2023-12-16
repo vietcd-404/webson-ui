@@ -353,7 +353,7 @@ const TableNguoiDung = () => {
             Thêm
           </Button>
           <Modal
-            title="Thêm voucher"
+            title="Thêm người dùng"
             open={isModalOpen}
             onCancel={handleCancel}
             onOk={handleAdd}
@@ -455,7 +455,7 @@ const TableNguoiDung = () => {
                     rules={[
                       {
                         required: true,
-                        message: "Giá trị giảm không được để trống!",
+                        message: "Giới tính không được để trống!",
                       },
                     ]}
                   >
@@ -470,7 +470,7 @@ const TableNguoiDung = () => {
                     name="ngaySinh"
                     label="Ngày sinh"
                     style={{ width: "360px", marginLeft: "40px" }}
-                    rules={[{ required: true, message: "Chọn ngày bắt đầu!" }]}
+                    rules={[{ required: true, message: "Chọn ngày sinh!" }]}
                   >
                     <DatePicker
                       style={{ width: "360px" }}
@@ -516,7 +516,7 @@ const TableNguoiDung = () => {
                     rules={[
                       {
                         required: true,
-                        message: "Giá trị giảm không được để trống!",
+                        message: "Vai trò không được để trống!",
                       },
                     ]}
                   >
@@ -592,7 +592,7 @@ const TableNguoiDung = () => {
                     rules={[
                       {
                         required: true,
-                        message: "Tên  không được để trống!",
+                        message: "Tên không được để trống!",
                       },
                     ]}
                   >
@@ -638,7 +638,7 @@ const TableNguoiDung = () => {
                 rules={[
                   {
                     required: true,
-                    message: "Giá trị giảm không được để trống!",
+                    message: "Giới tính không được để trống!",
                   },
                 ]}
               >
@@ -653,7 +653,7 @@ const TableNguoiDung = () => {
                 name="ngaySinh"
                 label="Ngày sinh"
                 style={{ width: "360px", marginLeft: "40px" }}
-                rules={[{ required: true, message: "Chọn ngày bắt đầu!" }]}
+                rules={[{ required: true, message: "Chọn ngày sinh!" }]}
               >
                 <DatePicker style={{ width: "360px" }} allowClear />
               </Form.Item>
@@ -696,7 +696,7 @@ const TableNguoiDung = () => {
                 rules={[
                   {
                     required: true,
-                    message: "Giá trị giảm không được để trống!",
+                    message: "Vai trò không được để trống!",
                   },
                 ]}
               >
