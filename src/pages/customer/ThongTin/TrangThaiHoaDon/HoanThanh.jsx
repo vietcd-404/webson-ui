@@ -131,7 +131,9 @@ const HoanThanh = () => {
               <div className="flex flex-col items-end">
                 <div className="mt-2 flex space-x-4">
                   <p className=" text-lg">Tổng số tiền:</p>
-                  <span className="font-bold text-lg">{item.tongTien} đ</span>
+                  <span className="font-bold text-lg">
+                    {item.tongTien + item.phiShip} đ
+                  </span>
                 </div>
                 <div className=" ml-4 flex justify-items-end mt-3 ">
                   {item.trangThai === 0 && (

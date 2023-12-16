@@ -58,6 +58,13 @@ const TableVoucher = () => {
   };
 
   // Edit
+  const dayjs = require("dayjs");
+  const timezone = require("dayjs/plugin/timezone");
+  const utc = require("dayjs/plugin/utc");
+
+  dayjs.extend(utc);
+  dayjs.extend(timezone);
+  dayjs.tz.setDefault("Asia/Ho_Chi_Minh");
 
   const showEditModal = (record) => {
     formUpdate.resetFields();
@@ -65,18 +72,20 @@ const TableVoucher = () => {
     formUpdate.setFieldsValue({
       maVoucher: record.maVoucher,
       soLuong: record.soLuong,
-      thoiGianBatDau: dayjs(record.thoiGianBatDau)
-        ? dayjs(record.thoiGianBatDau)
-        : "",
-      thoiGianKetThuc: dayjs(record.thoiGianKetThuc)
-        ? dayjs(record.thoiGianKetThuc)
-        : "",
+      thoiGianBatDau: dayjs(record.thoiGianBatDau),
+      // ? dayjs(record.thoiGianBatDau).utc()
+      // : "",
+      thoiGianKetThuc: dayjs(record.thoiGianKetThuc),
+      // ? dayjs(record.thoiGianKetThuc).utc()
+      // : "",
       giaTriGiam: record.giaTriGiam,
       dieuKien: record.dieuKien,
       giamToiDa: record.giamToiDa,
       moTa: record.moTa,
       tenVoucher: record.tenVoucher,
     });
+    console.log(dayjs(record.thoiGianBatDau));
+
     setIsEditModalOpen(true);
   };
 
@@ -182,7 +191,8 @@ const TableVoucher = () => {
       onOk: async () => {
         try {
           const values = await formUpdate.validateFields();
-          console.log(values.thoiGianBatDau);
+          values.thoiGianBatDau = dayjs(values.thoiGianBatDau);
+          values.thoiGianKetThuc = dayjs(values.thoiGianKetThuc);
           if (values.thoiGianBatDau.isAfter(values.thoiGianKetThuc)) {
             toast.error("Ngày bắt đầu không được lớn hơn ngày kết thúc");
             return;

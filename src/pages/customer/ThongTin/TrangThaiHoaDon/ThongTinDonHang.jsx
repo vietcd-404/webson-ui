@@ -271,13 +271,13 @@ function ThongTinDonHang() {
           return;
         }
 
-        if (tongDonGia > record.dieuKien + record.donGia) {
+        if (tongDonGia - record.donGia >= record.dieuKien) {
           newQuantity = record.soLuong - 1;
           console.log(donGia);
           loadSanPham();
           console.log(tongDonGia);
         } else {
-          message.error("không đủ điều kiện voucher");
+          message.error("Không đủ điều kiện voucher");
           return;
         }
       }
@@ -547,23 +547,35 @@ function ThongTinDonHang() {
       phiShip: feeShip,
     };
     if (validateForm()) {
-      try {
-        await updatetHoaDon(maHoaDon, updatedFormData);
-        Swal.fire({
-          title: "Sửa hóa đơn!",
-          text: "Sửa thành công thành công",
-          icon: "success",
-        });
+      Swal.fire({
+        title: "Bạn có chắc không?",
+        text: "Bạn có muốn sửa đơn hàng không!",
+        icon: "warning",
+        showCancelButton: true,
+        confirmButtonColor: "#3085d6",
+        cancelButtonColor: "#d33",
+        confirmButtonText: "Vâng, tôi muốn!",
+      }).then(async (result) => {
+        if (result.isConfirmed) {
+          try {
+            await updatetHoaDon(maHoaDon, updatedFormData);
+            Swal.fire({
+              title: "Sửa đơn hàng!",
+              text: "Sửa thành công thành công",
+              icon: "success",
+            });
 
-        // Redirect to the desired page
-        navigate("/invoices");
-      } catch (error) {
-        // Handle errors, such as displaying an error message
-        console.log("Lỗi ", error);
-        message.error(
-          error.response?.data?.message || "Error creating invoice"
-        );
-      }
+            // Redirect to the desired page
+            navigate("/invoices");
+          } catch (error) {
+            // Handle errors, such as displaying an error message
+            console.log("Lỗi ", error);
+            message.error(
+              error.response?.data?.message || "Error creating invoice"
+            );
+          }
+        }
+      });
     }
   };
   // const socket = new SockJS("http://localhost:8000/api/anh/ws");

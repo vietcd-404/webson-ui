@@ -121,7 +121,7 @@ const SpecialOffers = () => {
                 <div>
                   <Link to={`/product/${product.maSanPhamCT}`}>
                     <img
-                      className="w-full h-[90%] cursor-pointer"
+                      className="w-full h-[250px] cursor-pointer"
                       alt={product.tenSanPham}
                       src={`data:image/png;base64,${product.img[0]}`}
                       // onClick={() => handleProductDetails(product.maSanPhamCT)}

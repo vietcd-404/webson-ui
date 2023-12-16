@@ -7,16 +7,18 @@ const FormSanPham = ({ item, xoa, updateSoLuong, trangThai, cong, tru }) => {
     <>
       <tr key={item.maGioHang}>
         <td className="min-w-[80px]">
-          <Link to={`/product/${item.maSanPhamCT}`}>
-            <img
-              width="30%"
-              src={`data:image/png;base64,${item.anh}`}
-              alt={item.tenSanPham}
-              className="img-fluid rounded"
-            />
-          </Link>
+          <div className="w-[125px]">
+            <Link to={`/product/${item.maSanPhamCT}`}>
+              <img
+                width="100%"
+                src={`data:image/png;base64,${item.anh[0]}`}
+                alt={item.tenSanPham}
+                className="img-fluid rounded h-[10%]"
+              />
+            </Link>
+          </div>
         </td>
-        <td className="font-bold">
+        <td className="font-bold min-w-[100px]">
           <Link to={`/product/${item.maSanPhamCT}`}>{item.tenSanPham}</Link>
         </td>
         <td className="min-w-[100px]">

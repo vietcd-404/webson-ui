@@ -14,14 +14,16 @@ const CartSession = ({ item }) => {
     <>
       <tr>
         <td className="min-w-[80px]">
-          <Link to={`/product/${item.maSanPhamCT}`}>
-            <img
-              width="30%"
-              src={`data:image/png;base64,${item.anh}`}
-              alt={item.tenSanPham}
-              className="img-fluid rounded"
-            />
-          </Link>
+          <div className="w-[125px]">
+            <Link to={`/product/${item.maSanPhamCT}`}>
+              <img
+                width="100%"
+                src={`data:image/png;base64,${item.anh}`}
+                alt={item.tenSanPham}
+                className="img-fluid rounded"
+              />
+            </Link>
+          </div>
         </td>
 
         <td className="font-bold">
