@@ -20,6 +20,7 @@ import {
   EditOutlined,
   DeleteOutlined,
   ExclamationCircleFilled,
+  EyeOutlined,
 } from "@ant-design/icons";
 import {
   deleteCustomer,
@@ -369,11 +370,18 @@ const CaNhan = ({ props }) => {
                 rules={[
                   {
                     required: true,
-                    message: "Mật khẩu không được để trống!",
+                    whitespace: true,
+                    trim: true,
+                    message: "Mật khẩu cũ không được để trống!",
                   },
                 ]}
               >
-                <Input placeholder="Password" type="password" />
+                <Input.Password
+                  placeholder="Password"
+                  iconRender={(visible) =>
+                    visible ? <EyeOutlined /> : <EyeOutlined />
+                  }
+                />
               </Form.Item>
               <Form.Item
                 label="Mật khẩu mới"
@@ -382,11 +390,18 @@ const CaNhan = ({ props }) => {
                 rules={[
                   {
                     required: true,
+                    whitespace: true,
+                    trim: true,
                     message: "Mật khẩu không được để trống!",
                   },
                 ]}
               >
-                <Input placeholder="Password" type="password" />
+                <Input.Password
+                  placeholder="Password"
+                  iconRender={(visible) =>
+                    visible ? <EyeOutlined /> : <EyeOutlined />
+                  }
+                />
               </Form.Item>
               <Form.Item
                 label="Nhập lại mật khẩu mới"
@@ -395,11 +410,18 @@ const CaNhan = ({ props }) => {
                 rules={[
                   {
                     required: true,
-                    message: "Mật khẩu không được để trống!",
+                    whitespace: true,
+                    trim: true,
+                    message: "Mật khẩu nhắc lại không được để trống!",
                   },
                 ]}
               >
-                <Input placeholder="Password" type="password" />
+                <Input.Password
+                  placeholder="Password"
+                  iconRender={(visible) =>
+                    visible ? <EyeOutlined /> : <EyeOutlined />
+                  }
+                />
               </Form.Item>
             </Form>
             <Button
