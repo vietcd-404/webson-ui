@@ -45,7 +45,7 @@ const XuatHoaDon = ({ editFormData, tableDataProduct }) => {
           <div className="card-header bg-black"></div>
           <div className="card-body">
             <div className="container">
-              <div className="row">
+              <div className="row mb-6">
                 <div className="col-xl-8">
                   <img src={logo} alt="Logo" width="80" />
                 </div>
