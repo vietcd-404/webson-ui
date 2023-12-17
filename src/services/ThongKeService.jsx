@@ -24,12 +24,20 @@ export const getThongKeStatus = async (status) => {
   return await api.get(`/admin/status-bill?status=${status}`);
 };
 
-export const getDoanhThuTheoThang = async (month, year) => {
+export const getDoanhThuTheoThang = async (month, year, trangThai) => {
   return await api.get(
-    `/admin/doanh-thu-theo-thang?month=${month}&year=${year}`
+    `/admin/doanh-thu-theo-thang?month=${month}&year=${year}&trangThai=${trangThai}`
   );
 };
 
-export const getDoanhThuTheoNgay = async (day) => {
-  return await api.get(`/admin/doanh-thu-theo-ngay?day=${day}`);
+export const getDoanhThuTheoNgay = async (day, trangThai) => {
+  return await api.get(
+    `/admin/doanh-thu-theo-ngay?day=${day}&trangThai=${trangThai}`
+  );
+};
+
+export const getDoanhThuTheoKhoangNgay = async (ngayBD, ngayKT, trangThai) => {
+  return await api.get(
+    `/admin/total-round-time?ngayBD=${ngayBD}&ngayKT=${ngayKT}&trangThai=${trangThai}`
+  );
 };

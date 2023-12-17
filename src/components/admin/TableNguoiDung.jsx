@@ -26,6 +26,8 @@ import {
   EditOutlined,
   DeleteOutlined,
   ExclamationCircleFilled,
+  EyeInvisibleOutlined,
+  EyeTwoTone,
 } from "@ant-design/icons";
 import SearchInput from "./SearchInput";
 import dayjs from "dayjs";
@@ -60,13 +62,14 @@ const TableNguoiDung = () => {
   };
 
   const showEditModal = (record) => {
+    formUpdate.resetFields();
     setEditFormData(record);
-
     formUpdate.setFieldsValue({
       maNguoiDung: record.maNguoiDung,
       email: record.email,
       ngaySinh: record.ngaySinh ? dayjs(record.ngaySinh) : null,
       username: record.username,
+      password: record.password,
       gioiTinh: record.gioiTinh.toString(),
       sdt: record.sdt,
       tenDem: record.tenDem,
@@ -75,6 +78,9 @@ const TableNguoiDung = () => {
       trangThai: record.trangThai,
       vaiTro: record.vaiTro.toString(),
     });
+
+    console.log(record);
+    console.log(editFormData);
     setIsEditModalOpen(true);
   };
 
@@ -136,8 +142,16 @@ const TableNguoiDung = () => {
             form.resetFields();
           }
         } catch (error) {
+          if (
+            error.response &&
+            error.response.data &&
+            error.response.data.message !== null
+          ) {
+            toast.error(error.response.data.message);
+            return;
+          }
           console.error("Lỗi khi tạo người dùng : ", error);
-          toast.error("Lỗi khi tạo người dùng :");
+          toast.error("Tạo người dùng thất bại!");
         }
       },
       onCancel: () => {},
@@ -154,17 +168,30 @@ const TableNguoiDung = () => {
       onOk: async () => {
         try {
           const values = await formUpdate.validateFields();
+          console.log(values);
+          console.log(editFormData);
+          if (editFormData.vaiTro === "1" && values.vaiTro !== "1") {
+            toast.error("Lỗi không thể hạ cấp!");
+            return;
+          }
           const response = await updateNguoiDung(
             values,
             editFormData.maNguoiDung
           );
           if (response.status === 200) {
-            console.log(response);
             setIsEditModalOpen(false);
             toast.success("Cập nhật thành công!");
             loadTable();
           }
         } catch (error) {
+          if (
+            error.response &&
+            error.response.data &&
+            error.response.data.message !== null
+          ) {
+            toast.error(error.response.data.message);
+            return;
+          }
           console.error("Lỗi khi cập nhật người dùng : ", error);
           toast.error("Lỗi khi cập nhật người dùng");
         }
@@ -292,7 +319,6 @@ const TableNguoiDung = () => {
       dataIndex: "ngaySinh",
       key: "ngaySinh",
       render: (ngaySinh) => format(new Date(ngaySinh), "dd-MM-yyyy "),
-      width: 150,
     },
     {
       title: "Giới tính",
@@ -309,6 +335,7 @@ const TableNguoiDung = () => {
       title: "Email",
       dataIndex: "email",
       key: "email",
+      width: "130",
     },
     {
       title: "Trạng Thái",
@@ -446,7 +473,12 @@ const TableNguoiDung = () => {
                       },
                     ]}
                   >
-                    <Input placeholder="Password" type="password" />
+                    <Input.Password
+                      placeholder="Password"
+                      iconRender={(visible) =>
+                        visible ? <EyeTwoTone /> : <EyeInvisibleOutlined />
+                      }
+                    />
                   </Form.Item>
                   <Form.Item
                     label="Giới tính"
@@ -629,7 +661,12 @@ const TableNguoiDung = () => {
                   },
                 ]}
               >
-                <Input placeholder="Password" type="password" />
+                <Input.Password
+                  placeholder="Password"
+                  iconRender={(visible) =>
+                    visible ? <EyeTwoTone /> : <EyeInvisibleOutlined />
+                  }
+                />
               </Form.Item>
               <Form.Item
                 label="Giới tính"

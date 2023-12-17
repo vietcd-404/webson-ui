@@ -381,7 +381,7 @@ const TableVoucher = () => {
                     rules={[
                       {
                         required: true,
-                        message: "Tên loại không được để trống!",
+                        message: "Tên voucher không được để trống!",
                       },
                     ]}
                   >
@@ -395,7 +395,7 @@ const TableVoucher = () => {
                     rules={[
                       {
                         required: true,
-                        message: "Giá trị giảm không được để trống!",
+                        message: "Giá trị phần trăm giảm không được để trống!",
                       },
                       ({ giaTriGiam }) => ({
                         validator(_, value) {
@@ -580,7 +580,7 @@ const TableVoucher = () => {
                 rules={[
                   {
                     required: true,
-                    message: "Tên loại không được để trống!",
+                    message: "Tên voucher không được để trống!",
                   },
                 ]}
               >
@@ -594,7 +594,7 @@ const TableVoucher = () => {
                 rules={[
                   {
                     required: true,
-                    message: "Giá trị giảm không được để trống!",
+                    message: "Giá trị phần trăm giảm không được để trống!",
                   },
                   ({ giaTriGiam }) => ({
                     validator(_, value) {

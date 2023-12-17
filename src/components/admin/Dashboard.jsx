@@ -4,9 +4,21 @@ import {
   ShoppingOutlined,
   UserOutlined,
 } from "@ant-design/icons";
-import { Card, Col, Row, Space, Statistic, Table, Typography } from "antd";
+import {
+  Button,
+  Card,
+  Col,
+  DatePicker,
+  Row,
+  Space,
+  Statistic,
+  Table,
+  Typography,
+  message,
+} from "antd";
 import { useEffect, useState } from "react";
 import {
+  getDoanhThuTheoKhoangNgay,
   getDoanhThuTheoNam,
   getDoanhThuTheoNgay,
   getDoanhThuTheoThang,
@@ -34,6 +46,7 @@ import {
   LineController,
   LineElement,
 } from "chart.js";
+import dayjs from "dayjs";
 import { Bar, Doughnut, Line } from "react-chartjs-2";
 
 ChartJS.register(
@@ -169,6 +182,7 @@ function Dashboard() {
         <TopFavorite />
       </Space>
       <div style={{ clear: "both" }} />
+      <DashboardColumn />
       <Row gutter={16}>
         <Col span={12}>
           <DashboardChart />
@@ -177,7 +191,6 @@ function Dashboard() {
           <StatusChart />
         </Col>
       </Row>
-      <DashboardColumn />
     </Space>
   );
 }
@@ -353,7 +366,9 @@ function DashboardChart() {
           dataByYear[item.year] = item;
         });
 
-        for (let year = 2020; year <= 2023; year++) {
+        const currentYear = new Date().getUTCFullYear();
+
+        for (let year = currentYear - 4; year <= currentYear; year++) {
           const dataForYear = dataByYear[year.toString()];
 
           chartData.labels.push(`${year}`);
@@ -501,23 +516,26 @@ function DashboardColumn() {
     ],
   });
 
-  const [selectedOption, setSelectedOption] = useState("today"); // State để lưu trữ lựa chọn của người dùng
+  const [selectedOption, setSelectedOption] = useState("today");
+  const [selectedType, setSelectedType] = useState("3");
+  const [startDate, setStartDate] = useState("");
+  const [endDate, setEndDate] = useState("");
 
-  const fetchData = async () => {
-    function formatDateToString(date) {
-      const year = date.getFullYear();
-      let month = date.getMonth() + 1;
-      let day = date.getDate();
-      if (month < 10) {
-        month = `0${month}`;
-      }
-      if (day < 10) {
-        day = `0${day}`;
-      }
-
-      return `${year}-${month}-${day}`;
+  function formatDateToString(date) {
+    const year = date.getFullYear();
+    let month = date.getMonth() + 1;
+    let day = date.getDate();
+    if (month < 10) {
+      month = `0${month}`;
+    }
+    if (day < 10) {
+      day = `0${day}`;
     }
 
+    return `${year}-${month}-${day}`;
+  }
+
+  const fetchData = async () => {
     const today = formatDateToString(new Date());
     const yesterdayDate = new Date();
     yesterdayDate.setDate(yesterdayDate.getDate() - 1);
@@ -532,17 +550,17 @@ function DashboardColumn() {
       let response;
       switch (selectedOption) {
         case "today":
-          response = await getDoanhThuTheoNgay(today);
+          response = await getDoanhThuTheoNgay(today, selectedType);
           break;
         case "yesterday":
-          response = await getDoanhThuTheoNgay(yesterday);
+          response = await getDoanhThuTheoNgay(yesterday, selectedType);
           break;
 
         case "month":
-          response = await getDoanhThuTheoThang(thisMonth, year);
+          response = await getDoanhThuTheoThang(thisMonth, year, selectedType);
           break;
         case "lastMonth":
-          response = await getDoanhThuTheoThang(month, year);
+          response = await getDoanhThuTheoThang(month, year, selectedType);
           break;
         default:
           break;
@@ -575,21 +593,124 @@ function DashboardColumn() {
 
   useEffect(() => {
     fetchData();
-  }, [selectedOption]);
+  }, [selectedOption, selectedType]);
 
   const handleOptionChange = (event) => {
     setSelectedOption(event.target.value);
   };
 
+  const handleSaleTypeChange = (event) => {
+    setSelectedType(event.target.value);
+  };
+
+  const handleStartDateChange = (date, dateString) => {
+    setStartDate(date);
+  };
+
+  const handleEndDateChange = (date, dateString) => {
+    setEndDate(date);
+  };
+  const handleSearch = async () => {
+    setSelectedOption("");
+    try {
+      if (!startDate) {
+        message.error("Vui lòng chọn cả ngày bắt đầu");
+        return;
+      }
+      if (!endDate) {
+        message.error("Vui lòng chọn cả ngày kết thúc");
+        return;
+      }
+
+      if (startDate > endDate) {
+        message.error("Ngày bắt đầu không được lớn hơn ngày kết thúc.");
+        return;
+      }
+
+      const selectedStartDate = new Date(startDate);
+      const selectedEndDate = new Date(endDate);
+
+      const startDateFormat = formatDateToString(selectedStartDate);
+      const endDateFormat = formatDateToString(selectedEndDate);
+
+      const response = await getDoanhThuTheoKhoangNgay(
+        startDateFormat,
+        endDateFormat,
+        selectedType
+      );
+
+      if (response) {
+        const data = response.data;
+        const labels = [""];
+        const revenueValues = [data.doanhThu];
+        const salesValues = [data.slDaBan];
+
+        setChartData({
+          labels: labels,
+          datasets: [
+            {
+              ...chartData.datasets[1],
+              data: revenueValues,
+            },
+            {
+              ...chartData.datasets[0],
+              data: salesValues,
+            },
+          ],
+        });
+      }
+    } catch (error) {
+      console.error("Lỗi khi lấy dữ liệu: ", error);
+    }
+  };
+
+  const handleClear = async () => {
+    setSelectedOption("today");
+    setSelectedType("3");
+    setStartDate("");
+    setEndDate("");
+  };
+
   return (
     <div>
       <Card title={"Số lượng và doanh thu"} style={{ textAlign: "center" }}>
-        <select value={selectedOption} onChange={handleOptionChange}>
-          <option value="today">Hôm nay</option>
-          <option value="yesterday">Hôm qua</option>
-          <option value="month">Trong tháng</option>
-          <option value="lastMonth">Tháng trước</option>
-        </select>
+        <div>
+          <select value={selectedOption} onChange={handleOptionChange}>
+            <option value="today">Hôm nay</option>
+            <option value="yesterday">Hôm qua</option>
+            <option value="month">Trong tháng</option>
+            <option value="lastMonth">Tháng trước</option>
+          </select>
+          <select value={selectedType} onChange={handleSaleTypeChange}>
+            <option value="3">Bán Online</option>
+            <option value="5">Bán Offline</option>
+          </select>
+          <div className="mt-3 mb-3">
+            <DatePicker
+              value={startDate}
+              className="mr-2"
+              format={"DD/MM/YYYY"}
+              onChange={handleStartDateChange}
+            />
+            <DatePicker
+              value={endDate}
+              className="mr-2"
+              format={"DD/MM/YYYY"}
+              onChange={handleEndDateChange}
+            />
+
+            <Button
+              style={{ color: "white", backgroundColor: "red" }}
+              onClick={() => handleSearch()}
+            >
+              Xác nhận
+            </Button>
+
+            <Button className="ml-2" onClick={() => handleClear()}>
+              Clear
+            </Button>
+          </div>
+        </div>
         <Bar
           data={{
             labels: chartData.labels,
@@ -613,8 +734,8 @@ function DashboardColumn() {
               y: [
                 {
                   id: "revenue",
-                  type: "linear", // Loại trục là linear cho doanh thu
-                  position: "left", // Đặt vị trí là bên trái
+                  type: "linear",
+                  position: "left",
                   ticks: {
                     beginAtZero: true,
                   },
