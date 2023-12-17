@@ -27,7 +27,9 @@ const CartSession = ({ item }) => {
         </td>
 
         <td className="font-bold">
-          <Link to={`/product/${item.maSanPhamCT}`}>{item.tenSanPham}</Link>
+          <Link to={`/product/${item.maSanPhamCT}`}>
+            [{item.tenMau}] - {item.tenSanPham}
+          </Link>
         </td>
         <td className="min-w-[100px]">
           <div className="public-price">{item.giaBan}đ</div>

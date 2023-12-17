@@ -197,6 +197,8 @@ const NewArrivals = () => {
                               maSanPhamCT: product.maSanPhamCT,
                               tenSanPham: product.tenSanPham,
                               soLuong: 1,
+                              tenMau: product.tenMau,
+
                               anh: product.img,
                               giaBan:
                                 product.giaBan *

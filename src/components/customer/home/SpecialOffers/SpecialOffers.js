@@ -157,6 +157,7 @@ const SpecialOffers = () => {
                               tenSanPham: product.tenSanPham,
                               soLuong: 1,
                               anh: product.img,
+                              tenMau: product.tenMau,
                               giaBan:
                                 product.giaBan *
                                 ((100 - product.phanTramGiam) / 100),
