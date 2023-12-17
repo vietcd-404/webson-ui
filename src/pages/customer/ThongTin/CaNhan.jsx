@@ -394,6 +394,10 @@ const CaNhan = ({ props }) => {
                     trim: true,
                     message: "Mật khẩu không được để trống!",
                   },
+                  {
+                    min: 6,
+                    message: "Mật khẩu phải có ít nhất 6 ký tự!",
+                  },
                 ]}
               >
                 <Input.Password
@@ -413,6 +417,10 @@ const CaNhan = ({ props }) => {
                     whitespace: true,
                     trim: true,
                     message: "Mật khẩu nhắc lại không được để trống!",
+                  },
+                  {
+                    min: 6,
+                    message: "Mật khẩu phải có ít nhất 6 ký tự!",
                   },
                 ]}
               >
