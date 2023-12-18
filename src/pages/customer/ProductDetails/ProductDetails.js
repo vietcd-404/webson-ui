@@ -191,6 +191,7 @@ const ProductDetails = (props) => {
             ))}
           </div>
         </div>
+
         <div className="mt-5">
           <div className="w-full pb-16">
             <Heading heading="Sản Phẩm Tương Tự" />

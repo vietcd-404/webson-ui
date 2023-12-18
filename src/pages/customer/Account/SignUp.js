@@ -25,7 +25,7 @@ const SignUp = () => {
   };
 
   const validatePhone = (sdt) => {
-    return String(sdt).match(/^0?\d{10}$/);
+    return String(sdt).match(/^0\d{9}$/);
   };
   const validateForm = () => {
     let valid = true;

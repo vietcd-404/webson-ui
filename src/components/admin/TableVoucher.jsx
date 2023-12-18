@@ -245,15 +245,15 @@ const TableVoucher = () => {
       const endDate = new Date(record.thoiGianKetThuc);
       console.log(currentDate);
       console.log(startDate);
-      if (!(currentDate >= startDate && currentDate <= endDate)) {
+      if (!currentDate >= startDate && currentDate <= endDate) {
         toast.error(
           "Không thể chuyển trạng thái do thời gian bắt đầu không hợp lệ."
         );
-        await updateStatusVoucher(
-          { ...record, trangThai: 1 },
-          record.maVoucher
-        );
-        loadTable();
+        // await updateStatusVoucher(
+        //   { ...record, trangThai: 1 },
+        //   record.maVoucher
+        // );
+        // loadTable();
         return;
       }
       const response = await updateStatusVoucher(
