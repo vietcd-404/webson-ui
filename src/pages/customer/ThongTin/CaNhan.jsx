@@ -93,6 +93,25 @@ const CaNhan = ({ props }) => {
           } else if (user.vaiTro === "ROLE_ADMIN") {
             values.vaiTro = 1;
           }
+
+          const currentDate = new Date();
+          const startDate = new Date(values.ngaySinh);
+          const currentDateOnly = new Date(
+            currentDate.getFullYear(),
+            currentDate.getMonth(),
+            currentDate.getDate()
+          );
+          const startDateOnly = new Date(
+            startDate.getFullYear(),
+            startDate.getMonth(),
+            startDate.getDate()
+          );
+          if (startDateOnly >= currentDateOnly) {
+            toast.error(
+              " Ngày sinh không thế lớn hơn hoặc bằng ngày hiện tại!"
+            );
+            return;
+          }
           values.ho = values.ho.trim();
           values.ten = values.ten.trim();
           values.tenDem = values.tenDem.trim();

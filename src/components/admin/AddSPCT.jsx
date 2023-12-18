@@ -28,6 +28,7 @@ import { ToastContainer, toast } from "react-toastify";
 import { set } from "date-fns";
 import { Modal } from "antd";
 import { DeleteOutlined } from "@ant-design/icons";
+import TextArea from "antd/es/input/TextArea";
 function AddSPCT() {
   const [dataSanPham, setDataSanPham] = useState([]);
   const [dataLoai, setDataLoai] = useState([]);
@@ -110,7 +111,8 @@ function AddSPCT() {
     valuesSanPhan,
     valuesLoai,
     valuesMau,
-    valuesThuongHieu
+    valuesThuongHieu,
+    moTa
   ) => {
     const newData = valuesMau.map((value, index) => ({
       id: new Date().getTime() + index,
@@ -123,6 +125,7 @@ function AddSPCT() {
       phanTramGiam: 0,
       trangThai: 0,
       xoa: false,
+      moTa: moTa,
     }));
     setTableData(newData);
   };
@@ -148,6 +151,7 @@ function AddSPCT() {
       okText: "Xác nhận",
       cancelText: "Hủy",
       onOk: async () => {
+        const moTaValue = form.getFieldValue("moTa");
         const invalidRecords = tableData.filter((record) => {
           if (record.soLuongTon == null) {
             toast.error("Số lượng không trống");
@@ -177,7 +181,12 @@ function AddSPCT() {
           return;
         }
         try {
-          const response = await creatListSPCT(tableData);
+          const newDataWithMoTa = tableData.map((item) => ({
+            ...item,
+            moTa: moTaValue,
+          }));
+
+          const response = await creatListSPCT(newDataWithMoTa);
           console.log(response.data.length);
           if (response.data.length === 0) {
             message.error("Form trống, thêm sản phẩm chi tiết thất bại!");
@@ -399,6 +408,21 @@ function AddSPCT() {
               </Form.Item>
             </Col>
           </Row>
+        </Form>
+      </Card>
+      <Card title="Mô tả" bordered={false} className="card">
+        <Form form={form} onFinish={handleAddProduct}>
+          <Form.Item
+            label="Mô tả"
+            name="moTa"
+            style={{ width: "360px", marginLeft: "40px" }}
+            rules={[{ required: true, message: "Mô tả không được để trống!" }]}
+          >
+            <TextArea
+              rows={4}
+              defaultValue={`Xuất xứ: ,\nKhối lượng: ,\n...`}
+            />
+          </Form.Item>
         </Form>
       </Card>
       <Card title="Bảng sản phẩm" bordered={false} style={{ width: "100%" }}>

@@ -17,6 +17,10 @@ import {
   findAllThuongHieu,
   loadAllThuongHieu,
 } from "../../services/ThuongHieuService";
+import { ToastContainer, toast } from "react-toastify";
+import "react-toastify/dist/ReactToastify.css";
+
+import TextArea from "antd/es/input/TextArea";
 const { Option } = Select;
 const ModalUpdateSPCT = (props) => {
   const [dataSanPham, setDataSanPham] = useState([]);
@@ -42,10 +46,17 @@ const ModalUpdateSPCT = (props) => {
   }, [props.dataEdit]);
 
   const onUpdate = async () => {
-    const value = await frm.current?.validateFields();
-    if (value != null) {
-      await props.save(value);
-    }
+    frm.current
+      ?.validateFields()
+      .then((value) => {
+        if (value != null) {
+          return props.save(value);
+        }
+      })
+      .catch((error) => {
+        console.error("Lỗi validation:", error);
+        toast.error("Cập nhập thất bại, kiểm tra lại form");
+      });
   };
 
   const loadMau = async () => {
@@ -107,6 +118,7 @@ const ModalUpdateSPCT = (props) => {
   }, []);
   return (
     <div>
+      <ToastContainer />
       <Modal
         open={props.visible}
         onCancel={props.hidden}
@@ -193,7 +205,19 @@ const ModalUpdateSPCT = (props) => {
               <Form.Item
                 label="Giá bán"
                 name="giaBan"
-                rules={[{ required: true, message: "Giá bán không để trống" }]}
+                rules={[
+                  { required: true, message: "Giá bán không để trống" },
+                  ({ getFieldValue }) => ({
+                    validator(_, value) {
+                      if (value > 0) {
+                        return Promise.resolve();
+                      }
+                      return Promise.reject(
+                        new Error("Giá bán không được nhỏ hơn 0")
+                      );
+                    },
+                  }),
+                ]}
               >
                 <Input placeholder="Price" type="number" />
               </Form.Item>
@@ -202,7 +226,19 @@ const ModalUpdateSPCT = (props) => {
               <Form.Item
                 label="Số lượng"
                 name="soLuongTon"
-                rules={[{ required: true, message: "Số lượng không để trống" }]}
+                rules={[
+                  { required: true, message: "Số lượng không để trống" },
+                  ({ getFieldValue }) => ({
+                    validator(_, value) {
+                      if (value >= 0) {
+                        return Promise.resolve();
+                      }
+                      return Promise.reject(
+                        new Error("Số lượng không được nhỏ hơn 0")
+                      );
+                    },
+                  }),
+                ]}
               >
                 <Input placeholder="Quantity" type="number" />
               </Form.Item>
@@ -232,6 +268,18 @@ const ModalUpdateSPCT = (props) => {
                 <Input placeholder="Discount Percentage" type="number" />
               </Form.Item>
             </Col>
+          </Row>
+          <Row className="mt-2">
+            <Form.Item
+              label="Mô tả"
+              name="moTa"
+              style={{ width: "360px", marginLeft: "40px" }}
+              rules={[
+                { required: true, message: "Mô tả không được để trống!" },
+              ]}
+            >
+              <TextArea rows={4} />
+            </Form.Item>
           </Row>
         </Form>
       </Modal>

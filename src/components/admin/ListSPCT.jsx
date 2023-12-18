@@ -188,16 +188,19 @@ const ListSPCT = () => {
       cancelText: "Đóng",
       onOk: async () => {
         try {
+          console.log(value);
           const response = await updateSPCT(dataEdit.maSanPhamCT, value);
           if (response.status === 200) {
-            console.log(response);
             setVisibleModal(false);
             toast.success("Cập nhật thành công!");
             loadTable();
           }
         } catch (error) {
           console.error("Lỗi khi cập nhật sản phẩm : ", error);
-          toast.error("Cập nhật thất bại.");
+          if (error.errorFields && error.errorFields.length > 0) {
+            toast.error("Cập nhật thất bại.");
+            return;
+          }
         }
       },
 

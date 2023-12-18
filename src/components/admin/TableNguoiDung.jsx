@@ -133,6 +133,25 @@ const TableNguoiDung = () => {
             toast.error("Username đã tồn tại. Vui lòng chọn username khác.");
             return;
           }
+
+          const currentDate = new Date();
+          const startDate = new Date(values.ngaySinh);
+          const currentDateOnly = new Date(
+            currentDate.getFullYear(),
+            currentDate.getMonth(),
+            currentDate.getDate()
+          );
+          const startDateOnly = new Date(
+            startDate.getFullYear(),
+            startDate.getMonth(),
+            startDate.getDate()
+          );
+          if (startDateOnly >= currentDateOnly) {
+            toast.error(
+              " Ngày sinh không thế lớn hơn hoặc bằng ngày hiện tại!"
+            );
+            return;
+          }
           const response = await createNguoiDung(values);
           if (response.status === 200) {
             console.log(response);
@@ -168,8 +187,25 @@ const TableNguoiDung = () => {
       onOk: async () => {
         try {
           const values = await formUpdate.validateFields();
-          console.log(values);
-          console.log(editFormData);
+
+          const currentDate = new Date();
+          const startDate = new Date(values.ngaySinh);
+          const currentDateOnly = new Date(
+            currentDate.getFullYear(),
+            currentDate.getMonth(),
+            currentDate.getDate()
+          );
+          const startDateOnly = new Date(
+            startDate.getFullYear(),
+            startDate.getMonth(),
+            startDate.getDate()
+          );
+          if (startDateOnly >= currentDateOnly) {
+            toast.error(
+              " Ngày sinh không thế lớn hơn hoặc bằng ngày hiện tại!"
+            );
+            return;
+          }
           if (editFormData.vaiTro === "1" && values.vaiTro !== "1") {
             toast.error("Lỗi không thể hạ cấp!");
             return;
