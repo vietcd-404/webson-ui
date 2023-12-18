@@ -53,7 +53,10 @@ const ProductInfo = ({ item }) => {
       </h2>
       <p className="text-xl font-semibold text-[#C73030]">
         {/* Giá Bán: $ */}
-        {item.giaBan * ((100 - item.phanTramGiam) / 100)}đ
+        {(item.giaBan * ((100 - item.phanTramGiam) / 100)).toLocaleString(
+          "en-US"
+        )}
+        đ
       </p>
       <div className="flex flex-col space-y-2">
         <p className="font-medium text-lg text-gray-700">

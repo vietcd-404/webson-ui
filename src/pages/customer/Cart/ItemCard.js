@@ -25,7 +25,7 @@ const ItemCard = ({ item, xoa, updateSoLuong }) => {
           </Link>
         </td>
         <td className="min-w-[100px]">
-          <div className="public-price">{giaBan}đ</div>
+          <div className="public-price">{giaBan.toLocaleString("en-US")}đ</div>
         </td>
         <td className="min-w-[100px]">
           <input
@@ -43,7 +43,7 @@ const ItemCard = ({ item, xoa, updateSoLuong }) => {
           />
         </td>
         <td className="min-w-[100px]" id={`product-price-${item.maGioHang}`}>
-          {giaBan * item.soLuong}
+          {(giaBan * item.soLuong).toLocaleString("en-US")}
         </td>
         <td className="min-w-[100px]">
           <button

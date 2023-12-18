@@ -32,7 +32,9 @@ const CartSession = ({ item }) => {
           </Link>
         </td>
         <td className="min-w-[100px]">
-          <div className="public-price">{item.giaBan}đ</div>
+          <div className="public-price">
+            {item.giaBan.toLocaleString("en-US")}đ
+          </div>
         </td>
         <td className="min-w-[100px]">
           <div className="w-1/3 flex items-center gap-2 text-lg ">
@@ -81,7 +83,9 @@ const CartSession = ({ item }) => {
             </button>
           </div>
         </td>
-        <td className="min-w-[100px]">{item.giaBan * item.soLuong}</td>
+        <td className="min-w-[100px]">
+          {(item.giaBan * item.soLuong).toLocaleString("en-US")}
+        </td>
         <td className="min-w-[100px]">
           <button
             className="btn-delete"

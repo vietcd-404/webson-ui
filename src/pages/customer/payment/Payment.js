@@ -402,12 +402,21 @@ const Payment = () => {
   useEffect(() => {
     loadGioHang();
   }, []);
+  const [voucherDaSuDung, setVoucherDaSuDung] = useState(false);
+  const [selectedVoucherCode, setSelectedVoucherCode] = useState("");
 
   const printResultf = async () => {
     if (data.length === 0) {
       toast.error("Không có sản phẩm trong giỏ hàng");
       return;
     }
+    if (selectedVoucherCode) {
+      if (!voucherDaSuDung) {
+        toast.error("Voucher chưa đc sử dụng");
+        return;
+      }
+    }
+
     if (validateForm()) {
       setLoading(true);
       try {
@@ -549,7 +558,6 @@ const Payment = () => {
       console.error("Lỗi khi gọi API: ", error);
     }
   };
-  const [selectedVoucherCode, setSelectedVoucherCode] = useState("");
 
   const openModal = () => {
     setIsModalOpen(true);
@@ -558,7 +566,6 @@ const Payment = () => {
   const closeModal = () => {
     setIsModalOpen(false);
   };
-  const [voucherDaSuDung, setVoucherDaSuDung] = useState(false);
   const [voucherApplied, setVoucherApplied] = useState(false);
   const handleSubmit = (e) => {
     e.preventDefault();

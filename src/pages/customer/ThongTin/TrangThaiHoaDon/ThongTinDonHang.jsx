@@ -493,7 +493,7 @@ function ThongTinDonHang() {
   const [errors, setErrors] = useState([]);
 
   const validatePhone = (sdt) => {
-    return String(sdt).match(/^0?\d{10}$/);
+    return String(sdt).match(/^0\d{9}$/);
   };
   const EmailValidation = (email) => {
     return String(email)
