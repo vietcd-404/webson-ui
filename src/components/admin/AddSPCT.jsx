@@ -401,7 +401,7 @@ function AddSPCT() {
           </Row>
         </Form>
       </Card>
-      <Card title="Table" bordered={false} style={{ width: "100%" }}>
+      <Card title="Bảng sản phẩm" bordered={false} style={{ width: "100%" }}>
         <Table dataSource={tableData} columns={columns} rowKey="id" />
       </Card>
       <Button className="mt-2" onClick={handleAddProduct}>

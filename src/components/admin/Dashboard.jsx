@@ -666,7 +666,7 @@ function DashboardColumn() {
 
   const handleClear = async () => {
     setSelectedOption("today");
-    setSelectedType("3");
+    setSelectedType("");
     setStartDate("");
     setEndDate("");
   };
@@ -682,6 +682,7 @@ function DashboardColumn() {
             <option value="lastMonth">Tháng trước</option>
           </select>
           <select value={selectedType} onChange={handleSaleTypeChange}>
+            <option value="">Hai kênh</option>
             <option value="3">Bán Online</option>
             <option value="5">Bán Offline</option>
           </select>
