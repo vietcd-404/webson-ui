@@ -177,7 +177,7 @@ const TableSanPham = () => {
             loadTable();
           }
         } catch (error) {
-          console.error("Lỗi khi xóa loại: ", error);
+          console.error("Lỗi khi xóa sản phẩm: ", error);
           toast.error("Xóa thất bại.");
         }
       },
@@ -297,7 +297,10 @@ const TableSanPham = () => {
                 name="tenSanPham"
                 style={{ width: "360px", marginLeft: "40px" }}
                 rules={[
-                  { required: true, message: "Tên loại không được để trống!" },
+                  {
+                    required: true,
+                    message: "Tên sản phẩm không được để trống!",
+                  },
                 ]}
               >
                 <Input placeholder="Tên" />
@@ -337,7 +340,7 @@ const TableSanPham = () => {
             name="tenSanPham"
             style={{ width: "360px", marginLeft: "40px" }}
             rules={[
-              { required: true, message: "Tên loại không được để trống!" },
+              { required: true, message: "Tên sản phẩm không được để trống!" },
             ]}
           >
             <Input placeholder="Tên" />

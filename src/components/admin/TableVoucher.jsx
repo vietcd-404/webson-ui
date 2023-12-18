@@ -230,7 +230,7 @@ const TableVoucher = () => {
             loadTable();
           }
         } catch (error) {
-          console.error("Lỗi khi xóa loại: ", error);
+          console.error("Lỗi khi xóa voucher: ", error);
           toast.error("Xóa thất bại.");
         }
       },

@@ -37,6 +37,8 @@ import new1 from "./news/new1.jpeg";
 import new2 from "./news/new2.jpeg";
 import new3 from "./news/new3.jpg";
 import new4 from "./news/new4.jpg";
+import new5 from "./news/new5.jpg";
+import new6 from "./news/new6.jpg";
 
 // Year Product
 import productOfTheYear from "./products/productOfTheYear.webp";
@@ -106,5 +108,7 @@ export {
   new2,
   new3,
   new4,
+  new5,
+  new6,
   forbidden,
 };

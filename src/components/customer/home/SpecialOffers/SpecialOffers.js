@@ -186,15 +186,17 @@ const SpecialOffers = () => {
               </div>
               <div className="max-w-80 py-6 flex flex-col gap-1 border-[1px] border-t-0 px-4">
                 <div className="flex items-center justify-between font-titleFont">
-                  <h2 className="text-lg text-primeColor font-bold cursor-pointer">
-                    <p
-                      className="hover:text-pink-500 translate-x-0 overflow-hidden whitespace-nowrap"
-                      style={{ textOverflow: "ellipsis", maxWidth: "200px" }}
-                      // onClick={() => handleProductDetails(product.maSanPhamCT)}
-                    >
-                      {product.tenSanPham}
-                    </p>
-                  </h2>
+                  <Link to={`/product/${product.maSanPhamCT}`}>
+                    <h2 className="text-lg text-primeColor font-bold cursor-pointer">
+                      <p
+                        className="hover:text-pink-500 translate-x-0 overflow-hidden whitespace-nowrap"
+                        style={{ textOverflow: "ellipsis", maxWidth: "200px" }}
+                        // onClick={() => handleProductDetails(product.maSanPhamCT)}
+                      >
+                        {product.tenSanPham}
+                      </p>
+                    </h2>
+                  </Link>
                   {product.phanTramGiam === 0 ? (
                     <></>
                   ) : (
@@ -207,7 +209,6 @@ const SpecialOffers = () => {
                 </div>
                 <div>
                   <div className="flex justify-between">
-                    {/* <p className="text-[#767676] text-[14px]">{item.tenMau}</p> */}
                     <p className="text-red-600 text-[20px] ">
                       {product.giaBan * ((100 - product.phanTramGiam) / 100)} đ
                     </p>

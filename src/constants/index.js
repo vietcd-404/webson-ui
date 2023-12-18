@@ -31,11 +31,6 @@ export const navBarList = [
     link: "/about",
   },
   {
-    _id: 1004,
-    title: "Liên hệ",
-    link: "/contact",
-  },
-  {
     _id: 1005,
     title: "Bảng tin",
     link: "/new",

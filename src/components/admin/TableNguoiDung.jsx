@@ -106,7 +106,7 @@ const TableNguoiDung = () => {
             loadTable();
           }
         } catch (error) {
-          console.error("Lỗi khi xóa loại: ", error);
+          console.error("Lỗi khi xóa người dùng: ", error);
           toast.error("Xóa thất bại.");
         }
       },

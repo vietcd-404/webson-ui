@@ -166,7 +166,7 @@ const TableThuongHieu = () => {
             loadTable();
           }
         } catch (error) {
-          console.error("Lỗi khi xóa loại: ", error);
+          console.error("Lỗi khi xóa thương hiệu: ", error);
           toast.error("Xóa thất bại.");
         }
       },
@@ -264,7 +264,10 @@ const TableThuongHieu = () => {
                 name="tenThuongHieu"
                 style={{ width: "360px", marginLeft: "40px" }}
                 rules={[
-                  { required: true, message: "Tên loại không được để trống!" },
+                  {
+                    required: true,
+                    message: "Tên thương hiệu không được để trống!",
+                  },
                 ]}
               >
                 <Input placeholder="Tên" />
@@ -275,7 +278,7 @@ const TableThuongHieu = () => {
       </Row>
 
       <Modal
-        title="Cập nhật loại"
+        title="Cập nhật thương hiệu"
         open={isEditModalOpen}
         onCancel={handleEditCancel}
         onOk={handleUpdate}

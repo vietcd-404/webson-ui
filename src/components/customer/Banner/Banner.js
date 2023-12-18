@@ -116,7 +116,7 @@ const Banner = () => {
         </Link>
         <Link to="/offer">
           <div>
-            <Image className="w-full h-[500px]" imgSrc={banner5} />
+            <Image className="w-full h-[500px]" imgSrc={banner1} />
           </div>
         </Link>
       </Slider>

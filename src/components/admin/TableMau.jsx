@@ -128,7 +128,7 @@ const TableMau = () => {
             loadTable();
           }
         } catch (error) {
-          console.error("Lỗi khi cập nhật loại: ", error);
+          console.error("Lỗi khi cập nhật màu: ", error);
           if (error.response && error.response.status === 400) {
             toast.error(error.response.data.message);
             return;
@@ -158,7 +158,7 @@ const TableMau = () => {
             loadTable();
           }
         } catch (error) {
-          console.error("Lỗi khi xóa loại: ", error);
+          console.error("Lỗi khi xóa màu: ", error);
           toast.error("Xóa thất bại.");
         }
       },
@@ -257,7 +257,7 @@ const TableMau = () => {
                 name="tenMau"
                 style={{ width: "360px", marginLeft: "40px" }}
                 rules={[
-                  { required: true, message: "Tên loại không được để trống!" },
+                  { required: true, message: "Tên màu không được để trống!" },
                 ]}
               >
                 <Input placeholder="Tên" />
@@ -279,7 +279,7 @@ const TableMau = () => {
             name="tenMau"
             style={{ width: "360px", marginLeft: "40px" }}
             rules={[
-              { required: true, message: "Tên loại không được để trống!" },
+              { required: true, message: "Tên màu không được để trống!" },
             ]}
           >
             <Input value={editFormData?.tenMau} placeholder="Tên" />

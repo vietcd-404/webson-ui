@@ -68,7 +68,6 @@ const NewArrivals = () => {
   const loadTable = async () => {
     try {
       const response = await top5SPNoiNhat();
-      // Dựa vào dữ liệu trả về từ API để cập nhật đúng các trường thông tin cần thiết
       setProducts(response.data.map((item) => ({ ...item, badge: true })));
       console.log("Dữ liệu từ API:", response.data);
     } catch (error) {
