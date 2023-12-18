@@ -306,7 +306,7 @@ const CaNhan = ({ props }) => {
               name="ngaySinh"
               label="Ngày sinh"
               style={{ width: "360px", marginLeft: "40px" }}
-              rules={[{ required: true, message: "Chọn ngày bắt đầu!" }]}
+              rules={[{ required: true, message: "Chọn ngày sinh!" }]}
             >
               <DatePicker style={{ width: "360px" }} allowClear />
             </Form.Item>
