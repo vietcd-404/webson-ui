@@ -240,6 +240,22 @@ const TableVoucher = () => {
 
   const handleSwitchChange = async (record, checked) => {
     try {
+      const currentDate = new Date();
+      const startDate = new Date(record.thoiGianBatDau);
+      const endDate = new Date(record.thoiGianKetThuc);
+      console.log(currentDate);
+      console.log(startDate);
+      if (!(currentDate >= startDate && currentDate <= endDate)) {
+        toast.error(
+          "Không thể chuyển trạng thái do thời gian bắt đầu không hợp lệ."
+        );
+        await updateStatusVoucher(
+          { ...record, trangThai: 1 },
+          record.maVoucher
+        );
+        loadTable();
+        return;
+      }
       const response = await updateStatusVoucher(
         { ...record, trangThai: checked ? 0 : 1 },
         record.maVoucher
@@ -726,7 +742,7 @@ const TableVoucher = () => {
           columns={columns}
           dataSource={data}
           pagination={{
-            pageSize: 5,
+            pageSize: 8,
             total: totalPage,
           }}
         />

@@ -1,12 +1,12 @@
 import React from "react";
 import FormHD from "./FormHD";
 
-const QuanLyHD = () => {
+const HuyHD = () => {
   return (
     <div>
-      <FormHD trangThaiHD="5" />
+      <FormHD trangThaiHD="7" />
     </div>
   );
 };
 
-export default QuanLyHD;
+export default HuyHD;

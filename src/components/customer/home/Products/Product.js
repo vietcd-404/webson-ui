@@ -180,7 +180,7 @@ const Product = (item) => {
                       })
                     );
                   } else {
-                    toast.error("Sản phẩm đã hết hàng");
+                    toast.error("Sản phẩm trong kho không đủ!");
                     return;
                   }
                 }}

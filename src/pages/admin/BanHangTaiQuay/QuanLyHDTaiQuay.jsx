@@ -1,5 +1,5 @@
 import React from "react";
-import QuanLyHD from "../../../components/admin/BanHangTaiQuay/QuanLyHD";
+import QuanLyHD from "../../../components/admin/BanHangTaiQuay/FormHD";
 
 const QuanLyHDTaiQuay = () => {
   return (

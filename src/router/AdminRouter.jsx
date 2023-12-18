@@ -25,6 +25,9 @@ import BanHangTaiQuay from "../pages/admin/BanHangTaiQuay/BanHangTaiQuay";
 import { ProtectedRoute } from "../pages/customer/Account/ProtectedRoute";
 import QuanLyHDTaiQuay from "../pages/admin/BanHangTaiQuay/QuanLyHDTaiQuay";
 import XuatHoaDon from "../components/admin/XuatHoaDon";
+import LayOutHDTaiQuay from "../components/admin/BanHangTaiQuay/LayOutHDTaiQuay";
+import HuyHD from "../components/admin/BanHangTaiQuay/HuyHD";
+import QuanLyHD from "../components/admin/BanHangTaiQuay/QuanLyHD";
 const AdminRouter = () => {
   return (
     <div>
@@ -181,7 +184,21 @@ const AdminRouter = () => {
           element={
             <ProtectedRoute userRole={["ROLE_STAFF", "ROLE_ADMIN"]}>
               <LayoutAdmin>
-                <QuanLyHDTaiQuay />
+                <LayOutHDTaiQuay>
+                  <QuanLyHD />
+                </LayOutHDTaiQuay>
+              </LayoutAdmin>
+            </ProtectedRoute>
+          }
+        />
+        <Route
+          path="/hoa-don-tai-quay/huy"
+          element={
+            <ProtectedRoute userRole={["ROLE_STAFF", "ROLE_ADMIN"]}>
+              <LayoutAdmin>
+                <LayOutHDTaiQuay>
+                  <HuyHD />
+                </LayOutHDTaiQuay>
               </LayoutAdmin>
             </ProtectedRoute>
           }
