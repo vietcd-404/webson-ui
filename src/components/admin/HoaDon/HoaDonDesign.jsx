@@ -66,6 +66,7 @@ const HoaDonDesign = (props) => {
     trangThai: "",
     tienGiam: "",
     ngayTao: "",
+    thanhToan: "",
   });
   const [isEditModalOpen, setIsEditModalOpen] = useState(false);
   const [messageValue, setMessageValue] = useState(null);
@@ -98,6 +99,7 @@ const HoaDonDesign = (props) => {
   const showEditModal = async (record) => {
     setMaHD(null);
     const response = await inforUserHoaDon(record.maHoaDon);
+    console.log(response.data[0]);
     setEditFormData((prevFormData) => ({
       ...prevFormData,
       maHoaDon: response.data[0].maHoaDon,
@@ -116,6 +118,7 @@ const HoaDonDesign = (props) => {
       trangThai: response.data[0].trangThai,
       tienGiam: response.data[0].tienGiam,
       ngayTao: response.data[0].ngayTao,
+      thanhToan: response.data[0].thanhToan,
     }));
     setMaHD(response.data[0].maHoaDon);
     formUpdate.setFieldsValue({
@@ -538,6 +541,7 @@ const HoaDonDesign = (props) => {
           name="soLuong"
           className="border-1"
           onChange={(e) => handleQuantityChange(e, record.maSanPhamCT)}
+          disabled={record.thanhToan === 1}
         />
       ),
     },
@@ -565,7 +569,10 @@ const HoaDonDesign = (props) => {
       key: "action",
       render: (_, record) => (
         <Space size="middle">
-          <Button onClick={() => handleXoaSanPham(record.maHoaDonCT)}>
+          <Button
+            onClick={() => handleXoaSanPham(record.maHoaDonCT)}
+            disabled={record.thanhToan === 1}
+          >
             <DeleteOutlined />
           </Button>
         </Space>
@@ -966,7 +973,10 @@ const HoaDonDesign = (props) => {
                 labelCol={{ span: 8 }}
                 wrapperCol={{ span: 16 }}
               >
-                <Input className="border-none" />
+                <Input
+                  className="border-none"
+                  disabled={editFormData.thanhToan === 1}
+                />
               </Form.Item>
               <Form.Item
                 label="Tên người nhận"
@@ -977,7 +987,10 @@ const HoaDonDesign = (props) => {
                   { required: true, message: "Tên người nhận không để trống!" },
                 ]}
               >
-                <Input placeholder="Nguyen Van A..." />
+                <Input
+                  placeholder="Nguyen Van A..."
+                  disabled={editFormData.thanhToan === 1}
+                />
               </Form.Item>
               <Form.Item
                 label="Email"
@@ -992,7 +1005,10 @@ const HoaDonDesign = (props) => {
                   },
                 ]}
               >
-                <Input placeholder="abc@gmail.com" />
+                <Input
+                  placeholder="abc@gmail.com"
+                  disabled={editFormData.thanhToan === 1}
+                />
               </Form.Item>
               <Form.Item
                 label="Số điện thoại"
@@ -1007,7 +1023,7 @@ const HoaDonDesign = (props) => {
                   },
                 ]}
               >
-                <Input />
+                <Input disabled={editFormData.thanhToan === 1} />
               </Form.Item>
               <Form.Item
                 label="Kiểu thanh toán:"
@@ -1021,7 +1037,10 @@ const HoaDonDesign = (props) => {
                   },
                 ]}
               >
-                <Input className="border-none" />
+                <Input
+                  className="border-none"
+                  disabled={editFormData.thanhToan === 1}
+                />
               </Form.Item>
             </Col>
             <Col span={12}>
@@ -1037,6 +1056,7 @@ const HoaDonDesign = (props) => {
                 <Select
                   onChange={(value) => handleProvinceChangeaa(value)}
                   placeholder="Chọn"
+                  disabled={editFormData.thanhToan === 1}
                 >
                   {provinces.map((province) => (
                     <Select.Option
@@ -1061,6 +1081,7 @@ const HoaDonDesign = (props) => {
                 <Select
                   onChange={(value) => handleDistrictChangeaaa(value)}
                   placeholder="Chọn"
+                  disabled={editFormData.thanhToan === 1}
                 >
                   {districts.map((district) => (
                     <Select.Option
@@ -1085,6 +1106,7 @@ const HoaDonDesign = (props) => {
                 <Select
                   onChange={(value) => handleWardChangeaaa(value)}
                   placeholder="Chọn"
+                  disabled={editFormData.thanhToan === 1}
                 >
                   {wards.map((ward) => (
                     <Select.Option key={ward.WardCode} value={ward.WardName}>
@@ -1101,11 +1123,18 @@ const HoaDonDesign = (props) => {
                 wrapperCol={{ span: 16 }}
                 rules={[{ required: true, message: "Địa chỉ không để trống!" }]}
               >
-                <Input.TextArea rows={4} />
+                <Input.TextArea
+                  rows={4}
+                  disabled={editFormData.thanhToan === 1}
+                />
               </Form.Item>
             </Col>
           </Row>
-          <Button type="primary" onClick={handleUpdate}>
+          <Button
+            type="primary"
+            onClick={handleUpdate}
+            disabled={editFormData.thanhToan === 1}
+          >
             Cập Nhập
           </Button>
         </Form>
@@ -1126,6 +1155,7 @@ const HoaDonDesign = (props) => {
               onChange={handleSearchProduct}
               value={searchQuery}
               placeholder="Tìm kiếm sản phẩm tại đây"
+              disabled={editFormData.thanhToan === 1}
             />
             {searchQuery && (
               <div
@@ -1201,6 +1231,7 @@ const HoaDonDesign = (props) => {
             <Button
               style={{ color: "white", backgroundColor: "green" }}
               onClick={updateProductQuantity}
+              disabled={editFormData.thanhToan === 1}
             >
               Cập nhập sản phẩm
             </Button>

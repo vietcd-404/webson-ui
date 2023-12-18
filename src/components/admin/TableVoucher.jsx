@@ -243,9 +243,27 @@ const TableVoucher = () => {
       const currentDate = new Date();
       const startDate = new Date(record.thoiGianBatDau);
       const endDate = new Date(record.thoiGianKetThuc);
-      console.log(currentDate);
-      console.log(startDate);
-      if (!(currentDate >= startDate && currentDate <= endDate)) {
+      const currentDateOnly = new Date(
+        currentDate.getFullYear(),
+        currentDate.getMonth(),
+        currentDate.getDate()
+      );
+      const startDateOnly = new Date(
+        startDate.getFullYear(),
+        startDate.getMonth(),
+        startDate.getDate()
+      );
+      const endDateOnly = new Date(
+        endDate.getFullYear(),
+        endDate.getMonth(),
+        endDate.getDate()
+      );
+
+      console.log(startDateOnly);
+      console.log(currentDateOnly);
+      if (
+        !(currentDateOnly >= startDateOnly && currentDateOnly <= endDateOnly)
+      ) {
         toast.error(
           "Không thể chuyển trạng thái do thời gian bắt đầu không hợp lệ."
         );
