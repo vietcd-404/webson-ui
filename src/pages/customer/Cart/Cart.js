@@ -220,9 +220,13 @@ const Cart = () => {
                     <div className="item-confirm pr-4 text-end font-bold">
                       <p className="mb-1">Tổng tiền hàng</p>
                       {user ? (
-                        <p className="text-danger mb-1">{totalAmt}đ</p>
+                        <p className="text-danger mb-1">
+                          {totalAmt.toLocaleString("en-US")}đ
+                        </p>
                       ) : (
-                        <p className="text-danger mb-1">{tongTien}đ</p>
+                        <p className="text-danger mb-1">
+                          {tongTien.toLocaleString("en-US")}đ
+                        </p>
                       )}
                     </div>
                     <div className=" bg-[#C73030] rounded-lg hover:bg-red-700">
@@ -320,9 +324,13 @@ const Cart = () => {
                     <div className="item-confirm pr-4 text-end font-bold">
                       <p className="mb-1">Tổng tiền hàng</p>
                       {user ? (
-                        <p className="text-danger mb-1">{totalAmt}đ</p>
+                        <p className="text-danger mb-1">
+                          {totalAmt.toLocaleString("en-US")}đ
+                        </p>
                       ) : (
-                        <p className="text-danger mb-1">{tongTien}đ</p>
+                        <p className="text-danger mb-1">
+                          {tongTien.toLocaleString("en-US")}đ
+                        </p>
                       )}
                     </div>
                     <div className=" bg-[#C73030] rounded-lg hover:bg-red-700">

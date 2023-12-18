@@ -203,7 +203,7 @@ const SpecialOffers = () => {
                   ) : (
                     <>
                       <del className="text-[#767676] text-[14px]">
-                        {product.giaBan} đ
+                        {product.giaBan.toLocaleString("en-US")} đ
                       </del>
                     </>
                   )}
@@ -211,7 +211,11 @@ const SpecialOffers = () => {
                 <div>
                   <div className="flex justify-between">
                     <p className="text-red-600 text-[20px] ">
-                      {product.giaBan * ((100 - product.phanTramGiam) / 100)} đ
+                      {(
+                        product.giaBan *
+                        ((100 - product.phanTramGiam) / 100)
+                      ).toLocaleString("en-US")}{" "}
+                      đ
                     </p>
                   </div>
                   <p className="text-[#767676] text-[14px]">

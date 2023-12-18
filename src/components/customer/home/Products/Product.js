@@ -222,7 +222,9 @@ const Product = (item) => {
             <></>
           ) : (
             <>
-              <del className="text-[#767676] text-[14px]">{item.giaBan} đ</del>
+              <del className="text-[#767676] text-[14px]">
+                {item.giaBan.toLocaleString("en-US")} đ
+              </del>
             </>
           )}
         </div>
@@ -230,7 +232,10 @@ const Product = (item) => {
           <div className="flex justify-between">
             {/* <p className="text-[#767676] text-[14px]">{item.tenMau}</p> */}
             <p className="text-red-600 text-[20px] ">
-              {item.giaBan * ((100 - item.phanTramGiam) / 100)} đ
+              {(item.giaBan * ((100 - item.phanTramGiam) / 100)).toLocaleString(
+                "en-US"
+              )}{" "}
+              đ
             </p>
           </div>
           <p className="text-[#767676] text-[14px]">{item.tenLoai}</p>
