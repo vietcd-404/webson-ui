@@ -49,7 +49,7 @@ const DiaChi = () => {
       .match(/^[A-Z0-9._%+-]+@[A-Z0-9.-]+\.[A-Z]{2,4}$/i);
   };
   const validatePhone = (sdt) => {
-    return String(sdt).match(/^0?\d{10}$/);
+    return String(sdt).match(/^0\d{9}$/);
   };
   const validateForm = () => {
     let valid = true;

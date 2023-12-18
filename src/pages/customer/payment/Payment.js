@@ -214,7 +214,7 @@ const Payment = () => {
       .match(/^[A-Z0-9._%+-]+@[A-Z0-9.-]+\.[A-Z]{2,4}$/i);
   };
   const validatePhone = (sdt) => {
-    return String(sdt).match(/^0?\d{10}$/);
+    return String(sdt).match(/^0\d{9}$/);
   };
   const validateForm = () => {
     let valid = true;
@@ -576,26 +576,25 @@ const Payment = () => {
     );
     console.log(selectedVoucher);
 
-    if (selectedVoucher.soLuong <= 0) {
-      toast.error("Voucher đã hết ");
-      setSelectedVoucherCode("");
-      return;
-    }
-    if (voucherCode === null) {
-      toast.error("Voucher không khả dụng hoặc đã được sử dụng trước đó");
+    if (voucherCode === null || selectedVoucherCode === "") {
+      toast.warning("Voucher không khả dụng hoặc đã được sử dụng trước đó");
       return;
     }
 
     if (!selectedVoucher || !selectedVoucherCode) {
       toast.warning("Voucher không khả dụng hoặc đã được sử dụng trước đó");
-      console.log(selectedVoucher.soLuong);
       return;
     }
     const dieuKien = selectedVoucher.dieuKien;
-    if (tongTien1 < dieuKien) {
+    if (selectedVoucher.soLuong <= 0) {
+      toast.error("Voucher đã hết ");
+      setSelectedVoucherCode("");
+      return;
+    }
+    if (tamTinh < dieuKien) {
       toast.error("Không đủ điều kiện áp mã");
       setSelectedVoucherCode("");
-      return tongTien1;
+      return tamTinh;
     }
 
     if (voucherDaSuDung) {
@@ -624,7 +623,7 @@ const Payment = () => {
     setTongTien1(tamTinh);
     closeModal();
   };
-
+  const [giamGia, setGiaGiam] = useState("");
   const calculateTotalPrice = () => {
     const voucherCode = selectedVoucherCode;
 
@@ -648,6 +647,7 @@ const Payment = () => {
       if (giamGia > giamToiDa) {
         giamGia = giamToiDa;
       }
+      setGiaGiam(giamGia);
       console.log(giamGia);
       const tongTienSauKhiGiamGia = tongTien1 - giamGia;
       console.log(tongTienSauKhiGiamGia);
@@ -730,6 +730,8 @@ const Payment = () => {
   const [districtsLoaded, setDistrictsLoaded] = useState(false);
   const handleClearClick = () => {
     setSelectedVoucherCode("");
+    setGiaGiam("");
+    setTongTien1(tamTinh);
   };
   return (
     <div className="container mx-auto px-4 ">
@@ -1174,6 +1176,19 @@ const Payment = () => {
                     id="price_ship_coco"
                   />
                 </div>
+                {giamGia && (
+                  <div className="d-flex align-items-center justify-content-between mb-3">
+                    <span>Giảm:</span>
+                    <span id="price_ship">- {giamGia} đ</span>
+                    <input
+                      type="hidden"
+                      value="0"
+                      name="price_ship_coco"
+                      id="price_ship_coco"
+                    />
+                  </div>
+                )}
+
                 <hr />
 
                 <div className="d-flex align-items-center justify-content-between mb-3">

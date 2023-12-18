@@ -83,6 +83,9 @@ const ProductInfo = ({ item }) => {
         <p className="font-medium text-sm text-gray-600">
           <span className="font-normal">Số lượng:</span> {item.soLuongTon}
         </p>
+        <p className="font-medium text-sm text-gray-600">
+          <span>Thông tin sản phẩm:</span> {item.moTa}
+        </p>
         <div className="w-1/3 flex items-center gap-2 text-lg ">
           <button
             onClick={decreaseQuantity}
