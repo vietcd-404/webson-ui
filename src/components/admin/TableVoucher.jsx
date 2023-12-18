@@ -264,9 +264,7 @@ const TableVoucher = () => {
       if (
         !(currentDateOnly >= startDateOnly && currentDateOnly <= endDateOnly)
       ) {
-        toast.error(
-          "Không thể chuyển trạng thái do thời gian bắt đầu không hợp lệ."
-        );
+        toast.error("Không thể chuyển trạng thái do thời gian không hợp lệ.");
         // await updateStatusVoucher(
         //   { ...record, trangThai: 1 },
         //   record.maVoucher
