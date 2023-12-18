@@ -130,6 +130,10 @@ const CaNhan = ({ props }) => {
           }
         } catch (error) {
           console.error("Lỗi khi cập nhật người dùng : ", error);
+          if (error.response && error.response.status === 400) {
+            toast.error(error.response.data.message);
+            return;
+          }
           toast.error("Lỗi khi cập nhập người dùng!");
         }
       },

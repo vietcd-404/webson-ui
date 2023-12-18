@@ -188,7 +188,6 @@ const ListSPCT = () => {
       cancelText: "Đóng",
       onOk: async () => {
         try {
-          console.log(value);
           const response = await updateSPCT(dataEdit.maSanPhamCT, value);
           if (response.status === 200) {
             setVisibleModal(false);

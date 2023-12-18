@@ -55,7 +55,7 @@ const ModalUpdateSPCT = (props) => {
       })
       .catch((error) => {
         console.error("Lỗi validation:", error);
-        toast.error("Cập nhập thất bại, kiểm tra lại form");
+        toast.error("Cập nhập thất bại!");
       });
   };
 
@@ -207,16 +207,15 @@ const ModalUpdateSPCT = (props) => {
                 name="giaBan"
                 rules={[
                   { required: true, message: "Giá bán không để trống" },
-                  ({ getFieldValue }) => ({
-                    validator(_, value) {
-                      if (value > 0) {
+                  {
+                    validator: (rule, value) => {
+                      if (value && value <= 0) {
+                        return Promise.reject("Giá bán không được nhỏ hơn 0");
+                      } else {
                         return Promise.resolve();
                       }
-                      return Promise.reject(
-                        new Error("Giá bán không được nhỏ hơn 0")
-                      );
                     },
-                  }),
+                  },
                 ]}
               >
                 <Input placeholder="Price" type="number" />
@@ -228,16 +227,15 @@ const ModalUpdateSPCT = (props) => {
                 name="soLuongTon"
                 rules={[
                   { required: true, message: "Số lượng không để trống" },
-                  ({ getFieldValue }) => ({
-                    validator(_, value) {
-                      if (value >= 0) {
+                  {
+                    validator: (rule, value) => {
+                      if (value && value <= 0) {
+                        return Promise.reject("Số lượng không được nhỏ hơn 0");
+                      } else {
                         return Promise.resolve();
                       }
-                      return Promise.reject(
-                        new Error("Số lượng không được nhỏ hơn 0")
-                      );
                     },
-                  }),
+                  },
                 ]}
               >
                 <Input placeholder="Quantity" type="number" />
