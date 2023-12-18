@@ -225,7 +225,15 @@ const FormHD = (props) => {
 
   const handleSearch = async () => {
     try {
-      const response = await searchHoaDon(searchType, searchValue, 0);
+      if (searchQuery === null) {
+        toast.error("Mời chọn giá trị mong muốn tìm kiếm!");
+        return;
+      }
+      if (searchValue === null) {
+        toast.error("Mời nhập giá trị mong muốn tìm kiếm!");
+        return;
+      }
+      const response = await searchHoaDon(searchType, searchValue, 5);
       if (response.data.length === 0) {
         setTableData(response.data);
       } else {

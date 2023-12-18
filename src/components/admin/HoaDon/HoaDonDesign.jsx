@@ -275,6 +275,14 @@ const HoaDonDesign = (props) => {
 
   const handleSearch = async () => {
     try {
+      if (searchQuery === null) {
+        toast.error("Mời chọn giá trị mong muốn tìm kiếm!");
+        return;
+      }
+      if (searchValue === null) {
+        toast.error("Mời nhập giá trị mong muốn tìm kiếm!");
+        return;
+      }
       const response = await searchHoaDon(searchType, searchValue, 0);
       if (response.data.length === 0) {
         setTableData(response.data);
