@@ -528,7 +528,7 @@ const Payment = () => {
       } catch (error) {
         // Handle errors, such as displaying an error message
         console.log("Lỗi ", error);
-        message.error(error.response.data.message);
+        toast.error(error.response.data.message);
         setLoading(false);
       }
     }
@@ -1005,7 +1005,7 @@ const Payment = () => {
                         </p>
                         <p className="item-title mb-0">
                           <Link to={`/product/${item.maSanPhamCT}`}>
-                            {item.tenSanPham}
+                            [{item.tenMau}] - {item.tenSanPham}
                           </Link>
                         </p>
                         <p className="item-quantity mb-0">
@@ -1038,7 +1038,7 @@ const Payment = () => {
                         <p className="item-title mb-0">
                           {" "}
                           <Link to={`/product/${item.maSanPhamCT}`}>
-                            {item.tenSanPham}
+                            [{item.tenMau}] - {item.tenSanPham}
                           </Link>
                         </p>
 

@@ -145,13 +145,18 @@ const ProductInfo = ({ item }) => {
       ) : (
         <button
           onClick={() => {
-            if (quantity > 0 && quantity < item.soLuongTon) {
+            if (
+              quantity > 0 &&
+              quantity <= item.soLuongTon &&
+              item.soLuongTon > 0
+            ) {
               dispatch(
                 addToCart({
                   maSanPhamCT: item.maSanPhamCT,
                   tenSanPham: item.tenSanPham,
                   soLuong: quantity,
                   anh: item.img,
+                  tenMau: item.tenMau,
                   soLuongTon: item.soLuongTon,
                   giaBan: item.giaBan * ((100 - item.phanTramGiam) / 100),
                   tenThuongHieu: item.tenThuongHieu,
@@ -159,6 +164,7 @@ const ProductInfo = ({ item }) => {
               );
             } else {
               toast.error("Số lượng không hợp lệ");
+              return;
             }
           }}
           // onChange={han}

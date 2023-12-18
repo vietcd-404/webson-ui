@@ -19,6 +19,7 @@ import { useEffect } from "react";
 import { themYthich } from "../../../../services/SanPhamYeuThichService";
 
 import { useAuth } from "../../../../pages/customer/Account/AuthProvider";
+import { message } from "antd";
 
 const Product = (item) => {
   const [maSanPhamID, setmaSanPhamID] = useState();
@@ -163,20 +164,26 @@ const Product = (item) => {
               </li>
             ) : (
               <li
-                onClick={() =>
-                  dispatch(
-                    addToCart({
-                      maSanPhamCT: item.maSanPhamCT,
-                      tenSanPham: item.tenSanPham,
-                      soLuong: 1,
-                      anh: item.img,
-                      giaBan: item.giaBan * ((100 - item.phanTramGiam) / 100),
-                      phanTramGiam: item.phanTramGiam,
-                      tenThuongHieu: item.tenThuongHieu,
-                      soLuongTon: item.soLuongTon,
-                    })
-                  )
-                }
+                onClick={() => {
+                  if (item.soLuongTon > 0) {
+                    dispatch(
+                      addToCart({
+                        maSanPhamCT: item.maSanPhamCT,
+                        tenSanPham: item.tenSanPham,
+                        soLuong: 1,
+                        anh: item.img,
+                        tenMau: item.tenMau,
+                        giaBan: item.giaBan * ((100 - item.phanTramGiam) / 100),
+                        phanTramGiam: item.phanTramGiam,
+                        tenThuongHieu: item.tenThuongHieu,
+                        soLuongTon: item.soLuongTon,
+                      })
+                    );
+                  } else {
+                    toast.error("Sản phẩm đã hết hàng");
+                    return;
+                  }
+                }}
                 className="text-[#767676] hover:text-primeColor text-sm font-normal border-b-[1px] border-b-gray-200 hover:border-b-primeColor flex items-center justify-end gap-2 hover:cursor-pointer pb-1 duration-300 w-full hover:text-pink-500"
               >
                 Thêm vào giỏ hàng
