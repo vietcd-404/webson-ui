@@ -12,6 +12,9 @@ const SignUp = () => {
     email: "",
     sdt: "",
     password: "",
+    ho: "",
+    tenDem: "",
+    ten: "",
   });
   const [errors, setErrors] = useState([]);
 
@@ -36,6 +39,30 @@ const SignUp = () => {
       valid = false;
     } else if (/\s/.test(formData.username)) {
       newErrors.username = "Tên đăng nhập không hợp lệ";
+      valid = false;
+    }
+
+    if (!formData.ten) {
+      newErrors.ten = "Tên không được trống";
+      valid = false;
+    } else if (/\s/.test(formData.ten)) {
+      newErrors.ten = "Tên không hợp lệ";
+      valid = false;
+    }
+
+    if (!formData.ho) {
+      newErrors.ho = "Họ không được trống";
+      valid = false;
+    } else if (/\s/.test(formData.ho)) {
+      newErrors.ho = "Họ không hợp lệ";
+      valid = false;
+    }
+
+    if (!formData.tenDem) {
+      newErrors.tenDem = "Tên đệm không được trống";
+      valid = false;
+    } else if (/\s/.test(formData.tenDem)) {
+      newErrors.tenDem = "Tên đệm không hợp lệ";
       valid = false;
     }
 
@@ -145,6 +172,86 @@ const SignUp = () => {
                     {errors.username}
                   </p>
                 )}
+              </div>
+              <div className="flex flex-col gap-.5">
+                <div className=" flex items-center">
+                  <div className="w-[33%] pr-2">
+                    <label
+                      htmlFor="province"
+                      className="font-titleFont text-base font-semibold text-gray-600"
+                    >
+                      Họ
+                    </label>
+                    <input
+                      onChange={handleChange}
+                      // value={email}
+                      name="ho"
+                      className="w-full h-8 placeholder:text-sm placeholder:tracking-wide px-4 text-base font-medium placeholder:font-normal rounded-md border-[1px] border-gray-400 outline-none"
+                      type="text"
+                      placeholder="Họ"
+                    />
+                  </div>
+
+                  <div className="w-[33%] pr-2">
+                    <label
+                      htmlFor="district"
+                      className="font-titleFont text-base font-semibold text-gray-600"
+                    >
+                      Tên Đệm
+                    </label>
+                    <input
+                      onChange={handleChange}
+                      // value={email}
+                      name="tenDem"
+                      className="w-full h-8 placeholder:text-sm placeholder:tracking-wide px-4 text-base font-medium placeholder:font-normal rounded-md border-[1px] border-gray-400 outline-none"
+                      type="text"
+                      placeholder="Tên đệm"
+                    />
+                  </div>
+
+                  <div className="w-[33%] pr-2">
+                    <label
+                      htmlFor="ward"
+                      className="font-titleFont text-base font-semibold text-gray-600"
+                    >
+                      Tên
+                    </label>
+                    <input
+                      onChange={handleChange}
+                      // value={email}
+                      name="ten"
+                      className="w-full h-8 placeholder:text-sm placeholder:tracking-wide px-4 text-base font-medium placeholder:font-normal rounded-md border-[1px] border-gray-400 outline-none"
+                      type="text"
+                      placeholder="Tên"
+                    />
+                  </div>
+                </div>
+                <div className=" flex items-center">
+                  <div className="w-[33%] pr-2">
+                    {errors.ho && (
+                      <p className="text-sm text-red-500 font-titleFont font-semibold px-4">
+                        <span className="font-bold italic mr-1">!</span>
+                        {errors.ho}
+                      </p>
+                    )}
+                  </div>
+                  <div className="w-[33%] pr-2">
+                    {errors.tenDem && (
+                      <p className="text-sm text-red-500 font-titleFont font-semibold px-4">
+                        <span className="font-bold italic mr-1">!</span>
+                        {errors.tenDem}
+                      </p>
+                    )}
+                  </div>
+                  <div className="w-[33%] pr-2">
+                    {errors.ten && (
+                      <p className="text-sm text-red-500 font-titleFont font-semibold px-4">
+                        <span className="font-bold italic mr-1">!</span>
+                        {errors.ten}
+                      </p>
+                    )}
+                  </div>
+                </div>
               </div>
 
               <div className="flex flex-col gap-.5">
