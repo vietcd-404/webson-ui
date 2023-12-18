@@ -98,8 +98,8 @@ const HoaDonDesign = (props) => {
   // Hiển thị thông tin chi tiết order
   const showEditModal = async (record) => {
     setMaHD(null);
+
     const response = await inforUserHoaDon(record.maHoaDon);
-    console.log(response.data[0]);
     setEditFormData((prevFormData) => ({
       ...prevFormData,
       maHoaDon: response.data[0].maHoaDon,
@@ -541,7 +541,7 @@ const HoaDonDesign = (props) => {
           name="soLuong"
           className="border-1"
           onChange={(e) => handleQuantityChange(e, record.maSanPhamCT)}
-          disabled={record.thanhToan === 1}
+          disabled={editFormData.thanhToan === 1}
         />
       ),
     },
@@ -571,7 +571,7 @@ const HoaDonDesign = (props) => {
         <Space size="middle">
           <Button
             onClick={() => handleXoaSanPham(record.maHoaDonCT)}
-            disabled={record.thanhToan === 1}
+            disabled={editFormData.thanhToan === 1}
           >
             <DeleteOutlined />
           </Button>
