@@ -55,8 +55,8 @@ const ProductInfo = ({ item }) => {
         {/* Giá Bán: $ */}
         {(item.giaBan * ((100 - item.phanTramGiam) / 100)).toLocaleString(
           "en-US"
-        )}
-        đ
+        )}{" "}
+        VNĐ
       </p>
       <div className="flex flex-col space-y-2">
         <p className="font-medium text-lg text-gray-700">

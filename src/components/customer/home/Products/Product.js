@@ -223,7 +223,7 @@ const Product = (item) => {
           ) : (
             <>
               <del className="text-[#767676] text-[14px]">
-                {item.giaBan.toLocaleString("en-US")} đ
+                {item.giaBan.toLocaleString("en-US")}
               </del>
             </>
           )}
@@ -235,7 +235,7 @@ const Product = (item) => {
               {(item.giaBan * ((100 - item.phanTramGiam) / 100)).toLocaleString(
                 "en-US"
               )}{" "}
-              đ
+              VNĐ
             </p>
           </div>
           <p className="text-[#767676] text-[14px]">{item.tenLoai}</p>

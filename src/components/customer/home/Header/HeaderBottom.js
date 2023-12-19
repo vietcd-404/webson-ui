@@ -174,7 +174,7 @@ const HeaderBottom = () => {
                     >
                       <img
                         className="w-[20%] h-[80%] object-cover"
-                        src={`data:image/png;base64,${item.img}`}
+                        src={`data:image/png;base64,${item.img[0]}`}
                         alt=""
                       />
                       <div className="flex flex-col gap-1">
@@ -185,7 +185,7 @@ const HeaderBottom = () => {
                         <p className="text-sm">
                           Giá bán:{" "}
                           <span className="text-primeColor font-semibold">
-                            {item.giaBan} đ
+                            {item.giaBan} VNĐ
                           </span>
                         </p>
                       </div>

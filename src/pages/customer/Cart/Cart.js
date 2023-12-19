@@ -325,11 +325,11 @@ const Cart = () => {
                       <p className="mb-1">Tổng tiền hàng</p>
                       {user ? (
                         <p className="text-danger mb-1">
-                          {totalAmt.toLocaleString("en-US")}đ
+                          {totalAmt.toLocaleString("en-US")} VNĐ
                         </p>
                       ) : (
                         <p className="text-danger mb-1">
-                          {tongTien.toLocaleString("en-US")}đ
+                          {tongTien.toLocaleString("en-US")} VNĐ
                         </p>
                       )}
                     </div>
