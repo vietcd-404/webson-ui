@@ -412,7 +412,7 @@ const Payment = () => {
     }
     if (selectedVoucherCode) {
       if (!voucherDaSuDung) {
-        toast.error("Voucher chưa đc sử dụng");
+        toast.error("Voucher chưa được sử dụng");
         return;
       }
     }
@@ -1001,7 +1001,7 @@ const Payment = () => {
                       <div className="w-[35%]">
                         <Link to={`/product/${item.maSanPhamCT}`}>
                           <img
-                            src={`data:image/png;base64,${item.anh}`}
+                            src={`data:image/png;base64,${item.anh[0]}`}
                             alt={item.tenSanPham}
                             className="img-fluid flex-shrink-0 w-[100%] h-[120px]" // Use flex-shrink-0 to prevent image shrinking
                           />
@@ -1034,7 +1034,7 @@ const Payment = () => {
                       <div className="w-[35%]">
                         <Link to={`/product/${item.maSanPhamCT}`}>
                           <img
-                            src={`data:image/png;base64,${item.anh}`}
+                            src={`data:image/png;base64,${item.anh[0]}`}
                             alt={item.tenSanPham}
                             className="img-fluid flex-shrink-0 w-[100%] h-[120px]" // Use flex-shrink-0 to prevent image shrinking
                           />
