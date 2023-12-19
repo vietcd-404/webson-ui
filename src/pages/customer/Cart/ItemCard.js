@@ -25,7 +25,9 @@ const ItemCard = ({ item, xoa, updateSoLuong }) => {
           </Link>
         </td>
         <td className="min-w-[100px]">
-          <div className="public-price">{giaBan.toLocaleString("en-US")}đ</div>
+          <div className="public-price">
+            {giaBan.toLocaleString("en-US")} VNĐ
+          </div>
         </td>
         <td className="min-w-[100px]">
           <input
@@ -43,7 +45,7 @@ const ItemCard = ({ item, xoa, updateSoLuong }) => {
           />
         </td>
         <td className="min-w-[100px]" id={`product-price-${item.maGioHang}`}>
-          {(giaBan * item.soLuong).toLocaleString("en-US")}
+          {(giaBan * item.soLuong).toLocaleString("en-US")} VNĐ
         </td>
         <td className="min-w-[100px]">
           <button

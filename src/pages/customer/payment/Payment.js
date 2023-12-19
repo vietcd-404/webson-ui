@@ -1022,7 +1022,8 @@ const Payment = () => {
                         </p>
                         <div className="item-price fw-bold">
                           <div className="public-price">
-                            {item.giaBan * ((100 - item.phanTramGiam) / 100)}đ
+                            {item.giaBan * ((100 - item.phanTramGiam) / 100)}{" "}
+                            VNĐ
                           </div>
                         </div>
                       </div>
@@ -1058,7 +1059,7 @@ const Payment = () => {
                           </span>
                         </p>
                         <div className="item-price fw-bold">
-                          <div className="public-price">{item.giaBan}đ</div>
+                          <div className="public-price">{item.giaBan} VNĐ</div>
                         </div>
                       </div>
                     </div>
@@ -1137,8 +1138,8 @@ const Payment = () => {
                             </div>
                             <div className="mt-2">
                               <li>Giảm {item.giaTriGiam}%</li>
-                              <li>Tối đa {item.giamToiDa} đ</li>
-                              <li>Đơn tối thiểu {item.dieuKien} đ</li>
+                              <li>Tối đa {item.giamToiDa} VNĐ</li>
+                              <li>Đơn tối thiểu {item.dieuKien} VNĐ</li>
                               <div className="flex justify-between">
                                 <li>
                                   <span className="cursor-pointer text-blue-500">
@@ -1164,7 +1165,7 @@ const Payment = () => {
                 </div>
                 <div className="d-flex align-items-center justify-content-between mb-3">
                   <span>Tạm tính:</span>
-                  <span>{tamTinh} đ</span>
+                  <span>{tamTinh} VNĐ</span>
                   <input
                     type="hidden"
                     value="318000"
@@ -1175,7 +1176,7 @@ const Payment = () => {
 
                 <div className="d-flex align-items-center justify-content-between mb-3">
                   <span>Phí vận chuyển:</span>
-                  <span id="price_ship">{feeShip ? feeShip : 0} đ</span>
+                  <span id="price_ship">{feeShip ? feeShip : 0} VNĐ</span>
                   <input
                     type="hidden"
                     value="0"
@@ -1186,7 +1187,7 @@ const Payment = () => {
                 {giamGia && (
                   <div className="d-flex align-items-center justify-content-between mb-3">
                     <span>Giảm:</span>
-                    <span id="price_ship">- {giamGia} đ</span>
+                    <span id="price_ship">- {giamGia} VNĐ</span>
                     <input
                       type="hidden"
                       value="0"
@@ -1201,7 +1202,7 @@ const Payment = () => {
                 <div className="d-flex align-items-center justify-content-between mb-3">
                   <span class="text-uppercase">Tổng cộng</span>
                   <span class="fw-bold text-danger" id="total_price_ship">
-                    {feeShip ? tongTien1 + feeShip : tongTien1}
+                    {feeShip ? tongTien1 + feeShip : tongTien1} VNĐ
                   </span>
                 </div>
                 <div className=" bg-[#C73030] rounded-lg hover:bg-red-700 w-[85px]">
@@ -1217,7 +1218,7 @@ const Payment = () => {
               <>
                 <div className="d-flex align-items-center justify-content-between mb-3">
                   <span>Tạm tính:</span>
-                  <span>{totalAmt} đ</span>
+                  <span>{totalAmt} VNĐ</span>
                   <input
                     type="hidden"
                     value="318000"
@@ -1228,7 +1229,7 @@ const Payment = () => {
 
                 <div className="d-flex align-items-center justify-content-between mb-3">
                   <span>Phí vận chuyển:</span>
-                  <span id="price_ship">{feeShip ? feeShip : 0} đ</span>
+                  <span id="price_ship">{feeShip ? feeShip : 0} VNĐ</span>
                   <input
                     type="hidden"
                     value="0"
@@ -1245,7 +1246,7 @@ const Payment = () => {
                     id="total_price_ship"
                     name="tongTien"
                   >
-                    {feeShip ? totalAmt + feeShip : totalAmt} đ
+                    {feeShip ? totalAmt + feeShip : totalAmt} VNĐ
                   </span>
                 </div>
                 <div className=" bg-[#C73030] rounded-lg hover:bg-red-700 w-[85px]">
