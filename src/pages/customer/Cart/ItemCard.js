@@ -12,7 +12,7 @@ const ItemCard = ({ item, xoa, updateSoLuong }) => {
             <Link to={`/product/${item.maSanPhamCT}`}>
               <img
                 width="100%"
-                src={`data:image/png;base64,${item.anh}`}
+                src={`data:image/png;base64,${item.anh[0]}`}
                 alt={item.tenSanPham}
                 className="img-fluid rounded"
               />
