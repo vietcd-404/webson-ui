@@ -132,6 +132,7 @@ const FormHD = (props) => {
     try {
       const response = await getAllOrderByAdmin(trangThaiHD);
       setTotalPage(response.totalPage);
+      editFormData.thanhToan = 0;
       setLoading(false);
     } catch (error) {
       console.error("Lỗi khi gọi API: ", error);
@@ -517,7 +518,6 @@ const FormHD = (props) => {
           name="soLuong"
           className="border-1"
           onChange={(e) => handleQuantityChange(e, record.maSanPhamCT)}
-          disabled={editFormData.thanhToan === 1}
         />
       ),
     },
@@ -545,10 +545,7 @@ const FormHD = (props) => {
       key: "action",
       render: (_, record) => (
         <Space size="middle">
-          <Button
-            disabled={editFormData.thanhToan === 1}
-            onClick={() => handleXoaSanPham(record.maHoaDonCT)}
-          >
+          <Button onClick={() => handleXoaSanPham(record.maHoaDonCT)}>
             <DeleteOutlined />
           </Button>
         </Space>
@@ -782,10 +779,7 @@ const FormHD = (props) => {
                   },
                 ]}
               >
-                <Input
-                  placeholder="abc@gmail.com"
-                  disabled={editFormData.thanhToan === 1}
-                />
+                <Input placeholder="abc@gmail.com" />
               </Form.Item>
               <Form.Item
                 label="Số điện thoại"
@@ -800,15 +794,11 @@ const FormHD = (props) => {
                   },
                 ]}
               >
-                <Input disabled={editFormData.thanhToan === 1} />
+                <Input />
               </Form.Item>
             </Col>
           </Row>
-          <Button
-            disabled={editFormData.thanhToan === 1}
-            type="primary"
-            onClick={handleUpdate}
-          >
+          <Button type="primary" onClick={handleUpdate}>
             Cập Nhập
           </Button>
         </Form>
@@ -829,7 +819,6 @@ const FormHD = (props) => {
               onChange={handleSearchProduct}
               value={searchQuery}
               placeholder="Tìm kiếm sản phẩm tại đây"
-              disabled={editFormData.thanhToan === 1}
             />
             {searchQuery && (
               <div
@@ -898,7 +887,6 @@ const FormHD = (props) => {
           <p className="padding-right mt-2">
             <Button
               style={{ color: "white", backgroundColor: "green" }}
-              disabled={editFormData.thanhToan === 1}
               onClick={updateProductQuantity}
             >
               Cập nhập sản phẩm
