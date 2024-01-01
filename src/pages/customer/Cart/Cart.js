@@ -6,98 +6,373 @@ import Breadcrumbs from "../../../components/customer/pageProps/Breadcrumbs";
 import { resetCart } from "../../../redux/orebiSlice";
 import { emptyCart } from "../../../assets/images/index";
 import ItemCard from "./ItemCard";
+import ButtonShop from "../../../components/customer/designLayouts/buttons/ShopNow";
+import {
+  findGioHang,
+  hienGioHangSession,
+  updateSoLuong,
+  xoaGioHang,
+  xoaTatCaGioHang,
+} from "../../../services/GioHangService";
+import { message } from "antd";
+import { ToastContainer, toast } from "react-toastify";
+import "react-toastify/dist/ReactToastify.css";
+import { useAuth } from "../Account/AuthProvider";
+import CartSession from "./CartSession";
+import Cookies from "js-cookie";
 
 const Cart = () => {
   const dispatch = useDispatch();
   const products = useSelector((state) => state.orebiReducer.products);
+
   const [totalAmt, setTotalAmt] = useState("");
+  const [tongTien, setTongTien] = useState("");
+
   const [shippingCharge, setShippingCharge] = useState("");
-  useEffect(() => {
-    let price = 0;
-    products.map((item) => {
-      price += item.price * item.quantity;
-      return price;
-    });
-    setTotalAmt(price);
-  }, [products]);
-  useEffect(() => {
-    if (totalAmt <= 200) {
-      setShippingCharge(30);
-    } else if (totalAmt <= 400) {
-      setShippingCharge(25);
-    } else if (totalAmt > 401) {
-      setShippingCharge(20);
+  const [policy, setPolicy] = useState({
+    title: "Chính sách mua hàng",
+    content: [
+      "Quý khách được kiểm tra hàng trước khi thanh toán, quay video unbox nếu như đã nhận hàng mà chưa kiểm hàng.",
+      "- Đổi sản phẩm trong 24h nếu còn đủ tem mạc, nếu phát hiện lỗi khi sử dụng cùng với hình ảnh chi tiết.",
+      "- Giao hàng từ 3-5 ngày các ngày trong tuần.",
+    ],
+  });
+
+  const [data, setData] = useState([]);
+  const [dataSession, setDataSession] = useState([]);
+
+  const fetchCart = async () => {
+    try {
+      const storedCart = localStorage.getItem("cart");
+      if (storedCart) {
+        setDataSession(JSON.parse(storedCart));
+      }
+
+      // Fetch the cart from the server and update the local cart
+      const response = await hienGioHangSession();
+      setDataSession(response.data);
+
+      // Save the updated cart to localStorage
+      localStorage.setItem("cart", JSON.stringify(response.data));
+    } catch (error) {
+      console.error("Error fetching cart:", error);
     }
-  }, [totalAmt]);
+  };
+
+  const loadGioHang = async () => {
+    try {
+      const response = await findGioHang();
+      setData(response.data);
+    } catch (error) {
+      console.error("Lỗi khi gọi API: ", error);
+    }
+  };
+  const handleXoaTatCa = async () => {
+    try {
+      const response = await xoaTatCaGioHang();
+      if (response.status === 200) {
+        toast.success("Xóa tất cả thành công!");
+      }
+      loadGioHang();
+    } catch (error) {
+      console.error("Lỗi khi xóa loại: ", error);
+      message.error("Xóa thất bại.");
+    }
+  };
+
+  const handleQuantityChange = async (event, sanPham, maxQuantity) => {
+    const newQuantity = event.target.value;
+    if (newQuantity === "") {
+      toast.error("Số lượng không được để trống");
+      return;
+    }
+    if (newQuantity > maxQuantity) {
+      console.error("Quantity exceeds the maximum limit");
+      toast.error("Số lượng vượt giới hạn");
+      return;
+    }
+    setData((prevData) =>
+      prevData.map((item) =>
+        item.maSanPhamCT === sanPham ? { ...item, soLuong: newQuantity } : item
+      )
+    );
+    try {
+      await updateSoLuong(sanPham, newQuantity);
+      loadGioHang();
+    } catch (error) {
+      console.error("Failed to update quantity:", error);
+      message.error(error.response.data.message);
+    }
+  };
+
+  const handleXoa = async (ma) => {
+    try {
+      const response = await xoaGioHang(ma);
+      if (response.status === 200) {
+        toast.success("Xóa thành công!");
+        loadGioHang();
+      }
+    } catch (error) {
+      console.error("Lỗi khi xóa loại: ", error);
+      toast.error("Xóa thất bại.");
+    }
+  };
+
+  useEffect(() => {
+    let tongTien = 0;
+    data.map((item) => {
+      const giaBan = item.giaBan * ((100 - item.phanTramGiam) / 100);
+      tongTien += giaBan * item.soLuong;
+      return tongTien;
+    });
+    setTotalAmt(tongTien);
+  }, [data]);
+
+  useEffect(() => {
+    let tt = 0;
+    products.map((item) => {
+      const giaBan = item.giaBan * (item.phanTramGiam / 100);
+      tt += item.giaBan * item.soLuong;
+      return tt;
+    });
+    setTongTien(tt);
+  }, [products]);
+
+  useEffect(() => {
+    if (user) {
+      // User is authenticated
+      loadGioHang();
+    } else {
+      // User is not authenticated
+      fetchCart();
+    }
+    console.log(products);
+  }, []);
+
+  // useEffect(() => {
+  //   if (totalAmt <= 200) {
+  //     setShippingCharge(30);
+  //   } else if (totalAmt <= 400) {
+  //     setShippingCharge(25);
+  //   } else if (totalAmt > 401) {
+  //     setShippingCharge(20);
+  //   }
+  // }, [totalAmt]);
+  const { user } = useAuth();
+
   return (
     <div className="max-w-container mx-auto px-4">
+      <ToastContainer />
       <Breadcrumbs title="Giỏ Hàng" />
-      {products.length > 0 ? (
+      {data.length > 0 ? (
         <div className="pb-20">
-          <div className="w-full h-20 bg-[#F5F7F7] text-primeColor hidden lgl:grid grid-cols-5 place-content-center px-6 text-lg font-titleFont font-semibold">
-            <h2 className="col-span-2">Product</h2>
-            <h2>Price</h2>
-            <h2>Quantity</h2>
-            <h2>Sub Total</h2>
-          </div>
           <div className="mt-5">
-            {products.map((item) => (
-              <div key={item._id}>
-                <ItemCard item={item} />
-              </div>
-            ))}
-          </div>
-
-          <button
-            onClick={() => dispatch(resetCart())}
-            className="py-2 px-10 bg-red-500 text-white font-semibold uppercase mb-4 hover:bg-red-700 duration-300"
-          >
-            Reset cart
-          </button>
-
-          <div className="flex flex-col mdl:flex-row justify-between border py-4 px-4 items-center gap-2 mdl:gap-0">
-            <div className="flex items-center gap-4">
-              <input
-                className="w-44 mdl:w-52 h-8 px-4 border text-primeColor text-sm outline-none border-gray-400"
-                type="text"
-                placeholder="Coupon Number"
-              />
-              <p className="text-sm mdl:text-base font-semibold">
-                Apply Coupon
-              </p>
-            </div>
-            <p className="text-lg font-semibold">Update Cart</p>
-          </div>
-          <div className="max-w-7xl gap-4 flex justify-end mt-4">
-            <div className="w-96 flex flex-col gap-4">
-              <h1 className="text-2xl font-semibold text-right">Cart totals</h1>
+            <div className="container mx-auto mb-4 border py-2">
               <div>
-                <p className="flex items-center justify-between border-[1px] border-gray-400 border-b-0 py-1.5 text-lg px-4 font-medium">
-                  Subtotal
-                  <span className="font-semibold tracking-wide font-titleFont">
-                    ${totalAmt}
-                  </span>
-                </p>
-                <p className="flex items-center justify-between border-[1px] border-gray-400 border-b-0 py-1.5 text-lg px-4 font-medium">
-                  Shipping Charge
-                  <span className="font-semibold tracking-wide font-titleFont">
-                    ${shippingCharge}
-                  </span>
-                </p>
-                <p className="flex items-center justify-between border-[1px] border-gray-400 py-1.5 text-lg px-4 font-medium">
-                  Total
-                  <span className="font-bold tracking-wide text-lg font-titleFont">
-                    ${totalAmt + shippingCharge}
-                  </span>
-                </p>
+                <div className="layout-page-checkout mt-4 mb-5">
+                  <div className="page-title mb-2 font-bold text-2xl">
+                    Giỏ hàng
+                  </div>
+
+                  <div className="table-container overflow-x-auto">
+                    <table className="page-table table table-hover mb-4">
+                      <thead>
+                        <tr className="font-bold">
+                          <th></th>
+                          <th>Sản phẩm</th>
+                          <th>Giá sản phẩm</th>
+                          <th>Số lượng</th>
+                          <th>Thành tiền</th>
+                          <th>Thao tác</th>
+                        </tr>
+                      </thead>
+                      <tbody>
+                        {user
+                          ? data.map((item) => (
+                              <ItemCard
+                                key={item.maGioHang} // Don't forget to add a unique key when mapping over arrays in React
+                                item={item}
+                                xoa={() => handleXoa(item.maGioHang)}
+                                updateSoLuong={(e) =>
+                                  handleQuantityChange(
+                                    e,
+                                    item.maSanPhamCT,
+                                    item.soLuongTon
+                                  )
+                                }
+                              />
+                            ))
+                          : products.map((item) => (
+                              <CartSession
+                                key={item.maGioHang} // Don't forget to add a unique key when mapping over arrays in React
+                                item={item}
+                                // xoa={() => handleXoa(item.maGioHang)}
+                                // updateSoLuong={(e) =>
+                                //   handleQuantityChange(e, item.maSanPhamCT)
+                                // }
+                              />
+                            ))}
+                      </tbody>
+                    </table>
+                  </div>
+
+                  <div className="page-confirm flex justify-end items-center">
+                    <div className="item-confirm pr-4 text-end font-bold">
+                      <p className="mb-1">Tổng tiền hàng</p>
+                      {user ? (
+                        <p className="text-danger mb-1">
+                          {totalAmt.toLocaleString("en-US")}đ
+                        </p>
+                      ) : (
+                        <p className="text-danger mb-1">
+                          {tongTien.toLocaleString("en-US")}đ
+                        </p>
+                      )}
+                    </div>
+                    <div className=" bg-[#C73030] rounded-lg hover:bg-red-700">
+                      <Link to="/paymentgateway">
+                        <button className="btn-confirm  text-white p-2  cursor-pointer ">
+                          Tiến hành đặt hàng
+                        </button>
+                      </Link>
+                    </div>
+                  </div>
+                </div>
               </div>
-              <div className="flex justify-end">
-                <Link to="/paymentgateway">
-                  <button className="w-52 h-10 bg-primeColor text-white hover:bg-black duration-300">
-                    Proceed to Checkout
-                  </button>
-                </Link>
+            </div>
+          </div>
+
+          {user ? (
+            <button
+              // onClick={() => dispatch(resetCart())}
+              onClick={() => handleXoaTatCa()}
+              className="py-2 px-10 bg-red-500 text-white font-semibold uppercase mb-4 hover:bg-red-700 duration-300"
+            >
+              Làm trống giỏ hàng
+            </button>
+          ) : (
+            <button
+              onClick={() => dispatch(resetCart())}
+              className="py-2 px-10 bg-red-500 text-white font-semibold uppercase mb-4 hover:bg-red-700 duration-300"
+            >
+              Làm trống giỏ hàng
+            </button>
+          )}
+
+          <div className="flex flex-direction: row mt-3">
+            <div className="col-5">
+              <h1 style={{ fontWeight: "bold", color: "black", fontSize: 20 }}>
+                *Chính sách mua hàng
+              </h1>
+              <ul>
+                {policy.content.map((item, index) => (
+                  <li key={index}>{item}</li>
+                ))}
+              </ul>
+            </div>
+          </div>
+        </div>
+      ) : products.length > 0 ? (
+        <div className="pb-20">
+          <div className="mt-5">
+            <div className="container mx-auto mb-4 border py-2">
+              <div>
+                <div className="layout-page-checkout mt-4 mb-5">
+                  <div className="page-title mb-2 font-bold text-2xl">
+                    Giỏ hàng
+                  </div>
+
+                  <div className="table-container overflow-x-auto">
+                    <table className="page-table table table-hover mb-4">
+                      <thead>
+                        <tr className="font-bold">
+                          <th></th>
+                          <th>Sản phẩm</th>
+                          <th>Giá sản phẩm</th>
+                          <th>Số lượng</th>
+                          <th>Thành tiền</th>
+                          <th>Thao tác</th>
+                        </tr>
+                      </thead>
+                      <tbody>
+                        {user
+                          ? data.map((item) => (
+                              <ItemCard
+                                key={item.maGioHang} // Don't forget to add a unique key when mapping over arrays in React
+                                item={item}
+                                xoa={() => handleXoa(item.maGioHang)}
+                                updateSoLuong={(e) =>
+                                  handleQuantityChange(e, item.maSanPhamCT)
+                                }
+                              />
+                            ))
+                          : products.map((item) => (
+                              <CartSession
+                                key={item.maGioHang} // Don't forget to add a unique key when mapping over arrays in React
+                                item={item}
+                                // xoa={() => handleXoa(item.maGioHang)}
+                                // updateSoLuong={(e) =>
+                                //   handleQuantityChange(e, item.maSanPhamCT)
+                                // }
+                              />
+                            ))}
+                      </tbody>
+                    </table>
+                  </div>
+
+                  <div className="page-confirm flex justify-end items-center">
+                    <div className="item-confirm pr-4 text-end font-bold">
+                      <p className="mb-1">Tổng tiền hàng</p>
+                      {user ? (
+                        <p className="text-danger mb-1">
+                          {totalAmt.toLocaleString("en-US")} VNĐ
+                        </p>
+                      ) : (
+                        <p className="text-danger mb-1">
+                          {tongTien.toLocaleString("en-US")} VNĐ
+                        </p>
+                      )}
+                    </div>
+                    <div className=" bg-[#C73030] rounded-lg hover:bg-red-700">
+                      <Link to="/paymentgateway">
+                        <button className="btn-confirm  text-white p-2  cursor-pointer ">
+                          Tiến hành đặt hàng
+                        </button>
+                      </Link>
+                    </div>
+                  </div>
+                </div>
               </div>
+            </div>
+          </div>
+
+          {user ? (
+            <button
+              // onClick={() => dispatch(resetCart())}
+              onClick={() => handleXoaTatCa()}
+              className="py-2 px-10 bg-red-500 text-white font-semibold uppercase mb-4 hover:bg-red-700 duration-300"
+            >
+              Làm trống giỏ hàng
+            </button>
+          ) : (
+            <button
+              onClick={() => dispatch(resetCart())}
+              className="py-2 px-10 bg-red-500 text-white font-semibold uppercase mb-4 hover:bg-red-700 duration-300"
+            >
+              Làm trống giỏ hàng
+            </button>
+          )}
+
+          <div className="flex flex-direction: row mt-3">
+            <div className="col-5">
+              <h1 style={{ fontWeight: "bold", color: "black", fontSize: 20 }}>
+                *Chính sách mua hàng
+              </h1>
+              <ul>
+                {policy.content.map((item, index) => (
+                  <li key={index}>{item}</li>
+                ))}
+              </ul>
             </div>
           </div>
         </div>
@@ -120,12 +395,10 @@ const Cart = () => {
               Giỏ hàng của bạn đang trống.
             </h1>
             <p className="text-sm text-center px-10 -mt-2">
-              Hay Shopping ngay bây giờ nào.
+              Hãy Shopping ngay bây giờ nào.
             </p>
-            <Link to="/shop">
-              <button className="bg-[#FFA500] text-white rounded-md cursor-pointer hover:bg-[#8B0000] active:bg-gray-900 px-8 py-2 font-titleFont font-semibold text-lg text-gray-200 hover:text-white duration-300">
-                Tiếp tục mua sắm
-              </button>
+            <Link to={"/shop"}>
+              <ButtonShop />
             </Link>
           </div>
         </motion.div>

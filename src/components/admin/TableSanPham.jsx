@@ -10,6 +10,9 @@ import {
   Modal,
   Tag,
   Checkbox,
+  Switch,
+  Spin,
+  Flex,
 } from "antd";
 
 import { EditOutlined, DeleteOutlined } from "@ant-design/icons";
@@ -22,6 +25,7 @@ import {
   deleteBySanPham,
   findAllSanPham,
   updateSanPham,
+  updateStatusSp,
 } from "../../services/SanPhamService";
 
 const TableSanPham = () => {
@@ -31,6 +35,8 @@ const TableSanPham = () => {
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [isEditModalOpen, setIsEditModalOpen] = useState(false);
   const [editFormData, setEditFormData] = useState(null); // Data for editing
+  const [switchStatus, setSwitchStatus] = useState({});
+  const [searchTenSanPham, setsearchTenSanPham] = useState("");
 
   const [doBong, setDoBong] = useState(0);
   const [doLi, setDoLi] = useState(0);
@@ -92,6 +98,8 @@ const TableSanPham = () => {
           const values = await form.validateFields();
           values.doBong = doBong;
           values.doLi = doLi;
+          values.tenSanPham = values.tenSanPham.trim().replace(/\s+/g, " ");
+
           const response = await createSanPham(values);
           if (response.status === 200) {
             console.log(response);
@@ -102,7 +110,13 @@ const TableSanPham = () => {
           }
         } catch (error) {
           console.error("Lỗi khi tạo sản phẩm : ", error);
-          toast.error("Thêm mới thất bại.");
+
+          if (error.response && error.response.status === 400) {
+            toast.error(error.response.data.message);
+            return;
+          } else {
+            toast.error("Thêm mới thất bại.");
+          }
         }
       },
       onCancel: () => {},
@@ -122,6 +136,8 @@ const TableSanPham = () => {
           const values = await formUpdate.validateFields();
           values.doBong = doBongEdit; // Sử dụng giá trị doBongEdit
           values.doLi = doLiEdit;
+          values.tenSanPham = values.tenSanPham.trim().replace(/\s+/g, " ");
+
           const response = await updateSanPham(values, editFormData.maSanPham);
           if (response.status === 200) {
             console.log(response);
@@ -132,7 +148,12 @@ const TableSanPham = () => {
           }
         } catch (error) {
           console.error("Lỗi khi cập nhật sản phẩm : ", error);
-          toast.error("Cập nhật thất bại.");
+          if (error.response && error.response.status === 400) {
+            toast.error(error.response.data.message);
+            return;
+          } else {
+            toast.error("Cập nhập thất bại.");
+          }
         }
       },
 
@@ -156,7 +177,7 @@ const TableSanPham = () => {
             loadTable();
           }
         } catch (error) {
-          console.error("Lỗi khi xóa loại: ", error);
+          console.error("Lỗi khi xóa sản phẩm: ", error);
           toast.error("Xóa thất bại.");
         }
       },
@@ -164,11 +185,37 @@ const TableSanPham = () => {
     });
   };
 
+  const handleSwitchChange = async (record, checked) => {
+    try {
+      const response = await updateStatusSp(
+        { ...record, trangThai: checked ? 1 : 0 },
+        record.maSanPham
+      );
+      if (response.status === 200) {
+        setSwitchStatus((prevStatus) => ({
+          ...prevStatus,
+          [record.maSanPham]: checked,
+        }));
+        toast.success("Cập nhật trạng thái thành công!");
+        loadTable();
+      }
+    } catch (error) {
+      console.error("Lỗi khi cập nhật trạng thái người dùng: ", error);
+      toast.error("Cập nhật trạng thái thất bại.");
+    }
+  };
+
   const columns = [
     {
       title: "Tên",
       dataIndex: "tenSanPham",
       key: "tenSanPham",
+      filteredValue: [searchTenSanPham],
+      onFilter: (value, record) => {
+        return String(record.tenSanPham)
+          .toLowerCase()
+          .includes(value.toLowerCase());
+      },
     },
     {
       title: "Độ bóng",
@@ -197,8 +244,12 @@ const TableSanPham = () => {
       title: "Trạng Thái",
       dataIndex: "trangThai",
       key: "trangThai",
-      render: (trangThai) =>
-        trangThai === 0 ? "Hoạt động" : "Không hoạt động",
+      render: (_, record) => (
+        <Switch
+          checked={record.trangThai === 1}
+          onChange={(checked) => handleSwitchChange(record, checked)}
+        />
+      ),
     },
     {
       title: "Chức năng",
@@ -218,9 +269,17 @@ const TableSanPham = () => {
   return (
     <div>
       <ToastContainer />
-      <Row>
+      <Row style={{ marginBottom: "20px" }}>
         <Col span={12}>
-          <SearchInput text="Tìm kiếm loại" />
+          <Input.Search
+            placeholder="Tìm kiếm tên sản phẩm ..."
+            onSearch={(value) => {
+              setsearchTenSanPham(value);
+            }}
+            onChange={(e) => {
+              setsearchTenSanPham(e.target.value);
+            }}
+          />
         </Col>
         <Col span={4} offset={8}>
           <Button className="bg-blue-500 text-white" onClick={showModal}>
@@ -238,7 +297,10 @@ const TableSanPham = () => {
                 name="tenSanPham"
                 style={{ width: "360px", marginLeft: "40px" }}
                 rules={[
-                  { required: true, message: "Tên loại không được để trống!" },
+                  {
+                    required: true,
+                    message: "Tên sản phẩm không được để trống!",
+                  },
                 ]}
               >
                 <Input placeholder="Tên" />
@@ -278,7 +340,7 @@ const TableSanPham = () => {
             name="tenSanPham"
             style={{ width: "360px", marginLeft: "40px" }}
             rules={[
-              { required: true, message: "Tên loại không được để trống!" },
+              { required: true, message: "Tên sản phẩm không được để trống!" },
             ]}
           >
             <Input placeholder="Tên" />
@@ -305,8 +367,22 @@ const TableSanPham = () => {
       </Modal>
 
       {loading ? (
-        <p>Loading...</p>
+        <div className="">
+          {/* <Flex align="center" gap="middle">
+            <Spin />
+          </Flex> */}
+          Loading...
+        </div>
       ) : (
+        /* <div
+        className={`fixed top-0 left-0 w-full h-full flex justify-center items-center bg-white bg-opacity-50 z-50 ${
+          loading ? "" : "hidden"
+        }`}
+      >
+        <div className="">
+          <Spin size="large" />
+        </div>
+      </div> */
         <Table
           columns={columns}
           dataSource={data}

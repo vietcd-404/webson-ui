@@ -21,9 +21,18 @@ import { useAuth } from "./pages/customer/Account/AuthProvider";
 import Otp from "./pages/customer/Account/Otp";
 import ThongTin from "./pages/customer/ThongTin/ThongTin";
 import HoaDon from "./pages/customer/ThongTin/HoaDon";
-import CaNhan from "./pages/customer/ThongTin/CaNhan";
 import SanPhamYeuThich from "./pages/customer/ThongTin/SanPhamYeuThich";
-
+import ChoXacNhan from "./pages/customer/ThongTin/TrangThaiHoaDon/ChoXacNhan";
+import TatCa from "./pages/customer/ThongTin/TrangThaiHoaDon/TatCa";
+import DangGiao from "./pages/customer/ThongTin/TrangThaiHoaDon/DangGiao";
+import HoanThanh from "./pages/customer/ThongTin/TrangThaiHoaDon/HoanThanh";
+import Huy from "./pages/customer/ThongTin/TrangThaiHoaDon/Huy";
+import ThongTinDonHang from "./pages/customer/ThongTin/TrangThaiHoaDon/ThongTinDonHang";
+import XacNhan from "./pages/customer/ThongTin/TrangThaiHoaDon/XacNhan";
+import CaNhan from "./pages/customer/ThongTin/CaNhan";
+import ThongBaoXacNhan from "./pages/customer/payment/ThongBaoXacNhan";
+import NotFound from "./pages/customer/Account/NotFound";
+import DiaChi from "./pages/customer/ThongTin/DiaChi";
 const App = () => {
   const { user } = useAuth();
   return (
@@ -32,13 +41,14 @@ const App = () => {
         <Route
           path="/admin/*"
           element={
-            <ProtectedRoute userRole="ROLE_ADMIN">
-              <AdminRouter />
-            </ProtectedRoute>
+            // <ProtectedRoute userRole="ROLE_ADMIN">
+            <AdminRouter />
+            /* </ProtectedRoute> */
           }
         />
-        <Route path="/forbidden" element={<Forbidden />} />
 
+        <Route path="/forbidden" element={<Forbidden />} />
+        <Route path="*" element={<NotFound />} />
         {/* Khách hàng  */}
         <Route
           path="/"
@@ -53,6 +63,14 @@ const App = () => {
           element={
             <Main>
               <Shop />
+            </Main>
+          }
+        ></Route>
+        <Route
+          path="/done"
+          element={
+            <Main>
+              <ThongBaoXacNhan />
             </Main>
           }
         ></Route>
@@ -90,7 +108,7 @@ const App = () => {
           }
         ></Route>
         <Route
-          path="/product/:_id"
+          path="/product/:maSanPhamCT"
           element={
             <Main>
               <ProductDetails />
@@ -123,22 +141,123 @@ const App = () => {
         ></Route>
         <Route path="/active" element={<Otp />}></Route>
         <Route
-          path="/bill"
+          path="/invoices"
           element={
-            <ProtectedRoute userRole="ROLE_USER">
+            <ProtectedRoute
+              userRole={["ROLE_USER", "ROLE_ADMIN", "ROLE_STAFF"]}
+            >
               <Main>
-                <ThongTin children={<HoaDon />} />
+                <ThongTin children={<HoaDon props={<TatCa />} />} />
+              </Main>
+            </ProtectedRoute>
+          }
+        ></Route>
+        {/* trạng thái giao hàng */}
+        <Route
+          path="/invoices"
+          element={
+            <ProtectedRoute
+              userRole={["ROLE_USER", "ROLE_ADMIN", "ROLE_STAFF"]}
+            >
+              <Main>
+                <ThongTin children={<HoaDon props={<TatCa />} />} />
               </Main>
             </ProtectedRoute>
           }
         ></Route>
         <Route
+          path="/information/:maHoaDon"
+          element={
+            <ProtectedRoute
+              userRole={["ROLE_USER", "ROLE_ADMIN", "ROLE_STAFF"]}
+            >
+              <Main>
+                <ThongTin children={<ThongTinDonHang />} />
+              </Main>
+            </ProtectedRoute>
+          }
+        ></Route>
+        <Route
+          path="/invoices/confirmation"
+          element={
+            <ProtectedRoute
+              userRole={["ROLE_USER", "ROLE_ADMIN", "ROLE_STAFF"]}
+            >
+              <Main>
+                <ThongTin children={<HoaDon props={<XacNhan />} />} />
+              </Main>
+            </ProtectedRoute>
+          }
+        ></Route>
+        <Route
+          path="/invoices/wait-for-confirmation"
+          element={
+            <ProtectedRoute
+              userRole={["ROLE_USER", "ROLE_ADMIN", "ROLE_STAFF"]}
+            >
+              <Main>
+                <ThongTin children={<HoaDon props={<ChoXacNhan />} />} />
+              </Main>
+            </ProtectedRoute>
+          }
+        ></Route>
+        <Route
+          path="/invoices/in-progress"
+          element={
+            <ProtectedRoute
+              userRole={["ROLE_USER", "ROLE_ADMIN", "ROLE_STAFF"]}
+            >
+              <Main>
+                <ThongTin children={<HoaDon props={<DangGiao />} />} />
+              </Main>
+            </ProtectedRoute>
+          }
+        ></Route>
+        <Route
+          path="/invoices/complete"
+          element={
+            <ProtectedRoute
+              userRole={["ROLE_USER", "ROLE_ADMIN", "ROLE_STAFF"]}
+            >
+              <Main>
+                <ThongTin children={<HoaDon props={<HoanThanh />} />} />
+              </Main>
+            </ProtectedRoute>
+          }
+        ></Route>
+        <Route
+          path="/invoices/abort"
+          element={
+            <ProtectedRoute
+              userRole={["ROLE_USER", "ROLE_ADMIN", "ROLE_STAFF"]}
+            >
+              <Main>
+                <ThongTin children={<HoaDon props={<Huy />} />} />
+              </Main>
+            </ProtectedRoute>
+          }
+        ></Route>
+
+        {/* / */}
+
+        <Route
           path="/profile"
           element={
             user ? (
               <Main>
-                {" "}
-                <ThongTin />
+                <ThongTin children={<CaNhan />} />
+              </Main>
+            ) : (
+              <Navigate to="/signin" replace />
+            )
+          }
+        ></Route>
+        <Route
+          path="/address"
+          element={
+            user ? (
+              <Main>
+                <ThongTin children={<DiaChi />} />
               </Main>
             ) : (
               <Navigate to="/signin" replace />
@@ -148,11 +267,17 @@ const App = () => {
         <Route
           path="/my-favorites"
           element={
-            <ProtectedRoute userRole="ROLE_USER">
-              <Main>
-                <ThongTin children={<SanPhamYeuThich />} />
-              </Main>
-            </ProtectedRoute>
+            user ? (
+              <ProtectedRoute
+                userRole={["ROLE_USER", "ROLE_ADMIN", "ROLE_STAFF"]}
+              >
+                <Main>
+                  <ThongTin children={<SanPhamYeuThich />} />
+                </Main>
+              </ProtectedRoute>
+            ) : (
+              <Navigate to="/signin" replace />
+            )
           }
         ></Route>
       </Routes>

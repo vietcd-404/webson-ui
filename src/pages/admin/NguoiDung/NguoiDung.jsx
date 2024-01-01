@@ -1,10 +1,10 @@
 import React from "react";
-import QLNguoiDung from "../../../components/admin/QLNguoiDung";
+import TableNguoiDung from "../../../components/admin/TableNguoiDung";
 
 const NguoiDung = () => {
   return (
     <div>
-      <QLNguoiDung />
+      <TableNguoiDung />
     </div>
   );
 };

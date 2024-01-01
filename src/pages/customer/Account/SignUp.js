@@ -6,11 +6,15 @@ import { ToastContainer, toast } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
 const SignUp = () => {
   const [checked, setChecked] = useState(false);
+  const [loading, setLoading] = useState(false);
   const [formData, setFormData] = useState({
     username: "",
     email: "",
     sdt: "",
     password: "",
+    ho: "",
+    tenDem: "",
+    ten: "",
   });
   const [errors, setErrors] = useState([]);
 
@@ -23,12 +27,42 @@ const SignUp = () => {
     });
   };
 
+  const validatePhone = (sdt) => {
+    return String(sdt).match(/^0\d{9}$/);
+  };
   const validateForm = () => {
     let valid = true;
     const newErrors = {};
 
     if (!formData.username) {
       newErrors.username = "Tên đăng nhập không được trống";
+      valid = false;
+    } else if (/\s/.test(formData.username)) {
+      newErrors.username = "Tên đăng nhập không hợp lệ";
+      valid = false;
+    }
+
+    if (!formData.ten) {
+      newErrors.ten = "Tên không được trống";
+      valid = false;
+    } else if (/\s/.test(formData.ten)) {
+      newErrors.ten = "Tên không hợp lệ";
+      valid = false;
+    }
+
+    if (!formData.ho) {
+      newErrors.ho = "Họ không được trống";
+      valid = false;
+    } else if (/\s/.test(formData.ho)) {
+      newErrors.ho = "Họ không hợp lệ";
+      valid = false;
+    }
+
+    if (!formData.tenDem) {
+      newErrors.tenDem = "Tên đệm không được trống";
+      valid = false;
+    } else if (/\s/.test(formData.tenDem)) {
+      newErrors.tenDem = "Tên đệm không hợp lệ";
       valid = false;
     }
 
@@ -37,13 +71,21 @@ const SignUp = () => {
       valid = false;
     }
 
-    if (!formData.sdt) {
-      newErrors.sdt = "Số điện thoại không được trống";
+    if (formData.sdt.length !== 10) {
+      newErrors.sdt = "Số điện thoại cần có đúng 10 chữ số";
       valid = false;
     }
 
-    if (!formData.password) {
-      newErrors.password = "Mật khẩu không được trống";
+    if (!formData.sdt || !validatePhone(formData.sdt)) {
+      newErrors.sdt = "Số điện thoại không hợp lệ";
+      valid = false;
+    }
+
+    if (formData.password.length < 6) {
+      newErrors.password = "Mật khẩu không được nhỏ hơn 6 ký tự";
+      valid = false;
+    } else if (/\s/.test(formData.password)) {
+      newErrors.password = "Mật khẩu không hợp lệ";
       valid = false;
     }
 
@@ -65,42 +107,41 @@ const SignUp = () => {
   // ================= Email Validation End here ===============
   const handleAdd = async (e) => {
     e.preventDefault();
-
+    const updatedFormData = {
+      ...formData,
+      username: formData.username.trim(),
+      email: formData.email.trim(),
+      sdt: formData.sdt.trim(),
+    };
     if (validateForm()) {
-      // try {
-      //   const response = await dangKy(formData);
-
-      //   if (response.status === 200) {
-      //     toast.success(response.data.message);
-      //     const email = formData.email;
-      //     //setTimeout(navigate(`/active?email=${email}`), 3000);
-      //     console.log(response);
-      //     // Handle successful registration, e.g., redirect or show a success message
-      //   } else {
-      //     toast.error(response.data.message);
-      //   }
-      // } catch (error) {
-      //   console.log(error);
-      //   console.error("Lỗi khi gửi yêu cầu đăng ký:", error);
-      //   toast.error("Đăng ký thất bại"); // Handle other errors
-      // }
-      await dangKy(formData)
+      setLoading(true);
+      await dangKy(updatedFormData)
         .then((response) => {
+          setLoading(true);
           toast.success(response.data.message);
+
           setTimeout(() => {
+            setLoading(true);
             const email = formData.email;
-            // Sử dụng `navigate` hoặc chức năng chuyển hướng khác ở đây
             navigate(`/active?email=${email}`);
           }, 3000);
         })
         .catch((error) => {
           toast.error(error.response.data.message);
+          setLoading(false);
         });
     }
   };
 
   return (
     <div className="container mx-auto h-screen flex items-center justify-start">
+      <div
+        className={`fixed top-0 left-0 w-full h-full flex justify-center items-center bg-black bg-opacity-50 z-50 ${
+          loading ? "" : "hidden"
+        }`}
+      >
+        <div className="border-t-4 border-r-[3px] border-l-2 border-gray-700 border-solid rounded-full h-14 w-14 animate-spin"></div>
+      </div>
       <ToastContainer />
       <div className="w-full lgl:w-[500px] h-full flex flex-col justify-center">
         <form
@@ -131,6 +172,86 @@ const SignUp = () => {
                     {errors.username}
                   </p>
                 )}
+              </div>
+              <div className="flex flex-col gap-.5">
+                <div className=" flex items-center">
+                  <div className="w-[33%] pr-2">
+                    <label
+                      htmlFor="province"
+                      className="font-titleFont text-base font-semibold text-gray-600"
+                    >
+                      Họ
+                    </label>
+                    <input
+                      onChange={handleChange}
+                      // value={email}
+                      name="ho"
+                      className="w-full h-8 placeholder:text-sm placeholder:tracking-wide px-4 text-base font-medium placeholder:font-normal rounded-md border-[1px] border-gray-400 outline-none"
+                      type="text"
+                      placeholder="Họ"
+                    />
+                  </div>
+
+                  <div className="w-[33%] pr-2">
+                    <label
+                      htmlFor="district"
+                      className="font-titleFont text-base font-semibold text-gray-600"
+                    >
+                      Tên Đệm
+                    </label>
+                    <input
+                      onChange={handleChange}
+                      // value={email}
+                      name="tenDem"
+                      className="w-full h-8 placeholder:text-sm placeholder:tracking-wide px-4 text-base font-medium placeholder:font-normal rounded-md border-[1px] border-gray-400 outline-none"
+                      type="text"
+                      placeholder="Tên đệm"
+                    />
+                  </div>
+
+                  <div className="w-[33%] pr-2">
+                    <label
+                      htmlFor="ward"
+                      className="font-titleFont text-base font-semibold text-gray-600"
+                    >
+                      Tên
+                    </label>
+                    <input
+                      onChange={handleChange}
+                      // value={email}
+                      name="ten"
+                      className="w-full h-8 placeholder:text-sm placeholder:tracking-wide px-4 text-base font-medium placeholder:font-normal rounded-md border-[1px] border-gray-400 outline-none"
+                      type="text"
+                      placeholder="Tên"
+                    />
+                  </div>
+                </div>
+                <div className=" flex items-center">
+                  <div className="w-[33%] pr-2">
+                    {errors.ho && (
+                      <p className="text-sm text-red-500 font-titleFont font-semibold px-4">
+                        <span className="font-bold italic mr-1">!</span>
+                        {errors.ho}
+                      </p>
+                    )}
+                  </div>
+                  <div className="w-[33%] pr-2">
+                    {errors.tenDem && (
+                      <p className="text-sm text-red-500 font-titleFont font-semibold px-4">
+                        <span className="font-bold italic mr-1">!</span>
+                        {errors.tenDem}
+                      </p>
+                    )}
+                  </div>
+                  <div className="w-[33%] pr-2">
+                    {errors.ten && (
+                      <p className="text-sm text-red-500 font-titleFont font-semibold px-4">
+                        <span className="font-bold italic mr-1">!</span>
+                        {errors.ten}
+                      </p>
+                    )}
+                  </div>
+                </div>
               </div>
 
               <div className="flex flex-col gap-.5">

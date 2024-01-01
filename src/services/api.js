@@ -1,5 +1,6 @@
 import axios from "axios";
 import { APP_BASE_URL } from "../configs/constans";
+import Cookies from "js-cookie";
 
 const instance = axios.create({
   baseURL: APP_BASE_URL,
@@ -14,6 +15,11 @@ instance.interceptors.request.use(
     if (user && user.token) {
       config.headers["Authorization"] = `Bearer ${user.token}`;
     }
+    // const token = Cookies.get("jwt");
+    // if (token) {
+    //   config.headers["Authorization"] = `Bearer ${token}`;
+    // }
+
     return config;
   },
   (error) => {

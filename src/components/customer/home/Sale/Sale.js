@@ -7,6 +7,8 @@ import {
   a1,
   a2,
   a3,
+  banner4,
+  banner5,
 } from "../../../../assets/images/index";
 import Image from "../../designLayouts/Image";
 

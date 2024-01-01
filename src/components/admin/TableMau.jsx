@@ -1,5 +1,15 @@
 import React, { useEffect, useState } from "react";
-import { Button, Col, Form, Input, Row, Space, Table, Modal } from "antd";
+import {
+  Button,
+  Col,
+  Form,
+  Input,
+  Row,
+  Space,
+  Table,
+  Modal,
+  Switch,
+} from "antd";
 import "react-toastify/dist/ReactToastify.css";
 import { EditOutlined, DeleteOutlined } from "@ant-design/icons";
 import { ExclamationCircleFilled } from "@ant-design/icons";
@@ -9,6 +19,7 @@ import {
   deleteMau,
   findAllMau,
   updateMau,
+  updateStatusMau,
 } from "../../services/MauService";
 
 const TableMau = () => {
@@ -19,6 +30,7 @@ const TableMau = () => {
   const [isEditModalOpen, setIsEditModalOpen] = useState(false);
   const [editFormData, setEditFormData] = useState(null);
   const [searchTenMau, setSearchTenMau] = useState("");
+  const [switchStatus, setSwitchStatus] = useState({});
 
   const [form] = Form.useForm();
   const [formUpdate] = Form.useForm();
@@ -63,13 +75,15 @@ const TableMau = () => {
     Modal.confirm({
       title: "Xác nhận",
       icon: <ExclamationCircleFilled />,
-      content: "Bạn có chắc muốn thêm loại mới?",
+      content: "Bạn có chắc muốn thêm màu mới?",
       okText: "OK",
       okType: "danger",
       cancelText: "Đóng",
       onOk: async () => {
         try {
           const values = await form.validateFields();
+          values.tenMau = values.tenMau.trim().replace(/\s+/g, " ");
+
           const response = await createMau(values);
           if (response.status === 200) {
             console.log(response);
@@ -79,8 +93,13 @@ const TableMau = () => {
             form.resetFields();
           }
         } catch (error) {
-          console.error("Lỗi khi tạo loại: ", error);
-          toast.error("Thêm mới thất bại.");
+          console.error("Lỗi khi tạo màu: ", error);
+          if (error.response && error.response.status === 400) {
+            toast.error(error.response.data.message);
+            return;
+          } else {
+            toast.error("Thêm mới thất bại.");
+          }
         }
       },
       onCancel: () => {},
@@ -91,13 +110,15 @@ const TableMau = () => {
     Modal.confirm({
       title: "Xác nhận",
       icon: <ExclamationCircleFilled />,
-      content: "Bạn có chắc muốn cập nhập loại không?",
+      content: "Bạn có chắc muốn cập nhập màu không?",
       okText: "OK",
       okType: "danger",
       cancelText: "Đóng",
       onOk: async () => {
         try {
           const values = await formUpdate.validateFields();
+          values.tenMau = values.tenMau.trim().replace(/\s+/g, " ");
+
           const response = await updateMau(values, editFormData.maMau);
           if (response.status === 200) {
             console.log(response);
@@ -107,8 +128,13 @@ const TableMau = () => {
             loadTable();
           }
         } catch (error) {
-          console.error("Lỗi khi cập nhật loại: ", error);
-          toast.error("Cập nhật thất bại.");
+          console.error("Lỗi khi cập nhật màu: ", error);
+          if (error.response && error.response.status === 400) {
+            toast.error(error.response.data.message);
+            return;
+          } else {
+            toast.error("Cập nhập thất bại.");
+          }
         }
       },
 
@@ -120,7 +146,7 @@ const TableMau = () => {
     Modal.confirm({
       title: "Xác nhận",
       icon: <ExclamationCircleFilled />,
-      content: "Bạn có chắc muốn xóa loại này?",
+      content: "Bạn có chắc muốn xóa màu này?",
       okText: "Xóa",
       okType: "danger",
       cancelText: "Hủy",
@@ -132,12 +158,34 @@ const TableMau = () => {
             loadTable();
           }
         } catch (error) {
-          console.error("Lỗi khi xóa loại: ", error);
+          console.error("Lỗi khi xóa màu: ", error);
           toast.error("Xóa thất bại.");
         }
       },
       onCancel: () => {},
     });
+  };
+
+  const handleSwitchChange = async (record, checked) => {
+    const trangThaiValue = checked ? 1 : 0;
+    console.log(trangThaiValue);
+    try {
+      const response = await updateStatusMau(
+        { ...record, trangThai: checked ? 1 : 0 },
+        record.maMau
+      );
+      if (response.status === 200) {
+        setSwitchStatus((prevStatus) => ({
+          ...prevStatus,
+          [record.maMau]: checked,
+        }));
+        toast.success("Cập nhật trạng thái thành công!");
+        loadTable();
+      }
+    } catch (error) {
+      console.error("Lỗi khi cập nhật trạng thái màu: ", error);
+      toast.error("Cập nhật trạng thái thất bại.");
+    }
   };
 
   const columns = [
@@ -156,17 +204,12 @@ const TableMau = () => {
       title: "Trạng Thái",
       dataIndex: "trangThai",
       key: "trangThai",
-      render: (trangThai) => {
-        return <p>{trangThai === 0 ? "Hoạt động" : "Không hoạt động"}</p>;
-      },
-      filters: [
-        { text: "Hoạt động", value: 0 },
-        { text: "Không hoạt động", value: 1 },
-      ],
-      onFilter: (value, record) => {
-        const trangThaiMatch = record.trangThai === parseInt(value);
-        return trangThaiMatch;
-      },
+      render: (_, record) => (
+        <Switch
+          checked={record.trangThai === 1}
+          onChange={(checked) => handleSwitchChange(record, checked)}
+        />
+      ),
     },
     {
       title: "Chức năng",
@@ -189,7 +232,7 @@ const TableMau = () => {
       <Row style={{ marginBottom: "20px" }}>
         <Col span={12}>
           <Input.Search
-            placeholder="Tìm kiếm loại ..."
+            placeholder="Tìm kiếm màu ..."
             onSearch={(value) => {
               setSearchTenMau(value);
             }}
@@ -214,7 +257,7 @@ const TableMau = () => {
                 name="tenMau"
                 style={{ width: "360px", marginLeft: "40px" }}
                 rules={[
-                  { required: true, message: "Tên loại không được để trống!" },
+                  { required: true, message: "Tên màu không được để trống!" },
                 ]}
               >
                 <Input placeholder="Tên" />
@@ -225,7 +268,7 @@ const TableMau = () => {
       </Row>
 
       <Modal
-        title="Cập nhật loại"
+        title="Cập nhật màu"
         open={isEditModalOpen}
         onCancel={handleEditCancel}
         onOk={handleUpdate}
@@ -236,7 +279,7 @@ const TableMau = () => {
             name="tenMau"
             style={{ width: "360px", marginLeft: "40px" }}
             rules={[
-              { required: true, message: "Tên loại không được để trống!" },
+              { required: true, message: "Tên màu không được để trống!" },
             ]}
           >
             <Input value={editFormData?.tenMau} placeholder="Tên" />

@@ -1,13 +1,22 @@
-import React, { createContext, useContext, useMemo, useState } from "react";
+import React, {
+  createContext,
+  useContext,
+  useMemo,
+  useState,
+  useEffect,
+} from "react";
 import { useNavigate } from "react-router-dom";
 import { APP_BASE_URL } from "../../../configs/constans";
 import { toast } from "react-toastify";
+import Swal from "sweetalert2";
+import Cookies from "js-cookie";
 
 const AuthContext = createContext();
 
 export const AuthProvider = ({ children }) => {
   const [user, setUser] = useState(JSON.parse(localStorage.getItem("user")));
   const navigate = useNavigate();
+  let sessionTimer;
 
   const signin = async (username, password) => {
     try {
@@ -28,9 +37,26 @@ export const AuthProvider = ({ children }) => {
       }
 
       const data = await response.json();
+      if (data.trangThai === 0) {
+        setTimeout(() => {
+          const email = data.email;
+          navigate(`/active?email=${email}`, {
+            replace: true,
+          });
+        }, 3000);
+        return;
+      }
+      // const cookies = new Cookies();
+      // Cookies.set("jwt", JSON.stringify(data.token), { httpOnly: true });
+      // Cookies.set("jwt", JSON.stringify(data.token), { httpOnly: true });
+
       localStorage.setItem("user", JSON.stringify(data));
       setUser(data);
-      toast.success("Đăng nhập thành công");
+      Swal.fire({
+        title: "Đăng nhập!",
+        text: "Đăng nhập thành công",
+        icon: "success",
+      });
       if (data.vaiTro === "ROLE_ADMIN") {
         navigate("/admin/tong-quan", {
           replace: true,
@@ -39,11 +65,28 @@ export const AuthProvider = ({ children }) => {
         navigate("/", {
           replace: true,
         });
+      } else if (data.vaiTro === "ROLE_STAFF") {
+        navigate("/admin/ban-hang", {
+          replace: true,
+        });
       }
     } catch (error) {
       console.error(error);
     }
+    startSessionTimer();
   };
+
+  const startSessionTimer = () => {
+    const sessionTimeout = 60 * 60 * 1000;
+
+    clearTimeout(sessionTimer);
+
+    sessionTimer = setTimeout(() => {
+      signout();
+      toast.info("Đã tự động đăng xuất do hết phiên làm việc.");
+    }, sessionTimeout);
+  };
+
   const signup = async (username, password, email, sdt) => {
     try {
       const response = await fetch(`${APP_BASE_URL}/auth/signup`, {
@@ -68,7 +111,10 @@ export const AuthProvider = ({ children }) => {
 
   const signout = () => {
     setUser(null);
+    Cookies.remove("jwt");
     localStorage.removeItem("user");
+    localStorage.removeItem("items");
+    clearTimeout(sessionTimer);
     navigate("/signin", {
       replace: true,
     });
@@ -81,10 +127,14 @@ export const AuthProvider = ({ children }) => {
       signout,
       signup,
     }),
-
-    // eslint-disable-next-line
     [user]
   );
+
+  useEffect(() => {
+    if (user) {
+      startSessionTimer();
+    }
+  }, [user]);
 
   return <AuthContext.Provider value={value}>{children}</AuthContext.Provider>;
 };

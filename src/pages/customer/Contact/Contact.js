@@ -134,7 +134,7 @@ const Contact = () => {
               onClick={handlePost}
               className="bg-black text-white text-lg font-bodyFont w-[185px] h-[50px] hover:bg-white hover:text-black duration-300 font-bold"
             >
-              Đồng Ý
+              Xác Nhận
             </button>
           </div>
         </form>
